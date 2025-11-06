@@ -16,6 +16,7 @@ public class OrganizationGroup {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String description;
 
     @JoinColumn(name = "organization_id", nullable = false)

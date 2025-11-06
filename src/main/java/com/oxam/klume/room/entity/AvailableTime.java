@@ -38,17 +38,17 @@ public class AvailableTime {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "start_time", nullable = false)
-    private String startTime;
+    @Column(name = "available_start_time", nullable = false)
+    private String availableStartTime;
 
-    @Column(name = "end_time", nullable = false)
-    private String endTime;
+    @Column(name = "available_end_time", nullable = false)
+    private String availableEndTime;
 
-    @Column(name = "open_day")
-    private int openDay;
+    @Column(name = "reservation_open_day")
+    private Integer reservationOpenDay;
 
-    @Column(name = "open_time")
-    private String openTime;
+    @Column(name = "reservation_open_time")
+    private String reservationOpenTime;
 
     @Column(name = "repeat_start_day", nullable = false)
     private String repeatStartDay;

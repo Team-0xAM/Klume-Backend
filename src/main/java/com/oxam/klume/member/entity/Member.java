@@ -29,7 +29,6 @@ public class Member {
     @Column(name = "created_at", nullable = false)
     private String createdAt;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Provider provider;
 

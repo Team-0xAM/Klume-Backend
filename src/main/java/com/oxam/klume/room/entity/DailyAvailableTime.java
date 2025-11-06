@@ -16,17 +16,17 @@ public class DailyAvailableTime {
     @Column(nullable = false)
     private String date;
 
-    @Column(name = "start_time", nullable = false)
-    private String startTime;
+    @Column(name = "available_start_time", nullable = false)
+    private String availableStartTime;
 
-    @Column(name = "end_time", nullable = false)
-    private String endTime;
+    @Column(name = "available_end_time", nullable = false)
+    private String availableEndTime;
 
-    @Column(name = "open_day")
-    private Integer openDay;
+    @Column(name = "reservation_open_day")
+    private Integer reservationOpenDay;
 
-    @Column(name = "open_time")
-    private String openTime;
+    @Column(name = "reservation_open_time")
+    private String reservationOpenTime;
 
     @JoinColumn(name = "available_time_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)

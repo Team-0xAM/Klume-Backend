@@ -38,4 +38,8 @@ public class OrganizationMember {
     @JoinColumn(name = "member_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
+
+    @JoinColumn(name = "organization_group_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private OrganizationGroup organizationGroup;
 }
