@@ -20,9 +20,6 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String name;
-
     @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean isDeleted;
 
@@ -38,6 +35,6 @@ public class Member {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "is_notification_enabled", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Column(name = "is_notification_enabled", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
     private boolean isNotificationEnabled;
 }
