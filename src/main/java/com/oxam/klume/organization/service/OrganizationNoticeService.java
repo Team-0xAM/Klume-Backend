@@ -4,4 +4,5 @@ import com.oxam.klume.organization.dto.OrganizationNoticeRequest;
 
 public interface OrganizationNoticeService {
     void createNotice(OrganizationNoticeRequest request, int organizationId, int memberId);
+    void updateNotice(int organizationId, int noticeId, OrganizationNoticeRequest request, int memberId);
 }

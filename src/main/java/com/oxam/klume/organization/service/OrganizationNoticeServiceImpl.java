@@ -42,4 +42,18 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
 
         organizationNoticeRepository.save(notice);
     }
+
+    @Override
+    public void updateNotice(int organizationId, int noticeId, OrganizationNoticeRequest request, int memberId) {
+        // TODO 전역 에러 처리
+        OrganizationNotice notice = organizationNoticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("공지사항이 존재하지 않습니다."));
+
+        if (notice.getOrganization().getId() != organizationId) {
+            throw new IllegalArgumentException("이 공지사항은 해당 조직에 속하지 않습니다.");
+        }
+
+        notice.update(request.getTitle(), request.getContent());
+        organizationNoticeRepository.save(notice);
+    }
 }
