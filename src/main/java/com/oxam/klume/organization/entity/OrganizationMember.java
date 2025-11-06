@@ -3,6 +3,7 @@ package com.oxam.klume.organization.entity;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.organization.entity.enums.OrganizationRole;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,4 +43,16 @@ public class OrganizationMember {
     @JoinColumn(name = "organization_group_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private OrganizationGroup organizationGroup;
+
+    @Builder
+    public OrganizationMember(final OrganizationRole role, final String nickname, final Organization organization,
+                              final Member member, final OrganizationGroup organizationGroup) {
+        this.penaltyCount = 0;
+        this.isBanned = false;
+        this.role = role;
+        this.nickname = nickname;
+        this.organization = organization;
+        this.member = member;
+        this.organizationGroup = organizationGroup;
+    }
 }
