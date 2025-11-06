@@ -53,7 +53,24 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
             throw new IllegalArgumentException("이 공지사항은 해당 조직에 속하지 않습니다.");
         }
 
+        // TODO 관리자 권한 확인?
+
         notice.update(request.getTitle(), request.getContent());
         organizationNoticeRepository.save(notice);
+    }
+
+
+    @Override
+    public void deleteNotice(int organizationId, int noticeId, int memberId) {
+        OrganizationNotice notice = organizationNoticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("공지사항이 존재하지 않습니다."));
+
+        // TODO 관리자 권한 확인?
+
+        if (notice.getOrganization().getId() != organizationId) {
+            throw new IllegalArgumentException("이 공지사항은 해당 조직에 속하지 않습니다.");
+        }
+
+        organizationNoticeRepository.delete(notice);
     }
 }

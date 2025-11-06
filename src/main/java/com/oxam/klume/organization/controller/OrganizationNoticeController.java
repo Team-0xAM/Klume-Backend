@@ -49,6 +49,19 @@ public class OrganizationNoticeController {
         return ResponseEntity.ok("공지사항이 수정되었습니다.");
     }
 
+    @Operation(summary = "공지사항 삭제")
+    @DeleteMapping("/{noticeId}")
+    public ResponseEntity<String> deleteNotice(
+            @PathVariable int organizationId,
+            @PathVariable int noticeId
+    ) {
+        // TODO 현재 사용자 ID 가져오기
+        int memberId = 1;
+
+        organizationNoticeService.deleteNotice(organizationId, noticeId, memberId);
+        return ResponseEntity.ok("공지사항이 삭제되었습니다.");
+    }
+
 
 
 }
