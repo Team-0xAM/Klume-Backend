@@ -1,5 +1,6 @@
 package com.oxam.klume.organization.controller;
 
+import com.oxam.klume.organization.dto.InviteCodeResponseDTO;
 import com.oxam.klume.organization.dto.OrganizationRequestDTO;
 import com.oxam.klume.organization.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,10 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "organization", description = "조직 관련 API")
@@ -31,5 +29,18 @@ public class OrganizationController {
         organizationService.createOrganization(memberId, file, requestDTO);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "초대 코드 발급")
+    @PostMapping("/{organizationId}/invitations")
+    public ResponseEntity<InviteCodeResponseDTO> createInviteCode(@PathVariable("organizationId") final int organizationId) {
+        // TODO 로그인한 회원 ID 가져오기
+        final int memberId = 7;
+
+        final String inviteCode = organizationService.createInviteCode(organizationId, memberId);
+
+        final InviteCodeResponseDTO inviteCodeResponseDTO = new InviteCodeResponseDTO(inviteCode);
+
+        return ResponseEntity.ok(inviteCodeResponseDTO);
     }
 }
