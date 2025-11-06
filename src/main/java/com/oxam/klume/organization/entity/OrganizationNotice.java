@@ -33,4 +33,22 @@ public class OrganizationNotice {
     @JoinColumn(name = "organization_member_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private OrganizationMember organizationMember;
+
+    public static OrganizationNotice create(
+            String title,
+            String content,
+            String createdAt,
+            String updatedAt,
+            Organization organization,
+            OrganizationMember member
+    ) {
+        OrganizationNotice notice = new OrganizationNotice();
+        notice.title = title;
+        notice.content = content;
+        notice.createdAt = createdAt;
+        notice.updatedAt = updatedAt;
+        notice.organization = organization;
+        notice.organizationMember = member;
+        return notice;
+    }
 }
