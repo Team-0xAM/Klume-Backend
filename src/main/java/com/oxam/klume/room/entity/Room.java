@@ -8,7 +8,6 @@ import lombok.*;
 @Table(name = "room",
         uniqueConstraints = @UniqueConstraint(name = "UQ_Room_Name_Per_Org", columnNames = {"organization_id", "name"}))
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -25,11 +24,11 @@ public class Room {
     @Column(nullable = false)
     private int capacity;
 
+    @Setter
     @Column(name = "image_url")
     private String imageUrl;
 
-    @JoinColumn(name = "organization_id", nullable = false,
-            foreignKey = @ForeignKey(name = "FK_Organization_TO_Room"))
+    @JoinColumn(name = "organization_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Organization organization;
 }
