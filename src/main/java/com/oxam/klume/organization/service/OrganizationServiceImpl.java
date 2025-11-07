@@ -91,8 +91,6 @@ public class OrganizationServiceImpl implements OrganizationService {
     public List<OrganizationGroup> findOrganizationGroups(int memberId, int organizationId) {
         final Organization organization = findOrganizationById(organizationId);
 
-        findOrganizationMemberByMemberIdAndOrganization(memberId, organization);
-
         final List<OrganizationGroup> organizationGroups = organizationGroupRepository.findByOrganization(organization);
 
         return organizationGroups;
