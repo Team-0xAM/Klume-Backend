@@ -21,7 +21,7 @@ public class OrganizationNoticeController {
 
     @Operation(summary = "공지사항 목록 조회")
     @GetMapping
-    public ResponseEntity<List<OrganizationNoticeResponse>> getNotices(@PathVariable int organizationId) {
+    public ResponseEntity<List<OrganizationNoticeResponse>> getNotices(@PathVariable final int organizationId) {
         List<OrganizationNoticeResponse> notices = organizationNoticeService.getNotices(organizationId);
         return ResponseEntity.ok(notices);
     }
@@ -30,8 +30,8 @@ public class OrganizationNoticeController {
     @Operation(summary = "공지사항 세부 조회")
     @GetMapping("/{noticeId}")
     public ResponseEntity<OrganizationNoticeResponse> getNotices(
-            @PathVariable int organizationId,
-            @PathVariable int noticeId) {
+            @PathVariable final int organizationId,
+            @PathVariable final int noticeId) {
         OrganizationNoticeResponse notice = organizationNoticeService.getNoticeDetail(organizationId,noticeId);
         return ResponseEntity.ok(notice);
     }
@@ -39,8 +39,8 @@ public class OrganizationNoticeController {
     @Operation(summary = "공지사항 등록")
     @PostMapping
     public ResponseEntity<OrganizationNoticeResponse> createNotice(
-            @PathVariable int organizationId,
-            @RequestBody OrganizationNoticeRequest request
+            @PathVariable final int organizationId,
+            @RequestBody final OrganizationNoticeRequest request
     ) {
         // TODO: 현재 로그인한 사용자 ID 가져오기
         final int memberId = 5;
@@ -54,8 +54,8 @@ public class OrganizationNoticeController {
     @Operation(summary = "공지사항 수정")
     @PutMapping("/{noticeId}")
     public ResponseEntity<OrganizationNoticeResponse> updateNotice(
-            @PathVariable int organizationId,
-            @PathVariable int noticeId,
+            @PathVariable final int organizationId,
+            @PathVariable final int noticeId,
             @RequestBody OrganizationNoticeRequest request
     ) {
         // TODO 현재 사용자 ID 가져오기
@@ -71,8 +71,8 @@ public class OrganizationNoticeController {
     @Operation(summary = "공지사항 삭제")
     @DeleteMapping("/{noticeId}")
     public ResponseEntity<String> deleteNotice(
-            @PathVariable int organizationId,
-            @PathVariable int noticeId
+            @PathVariable final int organizationId,
+            @PathVariable final int noticeId
     ) {
         // TODO 현재 사용자 ID 가져오기
         int memberId = 5;

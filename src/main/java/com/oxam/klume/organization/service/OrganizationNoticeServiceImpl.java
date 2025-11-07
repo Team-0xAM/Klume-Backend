@@ -24,7 +24,7 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
 
     // 공지사항 목록 조회
     @Override
-    public List<OrganizationNoticeResponse> getNotices(int organizationId) {
+    public List<OrganizationNoticeResponse> getNotices(final int organizationId) {
         findOrganizationById(organizationId);
 
         List<OrganizationNotice> notices = organizationNoticeRepository.findByOrganizationId(organizationId);
@@ -37,14 +37,14 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
 
     // 공지사항 상세 조회
     @Override
-    public OrganizationNoticeResponse getNoticeDetail(int organizationId, int noticeId) {
+    public OrganizationNoticeResponse getNoticeDetail(final int organizationId, final int noticeId) {
         OrganizationNotice notice = findOrganizationNoticeById(noticeId);
         return OrganizationNoticeResponse.of(notice);
     }
 
     // 공지사항 등록
     @Override
-    public OrganizationNoticeResponse createNotice(OrganizationNoticeRequest request, int organizationId, int memberId) {
+    public OrganizationNoticeResponse createNotice(final OrganizationNoticeRequest request, final int organizationId, final int memberId) {
         Organization organization = findOrganizationById(organizationId);
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
         if(member.getRole() != OrganizationRole.ADMIN){
@@ -66,7 +66,7 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
     // 공지사항 수정
     @Transactional
     @Override
-    public OrganizationNoticeResponse updateNotice(int organizationId, int noticeId, OrganizationNoticeRequest request, int memberId) {
+    public OrganizationNoticeResponse updateNotice(final int organizationId, final int noticeId, OrganizationNoticeRequest request, final int memberId) {
         OrganizationNotice notice = findOrganizationNoticeById(noticeId);
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
 
@@ -84,7 +84,7 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
 
     // 공지사항 삭제
     @Override
-    public void deleteNotice(int organizationId, int noticeId, int memberId) {
+    public void deleteNotice(final int organizationId, final int noticeId, final int memberId) {
 
         findOrganizationById(organizationId);
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
@@ -102,17 +102,17 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
     }
 
     // ============================== 공통 메서드 =====================================
-    private Organization findOrganizationById(int organizationId){
+    private Organization findOrganizationById(final int organizationId){
         return organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new IllegalArgumentException("조직이 존재하지 않습니다"));
     }
 
-    private OrganizationMember findOrganizationMemberById(int organizationId, int memberId){
+    private OrganizationMember findOrganizationMemberById(final int organizationId, final int memberId){
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 가입하지 않은 조직입니다."));
     }
 
-    private OrganizationNotice findOrganizationNoticeById(int noticeId){
+    private OrganizationNotice findOrganizationNoticeById(final int noticeId){
         return organizationNoticeRepository.findById(noticeId)
                 .orElseThrow(() -> new IllegalArgumentException("공지사항이 존재하지 않습니다."));
     }
