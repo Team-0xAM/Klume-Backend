@@ -1,6 +1,7 @@
 package com.oxam.klume.organization.service;
 
 import com.oxam.klume.organization.dto.OrganizationNoticeRequest;
+import com.oxam.klume.organization.dto.OrganizationNoticeResponse;
 import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.entity.OrganizationNotice;
@@ -11,12 +12,25 @@ import com.oxam.klume.organization.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class OrganizationNoticeServiceImpl implements OrganizationNoticeService {
     private final OrganizationRepository organizationRepository;
     private final OrganizationNoticeRepository organizationNoticeRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
+
+    @Override
+    public List<OrganizationNoticeResponse> getNotices(int organizationId) {
+
+        List<OrganizationNotice> notices = organizationNoticeRepository.findByOrganizationId(organizationId);
+        List<OrganizationNoticeResponse> responses = notices.stream()
+                .map(OrganizationNoticeResponse::of)
+                .toList();
+
+        return responses;
+    }
 
     @Override
     public void createNotice(OrganizationNoticeRequest request, int organizationId, int memberId) {

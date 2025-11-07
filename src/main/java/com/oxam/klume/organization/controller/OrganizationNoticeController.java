@@ -1,14 +1,15 @@
 package com.oxam.klume.organization.controller;
 
 import com.oxam.klume.organization.dto.OrganizationNoticeRequest;
-import com.oxam.klume.organization.entity.OrganizationNotice;
-import com.oxam.klume.organization.repository.OrganizationNoticeRepository;
+import com.oxam.klume.organization.dto.OrganizationNoticeResponse;
 import com.oxam.klume.organization.service.OrganizationNoticeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "organization_notice", description = "공지사항 관련 API")
 @RequestMapping("/organizations/{organizationId}/notices")
@@ -17,7 +18,16 @@ import org.springframework.web.bind.annotation.*;
 public class OrganizationNoticeController {
     private final OrganizationNoticeService organizationNoticeService;
 
-    private final OrganizationNoticeRepository organizationNoticeRepository;
+    @Operation(summary = "공지사항 목록 조회")
+    @GetMapping("/")
+    public ResponseEntity<List<OrganizationNoticeResponse>> getNotices(@PathVariable int organizationId) {
+        List<OrganizationNoticeResponse> notices = organizationNoticeService.getNotices(organizationId);
+        return ResponseEntity.ok(notices);
+    }
+
+
+//    @Operation(summary = "공지사항 세부 조회")
+//    @GetMapping("/")
 
     @Operation(summary = "공지사항 등록")
     @PostMapping("/")
