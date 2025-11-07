@@ -6,6 +6,7 @@ import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.service.OrganizationNoticeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class OrganizationNoticeController {
     @PostMapping
     public ResponseEntity<OrganizationNoticeResponse> createNotice(
             @PathVariable final int organizationId,
-            @RequestBody final OrganizationNoticeRequest request
+            @Valid @RequestBody final OrganizationNoticeRequest request
     ) {
         // TODO: 현재 로그인한 사용자 ID 가져오기
         final int memberId = 5;
@@ -56,7 +57,7 @@ public class OrganizationNoticeController {
     public ResponseEntity<OrganizationNoticeResponse> updateNotice(
             @PathVariable final int organizationId,
             @PathVariable final int noticeId,
-            @RequestBody OrganizationNoticeRequest request
+            @Valid @RequestBody OrganizationNoticeRequest request
     ) {
         // TODO 현재 사용자 ID 가져오기
         int memberId = 5;
