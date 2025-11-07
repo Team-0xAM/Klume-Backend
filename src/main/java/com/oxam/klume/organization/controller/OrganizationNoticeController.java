@@ -26,9 +26,7 @@ public class OrganizationNoticeController {
             @RequestBody OrganizationNoticeRequest request
     ) {
         // TODO: 현재 로그인한 사용자 ID 가져오기
-        final int memberId = 1;
-
-        // TODO: 사용자가 현재 조직의 관리자인지 확인
+        final int memberId = 5;
 
         organizationNoticeService.createNotice(request, organizationId, memberId);
 
@@ -43,7 +41,7 @@ public class OrganizationNoticeController {
             @RequestBody OrganizationNoticeRequest request
     ) {
         // TODO 현재 사용자 ID 가져오기
-        int memberId = 1;
+        int memberId = 5;
 
         organizationNoticeService.updateNotice(organizationId, noticeId, request, memberId);
         return ResponseEntity.ok("공지사항이 수정되었습니다.");
@@ -56,7 +54,7 @@ public class OrganizationNoticeController {
             @PathVariable int noticeId
     ) {
         // TODO 현재 사용자 ID 가져오기
-        int memberId = 1;
+        int memberId = 5;
 
         organizationNoticeService.deleteNotice(organizationId, noticeId, memberId);
         return ResponseEntity.ok("공지사항이 삭제되었습니다.");

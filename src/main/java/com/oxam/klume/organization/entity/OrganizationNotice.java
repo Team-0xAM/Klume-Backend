@@ -40,16 +40,14 @@ public class OrganizationNotice {
     public static OrganizationNotice create(
             String title,
             String content,
-            String createdAt,
-            String updatedAt,
             Organization organization,
             OrganizationMember member
     ) {
         OrganizationNotice notice = new OrganizationNotice();
         notice.title = title;
         notice.content = content;
-        notice.createdAt = createdAt;
-        notice.updatedAt = updatedAt;
+        notice.createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        notice.updatedAt = null;
         notice.organization = organization;
         notice.organizationMember = member;
         return notice;
