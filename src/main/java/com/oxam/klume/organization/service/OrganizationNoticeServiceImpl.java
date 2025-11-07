@@ -40,7 +40,7 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
     }
 
     @Override
-    public void createNotice(OrganizationNoticeRequest request, int organizationId, int memberId) {
+    public OrganizationNoticeResponse createNotice(OrganizationNoticeRequest request, int organizationId, int memberId) {
         // TODO 전역 에러 처리
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new IllegalArgumentException("조직이 존재하지 않습니다"));
@@ -59,11 +59,13 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
                 member
         );
 
-        organizationNoticeRepository.save(notice);
+        OrganizationNotice saved = organizationNoticeRepository.save(notice);
+
+        return OrganizationNoticeResponse.of(saved);
     }
 
     @Override
-    public void updateNotice(int organizationId, int noticeId, OrganizationNoticeRequest request, int memberId) {
+    public OrganizationNoticeResponse updateNotice(int organizationId, int noticeId, OrganizationNoticeRequest request, int memberId) {
         // TODO 전역 에러 처리
         OrganizationNotice notice = organizationNoticeRepository.findById(noticeId)
                 .orElseThrow(() -> new IllegalArgumentException("공지사항이 존재하지 않습니다."));
@@ -80,7 +82,9 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
         }
 
         notice.update(request.getTitle(), request.getContent());
-        organizationNoticeRepository.save(notice);
+        OrganizationNotice saved = organizationNoticeRepository.save(notice);
+
+        return OrganizationNoticeResponse.of(saved);
     }
 
 

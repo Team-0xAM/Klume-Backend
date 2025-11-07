@@ -2,6 +2,7 @@ package com.oxam.klume.organization.controller;
 
 import com.oxam.klume.organization.dto.OrganizationNoticeRequest;
 import com.oxam.klume.organization.dto.OrganizationNoticeResponse;
+import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.service.OrganizationNoticeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,21 +38,22 @@ public class OrganizationNoticeController {
 
     @Operation(summary = "공지사항 등록")
     @PostMapping
-    public ResponseEntity<String> createNotice(
+    public ResponseEntity<OrganizationNoticeResponse> createNotice(
             @PathVariable int organizationId,
             @RequestBody OrganizationNoticeRequest request
     ) {
         // TODO: 현재 로그인한 사용자 ID 가져오기
         final int memberId = 5;
 
-        organizationNoticeService.createNotice(request, organizationId, memberId);
+        OrganizationNoticeResponse response =
+                organizationNoticeService.createNotice(request, organizationId, memberId);
 
-        return ResponseEntity.status(201).body("공지사항이 성공적으로 등록되었습니다.");
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "공지사항 수정")
     @PutMapping("/{noticeId}")
-    public ResponseEntity<String> updateNotice(
+    public ResponseEntity<OrganizationNoticeResponse> updateNotice(
             @PathVariable int organizationId,
             @PathVariable int noticeId,
             @RequestBody OrganizationNoticeRequest request
@@ -60,7 +62,10 @@ public class OrganizationNoticeController {
         int memberId = 5;
 
         organizationNoticeService.updateNotice(organizationId, noticeId, request, memberId);
-        return ResponseEntity.ok("공지사항이 수정되었습니다.");
+        OrganizationNoticeResponse response =
+                organizationNoticeService.updateNotice(organizationId, noticeId, request, memberId);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "공지사항 삭제")
