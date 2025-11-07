@@ -1,5 +1,6 @@
 package com.oxam.klume.organization.service;
 
+import com.oxam.klume.common.redis.RedisService;
 import com.oxam.klume.file.FileValidator;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.member.exception.MemberNotFoundException;
@@ -13,7 +14,6 @@ import com.oxam.klume.organization.exception.OrganizationNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,13 +25,14 @@ import java.time.Duration;
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
     private static final String INVITATION_CODE_PREFIX = "inviteCode:";
+    private static final String ORGANIZATION_PREFIX = "organization:";
 
     private final MemberRepository memberRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
 
     private final FileValidator fileValidator;
-    private final StringRedisTemplate redisTemplate;
+    private final RedisService redisService;
 
     @Transactional
     @Override
@@ -56,19 +57,29 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Transactional(readOnly = true)
     @Override
-    public String createInviteCode(final int organizationId, final int memberId) {
+    public String createInvitationCode(final int organizationId, final int memberId) {
         final Member member = findMemberById(memberId);
 
         final Organization organization = findOrganizationById(organizationId);
 
         validateAdminPermission(member, organization, OrganizationRole.ADMIN);
 
-        final String inviteCode = createRandomCode(6);
+        final String invitationCode = generateRandomCode(6);
 
-        redisTemplate.opsForValue().set(INVITATION_CODE_PREFIX + inviteCode, String.valueOf(organization.getId()),
-                Duration.ofMinutes(30));
+        saveInvitationCodeToRedis(organizationId, invitationCode);
 
-        return inviteCode;
+        return invitationCode;
+    }
+
+    private void saveInvitationCodeToRedis(final int organizationId, final String invitationCode) {
+        final String value = redisService.get(ORGANIZATION_PREFIX + organizationId);
+
+        if (value != null) {
+            redisService.delete(INVITATION_CODE_PREFIX + value);
+        }
+
+        redisService.set(INVITATION_CODE_PREFIX + invitationCode, String.valueOf(organizationId), Duration.ofMinutes(30));
+        redisService.set(ORGANIZATION_PREFIX + organizationId, invitationCode, Duration.ofMinutes(30));
     }
 
     private void validateAdminPermission(final Member member, final Organization organization, final OrganizationRole role) {
@@ -77,7 +88,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
     }
 
-    private String createRandomCode(final int length) {
+    private String generateRandomCode(final int length) {
         final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
         final SecureRandom secureRandom = new SecureRandom();
@@ -94,6 +105,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     private String uploadImage(final MultipartFile file) {
         if (file != null) {
             fileValidator.validateImage(file);
+
             // TODO s3 업로드 후 이미지 url 반환
             return "https://~";
         }

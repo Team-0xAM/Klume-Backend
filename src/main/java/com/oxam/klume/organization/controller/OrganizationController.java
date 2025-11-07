@@ -33,13 +33,13 @@ public class OrganizationController {
 
     @Operation(summary = "초대 코드 발급")
     @PostMapping("/{organizationId}/invitations")
-    public ResponseEntity<InviteCodeResponseDTO> createInviteCode(@PathVariable("organizationId") final int organizationId) {
+    public ResponseEntity<InviteCodeResponseDTO> createInvitationCode(@PathVariable("organizationId") final int organizationId) {
         // TODO 로그인한 회원 ID 가져오기
-        final int memberId = 7;
+        final int memberId = 1;
 
-        final String inviteCode = organizationService.createInviteCode(organizationId, memberId);
+        final String invitationCode = organizationService.createInvitationCode(organizationId, memberId);
 
-        final InviteCodeResponseDTO inviteCodeResponseDTO = new InviteCodeResponseDTO(inviteCode);
+        final InviteCodeResponseDTO inviteCodeResponseDTO = new InviteCodeResponseDTO(invitationCode);
 
         return ResponseEntity.ok(inviteCodeResponseDTO);
     }
