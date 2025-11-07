@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
@@ -45,11 +46,23 @@ public class MailServiceImpl implements MailService {
             helper.setTo(email);
             helper.setSubject("[KLÜME] 이메일 인증코드 안내");
 
+            // 이메일 발송자를 KLÜME 으로 출력
+            try {
+                helper.setFrom("no-reply@klume.io", "KLÜME");
+            } catch (MessagingException | UnsupportedEncodingException e) {
+                throw new IllegalStateException("이메일 발신자 설정 중 오류 발생", e);
+            }
+
+            // 답신 방지 헤더 설정
+            message.addHeader("Reply-To", "no-reply@klume.io");
+            message.addHeader("X-Auto-Response-Suppress", "All");
+            message.addHeader("Auto-Submitted", "auto-generated");
+
             // 이메일 본문 (로고 + 코드 + 만료시각)
             String htmlContent = buildEmailContent(code, expireTime);
             helper.setText(htmlContent, true);
 
-            // inline 로고 이미지 첨부 (cid 이름과 src 일치)
+            // inline 로고 이미지 첨부
             FileSystemResource logo = new FileSystemResource(
                     new File("src/main/resources/static/images/klume_logo.png")
             );
