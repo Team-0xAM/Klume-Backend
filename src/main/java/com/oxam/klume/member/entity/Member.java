@@ -2,12 +2,16 @@ package com.oxam.klume.member.entity;
 
 import com.oxam.klume.member.entity.enums.Provider;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Getter
 @Table(name = "member")
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 public class Member {
     @Id
