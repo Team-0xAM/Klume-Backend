@@ -19,7 +19,7 @@ public class OrganizationNoticeController {
     private final OrganizationNoticeService organizationNoticeService;
 
     @Operation(summary = "공지사항 목록 조회")
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<OrganizationNoticeResponse>> getNotices(@PathVariable int organizationId) {
         List<OrganizationNoticeResponse> notices = organizationNoticeService.getNotices(organizationId);
         return ResponseEntity.ok(notices);
@@ -36,7 +36,7 @@ public class OrganizationNoticeController {
     }
 
     @Operation(summary = "공지사항 등록")
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<String> createNotice(
             @PathVariable int organizationId,
             @RequestBody OrganizationNoticeRequest request
