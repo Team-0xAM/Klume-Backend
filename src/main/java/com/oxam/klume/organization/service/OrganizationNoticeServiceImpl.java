@@ -11,6 +11,7 @@ import com.oxam.klume.organization.repository.OrganizationNoticeRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -63,6 +64,7 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
     }
 
     // 공지사항 수정
+    @Transactional
     @Override
     public OrganizationNoticeResponse updateNotice(int organizationId, int noticeId, OrganizationNoticeRequest request, int memberId) {
         OrganizationNotice notice = findOrganizationNoticeById(noticeId);
@@ -77,9 +79,7 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
         }
 
         notice.update(request.getTitle(), request.getContent());
-        OrganizationNotice saved = organizationNoticeRepository.save(notice);
-
-        return OrganizationNoticeResponse.of(saved);
+        return OrganizationNoticeResponse.of(notice);
     }
 
     // 공지사항 삭제
