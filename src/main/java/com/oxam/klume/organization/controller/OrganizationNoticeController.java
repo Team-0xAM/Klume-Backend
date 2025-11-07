@@ -26,8 +26,14 @@ public class OrganizationNoticeController {
     }
 
 
-//    @Operation(summary = "공지사항 세부 조회")
-//    @GetMapping("/")
+    @Operation(summary = "공지사항 세부 조회")
+    @GetMapping("/{noticeId}")
+    public ResponseEntity<OrganizationNoticeResponse> getNotices(
+            @PathVariable int organizationId,
+            @PathVariable int noticeId) {
+        OrganizationNoticeResponse notice = organizationNoticeService.getNoticeDetail(organizationId,noticeId);
+        return ResponseEntity.ok(notice);
+    }
 
     @Operation(summary = "공지사항 등록")
     @PostMapping("/")

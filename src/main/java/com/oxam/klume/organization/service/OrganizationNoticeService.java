@@ -10,4 +10,5 @@ public interface OrganizationNoticeService {
     void updateNotice(int organizationId, int noticeId, OrganizationNoticeRequest request, int memberId);
     void deleteNotice(int organizationId, int noticeId, int memberId);
     List<OrganizationNoticeResponse> getNotices(int organizationId);
+    OrganizationNoticeResponse getNoticeDetail(int organizationId, int noticeId);
 }

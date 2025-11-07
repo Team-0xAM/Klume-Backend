@@ -33,6 +33,13 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
     }
 
     @Override
+    public OrganizationNoticeResponse getNoticeDetail(int organizationId, int noticeId) {
+        OrganizationNotice notice = organizationNoticeRepository.findByOrganizationIdAndId(organizationId, noticeId)
+                .orElseThrow(() -> new RuntimeException("해당 공지사항을 찾을 수 없습니다."));
+        return OrganizationNoticeResponse.of(notice);
+    }
+
+    @Override
     public void createNotice(OrganizationNoticeRequest request, int organizationId, int memberId) {
         // TODO 전역 에러 처리
         Organization organization = organizationRepository.findById(organizationId)
