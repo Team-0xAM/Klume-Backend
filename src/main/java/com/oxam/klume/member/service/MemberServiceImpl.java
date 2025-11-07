@@ -1,5 +1,6 @@
 package com.oxam.klume.member.service;
 
+import com.oxam.klume.auth.service.MailService;
 import com.oxam.klume.member.dto.SignupRequest;
 import com.oxam.klume.member.dto.SignupResponse;
 import com.oxam.klume.member.entity.Member;
@@ -23,6 +24,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public SignupResponse signup(SignupRequest request) {
+
         // 1. 이메일 인증 확인
         if (!mailService.isEmailVerified(request.getEmail())) {
             throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다. 먼저 이메일 인증을 진행해주세요.");

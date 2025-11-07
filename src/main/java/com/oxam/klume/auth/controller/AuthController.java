@@ -1,4 +1,4 @@
-package com.oxam.klume.member.controller;
+package com.oxam.klume.auth.controller;
 
 import com.oxam.klume.member.dto.SignupRequest;
 import com.oxam.klume.member.dto.SignupResponse;

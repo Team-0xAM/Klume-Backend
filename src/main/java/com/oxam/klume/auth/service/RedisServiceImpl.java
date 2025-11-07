@@ -1,4 +1,4 @@
-package com.oxam.klume.member.service;
+package com.oxam.klume.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

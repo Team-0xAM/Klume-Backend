@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8">
+		<title>KLÜME 테스트 회원가입</title>
+		<style>
+			body {
+				font-family: 'Noto Sans KR', sans-serif;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				height: 100vh;
+				background: #f9f9fb;
+			}
+			.container {
+				background: #fff;
+				padding: 30px;
+				border-radius: 16px;
+				box-shadow: 0 0 10px rgba(0,0,0,0.1);
+				width: 320px;
+			}
+			input {
+				width: 100%;
+				padding: 10px;
+				margin: 8px 0;
+				border: 1px solid #ccc;
+				border-radius: 8px;
+			}
+			button {
+				width: 100%;
+				padding: 10px;
+				background: #1b2b65;
+				color: #fff;
+				border: none;
+				border-radius: 8px;
+				cursor: pointer;
+				margin-top: 8px;
+			}
+			button:hover {
+				background: #142150;
+			}
+			.google {
+				background: white;
+				border: 1px solid #ccc;
+				color: #333;
+				font-weight: bold;
+			}
+			.google:hover {
+				background: #f7f7f7;
+			}
+			.result {
+				margin-top: 15px;
+				color: #333;
+				font-size: 0.9rem;
+				word-break: break-all;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div class="container">
+			<h2 style="text-align:center;">KLÜME 회원가입 테스트</h2>
+
+			<input id="email" type="email" placeholder="이메일 입력">
+			<input id="password" type="password" placeholder="비밀번호 입력">
+
+			<button onclick="signup()">회원가입 (로컬)</button>
+			<button class="google" onclick="googleLogin()">Google 계정으로 로그인</button>
+
+			<div id="result" class="result"></div>
+		</div>
+
+		<script>
+			async function signup() {
+				const email = document.getElementById("email").value;
+				const password = document.getElementById("password").value;
+
+				const response = await fetch("/auth/signup/local", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ email, password })
+				});
+
+				const data = await response.text();
+				document.getElementById("result").innerText = data;
+			}
+
+			function googleLogin() {
+				window.location.href = "/oauth2/authorization/google";
+			}
+		</script>
+
+	</body>
+</html>

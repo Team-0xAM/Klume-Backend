@@ -1,6 +1,6 @@
-package com.oxam.klume.member.controller;
+package com.oxam.klume.auth.controller;
 
-import com.oxam.klume.member.service.MailService;
+import com.oxam.klume.auth.service.MailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.oxam.klume.member.service;
+package com.oxam.klume.auth.service;
 
 
 import jakarta.mail.MessagingException;
@@ -83,7 +83,7 @@ public class MailServiceImpl implements MailService {
                 <div style="text-align:center; margin-bottom:16px;">
                     <img src="cid:klumeLogo" width="120" alt="KLÜME 로고"/>
                 </div>
-                <h2 style="text-align:center; color:#222;">KLÜME 이메일 인증</h2>
+                <h2 style="text-align:center; color:#222;">이메일 인증</h2>
                 <p style="text-align:center; color:#333;">안녕하세요 😊<br>
                 아래 인증코드를 입력하여 이메일 인증을 완료해주세요.</p>
                 <div style="font-size:28px; font-weight:bold; text-align:center; color:#0055ff; margin:16px 0;">
