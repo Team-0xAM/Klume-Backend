@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
 @Getter
 public class OrganizationNoticeRequest {
     @NotBlank(message = "제목은 비워둘 수 없습니다.")
