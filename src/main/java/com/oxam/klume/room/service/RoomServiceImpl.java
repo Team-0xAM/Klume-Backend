@@ -22,27 +22,6 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final OrganizationRepository organizationRepository;
 
-    // 조직 존재 여부 확인
-    private Organization getOrganizationOrThrow(int organizationId) {
-        return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new EntityNotFoundException("조직을 찾을 수 없습니다."));
-    }
-
-    // 회의실 존재 여부 확인
-    private Room getRoomOrThrow(int roomId, Organization organization) {
-        return roomRepository.findByIdAndOrganization(roomId, organization)
-                .orElseThrow(() -> new EntityNotFoundException("회의실을 찾을 수 없습니다."));
-    }
-
-    // 이미지 업로드 (S3 연동 전, mock URL 반환)
-    private String uploadImage(MultipartFile file) {
-        if (file != null && !file.isEmpty()) {
-            // TODO: S3 업로드 로직으로 교체
-            return "https://s3.amazonaws.com/klume-bucket/" + file.getOriginalFilename();
-        }
-        return null;
-    }
-
     // 회의실 + 이미지 등록
     @Override
     public RoomResponseDTO createRoomWithImage(int organizationId, RoomRequestDTO dto, MultipartFile imageFile) {
@@ -118,5 +97,26 @@ public class RoomServiceImpl implements RoomService {
                 .imageUrl(room.getImageUrl())
                 .organizationId(room.getOrganization().getId())
                 .build();
+    }
+
+    // 조직 존재 여부 확인
+    private Organization getOrganizationOrThrow(int organizationId) {
+        return organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new EntityNotFoundException("조직을 찾을 수 없습니다."));
+    }
+
+    // 회의실 존재 여부 확인
+    private Room getRoomOrThrow(int roomId, Organization organization) {
+        return roomRepository.findByIdAndOrganization(roomId, organization)
+                .orElseThrow(() -> new EntityNotFoundException("회의실을 찾을 수 없습니다."));
+    }
+
+    // 이미지 업로드 (S3 연동 전, mock URL 반환)
+    private String uploadImage(MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            // TODO: S3 업로드 로직으로 교체
+            return "https://s3.amazonaws.com/klume-bucket/" + file.getOriginalFilename();
+        }
+        return null;
     }
 }
