@@ -25,7 +25,8 @@ public class Room {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @JoinColumn(name = "organization_id", nullable = false)
+    @JoinColumn(name = "organization_id", nullable = false,
+            foreignKey = @ForeignKey(name = "FK_Organization_TO_Room"))
     @ManyToOne(fetch = FetchType.LAZY)
     private Organization organization;
 }
