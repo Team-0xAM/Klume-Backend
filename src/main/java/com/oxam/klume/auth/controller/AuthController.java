@@ -1,5 +1,7 @@
 package com.oxam.klume.auth.controller;
 
+import com.oxam.klume.member.dto.LoginRequest;
+import com.oxam.klume.member.dto.LoginResponse;
 import com.oxam.klume.member.dto.SignupRequest;
 import com.oxam.klume.member.dto.SignupResponse;
 import com.oxam.klume.member.service.MemberService;
@@ -26,5 +28,12 @@ public class AuthController {
     public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request) {
         SignupResponse response = memberService.signup(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(summary = "로컬 로그인", description = "이메일과 비밀번호로 로그인하고 JWT 토큰을 발급받습니다.")
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        LoginResponse response = memberService.login(request);
+        return ResponseEntity.ok(response);
     }
 }

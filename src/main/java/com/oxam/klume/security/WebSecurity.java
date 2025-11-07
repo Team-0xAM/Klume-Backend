@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class WebSecurity {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final JwtFilter jwtFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,7 +45,11 @@ public class WebSecurity {
                         .requestMatchers(
                                 "/auth/**",
                                 "/mail/**",
-                                "/oauth2/**"  // OAuth2 로그인
+                                "/oauth2/**",  // OAuth2 로그인
+                                "/test.html",  // 테스트 페이지
+                                "/*.html",     // 정적 HTML 파일
+                                "/css/**",     // CSS 파일
+                                "/js/**"       // JS 파일
                         ).permitAll()
                         // 그 외는 인증 필요
                         .anyRequest().authenticated()
@@ -56,7 +62,10 @@ public class WebSecurity {
                                 .userService(customOAuth2UserService)  // 커스텀 OAuth2 사용자 서비스
                         )
                         .successHandler(oAuth2SuccessHandler)  // 로그인 성공 핸들러
-                );
+                )
+
+                // JWT 필터 등록
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

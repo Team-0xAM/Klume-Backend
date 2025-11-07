@@ -1,5 +1,6 @@
 package com.oxam.klume.auth.oauth;
 
+import com.oxam.klume.security.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,12 +13,14 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /* 설명. OAuth2 로그인 성공 시 처리하는 핸들러
- *       로그인 성공 후 프론트엔드로 리다이렉트
+ *       로그인 성공 후 JWT 토큰 발급 및 프론트엔드로 리다이렉트
 * */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    private final JwtUtil jwtUtil;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -29,12 +32,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         log.info("OAuth2 로그인 성공 - email: {}", email);
 
-        // TODO: 나중에 JWT 토큰 생성 로직 추가
-        // String token = jwtTokenProvider.createToken(email);
+        // JWT 토큰 생성
+        String accessToken = jwtUtil.createAccessToken(email);
+        log.info("JWT 토큰 생성 완료");
 
-        // 프론트엔드로 리다이렉트 (임시 URL)
+        // 프론트엔드로 리다이렉트 (토큰을 URL 파라미터로 전달)
         // 실제 프론트엔드 URL로 변경 필요
-        String redirectUrl = "http://localhost:3000/oauth/callback?email=" + email;
+        String redirectUrl = "http://localhost:3000/oauth/callback?token=" + accessToken + "&email=" + email;
 
         log.info("리다이렉트 URL: {}", redirectUrl);
 

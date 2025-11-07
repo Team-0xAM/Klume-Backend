@@ -1,10 +1,13 @@
 package com.oxam.klume.member.service;
 
 import com.oxam.klume.auth.service.MailService;
+import com.oxam.klume.member.dto.LoginRequest;
+import com.oxam.klume.member.dto.LoginResponse;
 import com.oxam.klume.member.dto.SignupRequest;
 import com.oxam.klume.member.dto.SignupResponse;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.member.repository.MemberRepository;
+import com.oxam.klume.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
+    private final JwtUtil jwtUtil;
 
     @Override
     @Transactional
@@ -59,6 +63,40 @@ public class MemberServiceImpl implements MemberService {
                 .id(savedMember.getId())
                 .email(savedMember.getEmail())
                 .createdAt(savedMember.getCreatedAt())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LoginResponse login(LoginRequest request) {
+
+        // 1. 이메일로 회원 조회
+        Member member = memberRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
+
+        // 2. 로컬 회원인지 확인 (구글 회원은 비밀번호 로그인 불가)
+        if (member.getProvider() != null) {
+            throw new IllegalArgumentException("소셜 로그인 회원은 해당 소셜 계정으로 로그인해주세요.");
+        }
+
+        // 3. 비밀번호 확인
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 4. 탈퇴한 회원인지 확인
+        if (member.isDeleted()) {
+            throw new IllegalArgumentException("탈퇴한 회원입니다.");
+        }
+
+        // 5. JWT 토큰 생성
+        String accessToken = jwtUtil.createAccessToken(member.getEmail());
+
+        // 6. 응답 생성
+        return LoginResponse.builder()
+                .accessToken(accessToken)
+                .email(member.getEmail())
+                .message("로그인 성공")
                 .build();
     }
 }
