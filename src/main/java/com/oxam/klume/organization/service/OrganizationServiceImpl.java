@@ -11,6 +11,7 @@ import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.entity.enums.OrganizationRole;
 import com.oxam.klume.organization.exception.OrganizationNotAdminException;
 import com.oxam.klume.organization.exception.OrganizationNotFoundException;
+import com.oxam.klume.organization.exception.OrganizationMemberAccessDeniedException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Transactional
     @Override
-    public void createOrganization(final int memberId, final MultipartFile file, final OrganizationRequestDTO requestDTO) {
+    public Organization createOrganization(final int memberId, final MultipartFile file, final OrganizationRequestDTO requestDTO) {
         final Member member = findMemberById(memberId);
 
         final String imageUrl = uploadImage(file);
@@ -53,22 +54,35 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .build();
 
         organizationMemberRepository.save(organizationMember);
+
+        return organization;
     }
 
     @Transactional(readOnly = true)
     @Override
     public String createInvitationCode(final int organizationId, final int memberId) {
+        // TODO 스프링 시큐리티 적용 시, 이미 검증된 회원이므로 아래 코드 삭제 필요 by 지륜
         final Member member = findMemberById(memberId);
 
         final Organization organization = findOrganizationById(organizationId);
 
-        validateAdminPermission(member, organization, OrganizationRole.ADMIN);
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
 
         final String invitationCode = generateRandomCode(6);
 
         saveInvitationCodeToRedis(organizationId, invitationCode);
 
         return invitationCode;
+    }
+
+    @Override
+    public OrganizationMember findOrganizationMemberRole(final int memberId, final int organizationId) {
+        // TODO 스프링 시큐리티 적용 시, 이미 검증된 회원이므로 아래 코드 삭제 필요 by 지륜
+        final Member member = findMemberById(memberId);
+
+        final Organization organization = findOrganizationById(organizationId);
+
+        return findOrganizationMemberByMemberIdAndOrganization(memberId, organization);
     }
 
     private void saveInvitationCodeToRedis(final int organizationId, final String invitationCode) {
@@ -82,8 +96,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         redisService.set(ORGANIZATION_PREFIX + organizationId, invitationCode, Duration.ofMinutes(30));
     }
 
-    private void validateAdminPermission(final Member member, final Organization organization, final OrganizationRole role) {
-        if (!organizationMemberRepository.existsByMemberAndOrganizationAndRole(member, organization, role)) {
+    private void validateAdminPermission(final int memberId, final Organization organization, final OrganizationRole role) {
+        if (!organizationMemberRepository.existsByMemberIdAndOrganizationAndRole(memberId, organization, role)) {
             throw new OrganizationNotAdminException();
         }
     }
@@ -118,5 +132,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private Organization findOrganizationById(final int organizationId) {
         return organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+    }
+
+    private OrganizationMember findOrganizationMemberByMemberIdAndOrganization(final int memberId,
+                                                                               final Organization organization) {
+        return organizationMemberRepository.findByMemberIdAndOrganization(memberId, organization)
+                .orElseThrow(OrganizationMemberAccessDeniedException::new);
     }
 }
