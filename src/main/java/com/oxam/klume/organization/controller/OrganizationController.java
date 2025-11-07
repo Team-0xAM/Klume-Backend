@@ -1,10 +1,8 @@
 package com.oxam.klume.organization.controller;
 
-import com.oxam.klume.organization.dto.InviteCodeResponseDTO;
-import com.oxam.klume.organization.dto.OrganizationMemberRoleResponseDTO;
-import com.oxam.klume.organization.dto.OrganizationRequestDTO;
-import com.oxam.klume.organization.dto.OrganizationResponseDTO;
+import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
+import com.oxam.klume.organization.entity.OrganizationGroup;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "organization", description = "조직 관련 API")
 @RequestMapping("/organizations")
@@ -62,6 +63,21 @@ public class OrganizationController {
                 organizationService.findOrganizationMemberRole(memberId, organizationId);
 
         final OrganizationMemberRoleResponseDTO response = new OrganizationMemberRoleResponseDTO(organizationMember.getRole());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "조직 내 그룹 목록 조회")
+    @GetMapping("/{organizationId}/groups")
+    public ResponseEntity<List<OrganizationGroupResponseDTO>> findOrganizationGroups(@Parameter(name = "memberId") final int memberId,
+                                                                                     @PathVariable("organizationId") final int organizationId) {
+        // TODO 로그인한 회원 ID 가져오기  by 지륜
+
+        final List<OrganizationGroup> organizationGroup = organizationService.findOrganizationGroups(memberId, organizationId);
+
+        final List<OrganizationGroupResponseDTO> response = organizationGroup.stream()
+                .map(OrganizationGroupResponseDTO::of)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
     }
