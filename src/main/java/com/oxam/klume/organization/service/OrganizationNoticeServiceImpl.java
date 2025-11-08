@@ -41,11 +41,13 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
     // 공지사항 상세 조회
     @Override
     public OrganizationNoticeResponse getNoticeDetail(final int organizationId, final int noticeId) {
+        findOrganizationById(organizationId);
         OrganizationNotice notice = findOrganizationNoticeById(noticeId);
         return OrganizationNoticeResponse.of(notice);
     }
 
     // 공지사항 등록
+    @Transactional
     @Override
     public OrganizationNoticeResponse createNotice(final OrganizationNoticeRequest request, final int organizationId, final int memberId) {
         Organization organization = findOrganizationById(organizationId);
@@ -70,6 +72,7 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
     @Transactional
     @Override
     public OrganizationNoticeResponse updateNotice(final int organizationId, final int noticeId, OrganizationNoticeRequest request, final int memberId) {
+        findOrganizationById(organizationId);
         OrganizationNotice notice = findOrganizationNoticeById(noticeId);
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
 
@@ -86,9 +89,9 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
     }
 
     // 공지사항 삭제
+    @Transactional
     @Override
     public void deleteNotice(final int organizationId, final int noticeId, final int memberId) {
-
         findOrganizationById(organizationId);
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
         OrganizationNotice notice = findOrganizationNoticeById(noticeId);
