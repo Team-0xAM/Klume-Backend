@@ -62,7 +62,6 @@ public class OrganizationNoticeController {
         // TODO 현재 사용자 ID 가져오기
         int memberId = 5;
 
-        organizationNoticeService.updateNotice(organizationId, noticeId, request, memberId);
         OrganizationNoticeResponse response =
                 organizationNoticeService.updateNotice(organizationId, noticeId, request, memberId);
 
