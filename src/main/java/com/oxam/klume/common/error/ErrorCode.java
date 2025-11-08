@@ -19,8 +19,14 @@ public enum ErrorCode {
 
     /* MEMBER - 회원 */
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "존재하지 않는 회원입니다."),
-    MEMBER_DELETED(HttpStatus.FORBIDDEN, "MEMBER002", "탈퇴한 회원입니다.");
+    MEMBER_DELETED(HttpStatus.FORBIDDEN, "MEMBER002", "탈퇴한 회원입니다."),
 
+    /* Organization */
+    ORGANIZATION_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION001", "Organization not found"),
+    ORGANIZATION_NOT_ADMIN(HttpStatus.FORBIDDEN, "ORGANIZATION002", "Organization not admin"),
+
+    /* Organization Notice*/
+    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001","Organization notice not found");
     private final HttpStatus status;
     private final String code;
     private final String message;
