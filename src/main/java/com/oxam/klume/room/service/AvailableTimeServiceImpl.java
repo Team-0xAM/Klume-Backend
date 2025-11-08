@@ -80,11 +80,19 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
 
     @Transactional
     public void createFromAvailableTime(AvailableTime availableTime) {
+        // 반복 시작일, 종료일
         LocalDate startDate = LocalDate.parse(availableTime.getRepeatStartDay());
         LocalDate endDate = LocalDate.parse(availableTime.getRepeatEndDay());
+
+        // 사용 가능한 시간 구간
         LocalTime startTime = LocalTime.parse(availableTime.getAvailableStartTime());
         LocalTime endTime = LocalTime.parse(availableTime.getAvailableEndTime());
+
+        // 시간 간격
         Integer intervalMinutes = availableTime.getTimeInterval();
+
+        // 예약 오픈 전일수
+        Integer reservationOpenDayCount = availableTime.getReservationOpenDay();
 
         ArrayList<DailyAvailableTime> dailyList = new ArrayList<>();
 
@@ -103,6 +111,13 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
                             (dayOfWeek == DayOfWeek.SUNDAY && availableTime.isSun());
 
             if (!isAvailableDay) continue;
+
+            // reservationOpenDay가 null이 아니면 repeatStartDay 기준으로 며칠 전인지 설정
+            String reservationOpenDay = null;
+            if (reservationOpenDayCount != null) {
+                reservationOpenDay = date.minusDays(reservationOpenDayCount).toString();
+            }
+
             if (intervalMinutes == null) {
                 // interval이 없으면 하루에 하나만 생성
                 DailyAvailableTime daily = DailyAvailableTime.builder()
@@ -110,7 +125,7 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
                         .date(date.toString())
                         .availableStartTime(startTime.toString())
                         .availableEndTime(endTime.toString())
-                        .reservationOpenDay(availableTime.getReservationOpenDay())
+                        .reservationOpenDay(reservationOpenDay)
                         .reservationOpenTime(availableTime.getReservationOpenTime())
                         .build();
                 dailyList.add(daily);
@@ -125,13 +140,14 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
                             .date(date.toString())
                             .availableStartTime(time.toString())
                             .availableEndTime(nextTime.toString())
-                            .reservationOpenDay(availableTime.getReservationOpenDay())
+                            .reservationOpenDay(reservationOpenDay)
                             .reservationOpenTime(availableTime.getReservationOpenTime())
                             .build();
                     dailyList.add(daily);
                 }
             }
         }
+
         // 생성된 모든 일별 가능한 시간 구간을 한 번에 저장
         dailyAvailableTimeRepository.saveAll(dailyList);
     }

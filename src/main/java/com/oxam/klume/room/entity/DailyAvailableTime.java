@@ -27,7 +27,7 @@ public class DailyAvailableTime {
     private String availableEndTime;
 
     @Column(name = "reservation_open_day")
-    private Integer reservationOpenDay;
+    private String reservationOpenDay;
 
     @Column(name = "reservation_open_time")
     private String reservationOpenTime;
