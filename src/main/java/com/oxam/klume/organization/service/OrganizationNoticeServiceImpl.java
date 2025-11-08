@@ -6,6 +6,9 @@ import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.entity.OrganizationNotice;
 import com.oxam.klume.organization.entity.enums.OrganizationRole;
+import com.oxam.klume.organization.exception.OrganizationNotAdminException;
+import com.oxam.klume.organization.exception.OrganizationNotFoundException;
+import com.oxam.klume.organization.exception.OrganizationNoticeNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationNoticeRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
@@ -48,7 +51,7 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
         Organization organization = findOrganizationById(organizationId);
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
         if(member.getRole() != OrganizationRole.ADMIN){
-            throw new IllegalArgumentException("공지사항을 수정할 권한이 없습니다.");
+            throw new OrganizationNotAdminException("공지사항을 수정할 권한이 없습니다.");
         }
 
         OrganizationNotice notice = OrganizationNotice.create(
@@ -71,11 +74,11 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
 
         if (notice.getOrganization().getId() != organizationId) {
-            throw new IllegalArgumentException("이 공지사항은 해당 조직에 속하지 않습니다.");
+            throw new OrganizationNoticeNotFoundException("이 공지사항은 해당 조직에 속하지 않습니다.");
         }
 
         if(member.getRole() != OrganizationRole.ADMIN){
-            throw new IllegalArgumentException("공지사항을 수정할 권한이 없습니다.");
+            throw new OrganizationNotAdminException("공지사항을 수정할 권한이 없습니다.");
         }
 
         notice.update(request.getTitle(), request.getContent());
@@ -91,11 +94,11 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
         OrganizationNotice notice = findOrganizationNoticeById(noticeId);
 
         if(member.getRole() != OrganizationRole.ADMIN){
-            throw new IllegalArgumentException("공지사항을 수정할 권한이 없습니다.");
+            throw new OrganizationNotAdminException("공지사항을 수정할 권한이 없습니다.");
         }
 
         if (notice.getOrganization().getId() != organizationId) {
-            throw new IllegalArgumentException("이 공지사항은 해당 조직에 속하지 않습니다.");
+            throw new OrganizationNoticeNotFoundException("이 공지사항은 해당 조직에 속하지 않습니다.");
         }
 
         organizationNoticeRepository.delete(notice);
@@ -104,16 +107,16 @@ public class OrganizationNoticeServiceImpl implements OrganizationNoticeService 
     // ============================== 공통 메서드 =====================================
     private Organization findOrganizationById(final int organizationId){
         return organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new IllegalArgumentException("조직이 존재하지 않습니다"));
+                .orElseThrow(() -> new OrganizationNotFoundException("조직이 존재하지 않습니다"));
     }
 
     private OrganizationMember findOrganizationMemberById(final int organizationId, final int memberId){
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자가 가입하지 않은 조직입니다."));
+                .orElseThrow(() -> new OrganizationNotFoundException("사용자가 가입하지 않은 조직입니다."));
     }
 
     private OrganizationNotice findOrganizationNoticeById(final int noticeId){
         return organizationNoticeRepository.findById(noticeId)
-                .orElseThrow(() -> new IllegalArgumentException("공지사항이 존재하지 않습니다."));
+                .orElseThrow(() -> new OrganizationNoticeNotFoundException("공지사항이 존재하지 않습니다."));
     }
 }
