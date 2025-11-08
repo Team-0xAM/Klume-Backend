@@ -1,6 +1,9 @@
 package com.oxam.klume.member.service;
 
 import com.oxam.klume.auth.service.MailService;
+import com.oxam.klume.common.error.ErrorCode;
+import com.oxam.klume.common.error.exception.AuthException;
+import com.oxam.klume.common.error.exception.MemberException;
 import com.oxam.klume.member.dto.LoginRequest;
 import com.oxam.klume.member.dto.LoginResponse;
 import com.oxam.klume.member.dto.SignupRequest;
@@ -31,12 +34,12 @@ public class MemberServiceImpl implements MemberService {
 
         // 1. 이메일 인증 확인
         if (!mailService.isEmailVerified(request.getEmail())) {
-            throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다. 먼저 이메일 인증을 진행해주세요.");
+            throw new AuthException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
         // 2. 이메일 중복 확인
         if (memberRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("이미 가입된 이메일입니다.");
+            throw new AuthException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         // 3. 비밀번호 암호화
@@ -72,21 +75,21 @@ public class MemberServiceImpl implements MemberService {
 
         // 1. 이메일로 회원 조회
         Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
+                .orElseThrow(() -> new AuthException(ErrorCode.INVALID_CREDENTIALS));
 
         // 2. 로컬 회원인지 확인 (구글 회원은 비밀번호 로그인 불가)
         if (member.getProvider() != null) {
-            throw new IllegalArgumentException("소셜 로그인 회원은 해당 소셜 계정으로 로그인해주세요.");
+            throw new AuthException(ErrorCode.SOCIAL_LOGIN_REQUIRED);
         }
 
         // 3. 비밀번호 확인
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new AuthException(ErrorCode.INVALID_CREDENTIALS);
         }
 
         // 4. 탈퇴한 회원인지 확인
         if (member.isDeleted()) {
-            throw new IllegalArgumentException("탈퇴한 회원입니다.");
+            throw new MemberException(ErrorCode.MEMBER_DELETED);
         }
 
         // 5. JWT 토큰 생성
