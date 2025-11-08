@@ -11,6 +11,7 @@ import com.oxam.klume.room.dto.AvailableTimeResponseDTO;
 import com.oxam.klume.room.entity.AvailableTime;
 import com.oxam.klume.room.entity.DailyAvailableTime;
 import com.oxam.klume.room.entity.Room;
+import com.oxam.klume.room.exception.AvailableTimeNotFoundException;
 import com.oxam.klume.room.exception.RoomNotFoundException;
 import com.oxam.klume.room.repository.AvailableTimeRepository;
 import com.oxam.klume.room.repository.DailyAvailableTimeRepository;
@@ -78,7 +79,46 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
         return AvailableTimeResponseDTO.of(saved);
     }
 
+    // 예약 가능 시간 수정
     @Transactional
+    public AvailableTimeResponseDTO updateAvailableTime(final int availableTimeId, final AvailableTimeRequestDTO request) {
+        AvailableTime availableTime = availableTimeRepository.findById(availableTimeId)
+                .orElseThrow(AvailableTimeNotFoundException::new);
+
+        // TODO 같은 회의실 예약 가능 시간이 겹치는 경우 예외 반환
+
+        // 기존 DailyAvailableTime 모두 삭제
+        dailyAvailableTimeRepository.deleteAllByAvailableTime(availableTime);
+
+        availableTime.update(
+                request.isMon(),
+                request.isTue(),
+                request.isWed(),
+                request.isThu(),
+                request.isFri(),
+                request.isSat(),
+                request.isSun(),
+                request.getName(),
+                request.getAvailableStartTime(),
+                request.getAvailableEndTime(),
+                request.getReservationOpenDay(),
+                request.getReservationOpenTime(),
+                request.getRepeatStartDay(),
+                request.getRepeatEndDay(),
+                request.getTimeInterval()
+        );
+
+        AvailableTime saved = availableTimeRepository.save(availableTime);
+
+        // 수정된 예약 가능 시간에 맞춰 DailyAvailableTime 생성
+        createFromAvailableTime(saved);
+
+        return AvailableTimeResponseDTO.of(saved);
+    }
+
+
+
+
     public void createFromAvailableTime(AvailableTime availableTime) {
         // 반복 시작일, 종료일
         LocalDate startDate = LocalDate.parse(availableTime.getRepeatStartDay());

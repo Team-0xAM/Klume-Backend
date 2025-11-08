@@ -31,4 +31,14 @@ public class AvailableTimeController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "예약 가능 시간 수정")
+    @PutMapping("/{availableTimeId}")
+    public ResponseEntity<AvailableTimeResponseDTO> updateAvailableTime(
+            @PathVariable("availableTimeId") final int availableTimeId,
+            @Valid @RequestBody final AvailableTimeRequestDTO request
+    ) {
+        AvailableTimeResponseDTO updated = availableTimeService.updateAvailableTime(availableTimeId, request);
+        return ResponseEntity.ok(updated);
+    }
+
 }
