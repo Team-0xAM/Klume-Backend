@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Schema(description = "회원가입 요청 DTO")
-public class SignupRequest {
+public class SignupRequestDTO {
 
     @Schema(description = "이메일 (인증 완료된 이메일)", example = "user@example.com")
     private String email;

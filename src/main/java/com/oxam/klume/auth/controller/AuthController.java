@@ -1,9 +1,9 @@
 package com.oxam.klume.auth.controller;
 
-import com.oxam.klume.member.dto.LoginRequest;
-import com.oxam.klume.member.dto.LoginResponse;
-import com.oxam.klume.member.dto.SignupRequest;
-import com.oxam.klume.member.dto.SignupResponse;
+import com.oxam.klume.member.dto.LoginRequestDTO;
+import com.oxam.klume.member.dto.LoginResponseDTO;
+import com.oxam.klume.member.dto.SignupRequestDTO;
+import com.oxam.klume.member.dto.SignupResponseDTO;
 import com.oxam.klume.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,15 +30,15 @@ public class AuthController {
 
     @Operation(summary = "로컬 회원가입", description = "이메일 인증 완료 후 회원가입을 진행합니다.")
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request) {
-        SignupResponse response = memberService.signup(request);
+    public ResponseEntity<SignupResponseDTO> signup(@RequestBody SignupRequestDTO request) {
+        SignupResponseDTO response = memberService.signup(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "로컬 로그인", description = "이메일과 비밀번호로 로그인하고 JWT 토큰을 발급받습니다.")
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        LoginResponse response = memberService.login(request);
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
+        LoginResponseDTO response = memberService.login(request);
         return ResponseEntity.ok(response);
     }
 

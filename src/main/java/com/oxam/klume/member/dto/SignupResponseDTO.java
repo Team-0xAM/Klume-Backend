@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 @Schema(description = "회원가입 응답 DTO")
-public class SignupResponse {
+public class SignupResponseDTO {
 
     @Schema(description = "회원 ID", example = "1")
     private int id;

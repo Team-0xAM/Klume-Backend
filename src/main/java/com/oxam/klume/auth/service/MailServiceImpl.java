@@ -1,6 +1,8 @@
 package com.oxam.klume.auth.service;
 
 
+import com.oxam.klume.common.error.exception.VerificationCodeMismatchException;
+import com.oxam.klume.common.error.exception.VerificationCodeNotFoundException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -109,13 +111,21 @@ public class MailServiceImpl implements MailService {
     @Override
     public boolean verifyCode(String email, String code) {
         String storedCode = redisService.getData(email);
-        if (storedCode != null && storedCode.equals(code)) {
-            // 인증 성공 시 코드 삭제하고 인증 완료 상태 저장 (10분 유효)
-            redisService.deleteData(email);
-            redisService.setDataExpire(email + ":verified", "true", VERIFIED_TTL_MINUTES, TimeUnit.MINUTES);
-            return true;
+
+        // 인증 코드가 존재하지 않거나 만료된 경우
+        if (storedCode == null) {
+            throw new VerificationCodeNotFoundException();
         }
-        return false;
+
+        // 인증 코드가 일치하지 않는 경우
+        if (!storedCode.equals(code)) {
+            throw new VerificationCodeMismatchException();
+        }
+
+        // 인증 성공 시 코드 삭제하고 인증 완료 상태 저장 (10분 유효)
+        redisService.deleteData(email);
+        redisService.setDataExpire(email + ":verified", "true", VERIFIED_TTL_MINUTES, TimeUnit.MINUTES);
+        return true;
     }
 
     public boolean isEmailVerified(String email) {

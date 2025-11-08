@@ -1,16 +1,23 @@
 package com.oxam.klume.member.service;
 
 import com.oxam.klume.auth.service.MailService;
-import com.oxam.klume.common.error.ErrorCode;
-import com.oxam.klume.common.error.exception.AuthException;
-import com.oxam.klume.common.error.exception.MemberException;
-import com.oxam.klume.common.service.ProfileImageService;
-import com.oxam.klume.member.dto.LoginRequest;
-import com.oxam.klume.member.dto.LoginResponse;
-import com.oxam.klume.member.dto.SignupRequest;
-import com.oxam.klume.member.dto.SignupResponse;
+import com.oxam.klume.common.error.exception.EmailAlreadyExistsException;
+import com.oxam.klume.common.error.exception.EmailNotVerifiedException;
+import com.oxam.klume.common.error.exception.InvalidCredentialsException;
+import com.oxam.klume.common.error.exception.MemberDeletedException;
+import com.oxam.klume.common.error.exception.SocialLoginRequiredException;
+import com.oxam.klume.common.service.ProfileImageServiceImpl;
+import com.oxam.klume.member.dto.LoginRequestDTO;
+import com.oxam.klume.member.dto.LoginResponseDTO;
+import com.oxam.klume.member.dto.SignupRequestDTO;
+import com.oxam.klume.member.dto.SignupResponseDTO;
 import com.oxam.klume.member.entity.Member;
+import com.oxam.klume.member.entity.MemberSystemRole;
+import com.oxam.klume.member.entity.SystemRole;
+import com.oxam.klume.member.entity.enums.Role;
 import com.oxam.klume.member.repository.MemberRepository;
+import com.oxam.klume.member.repository.MemberSystemRoleRepository;
+import com.oxam.klume.member.repository.SystemRoleRepository;
 import com.oxam.klume.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,27 +35,29 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
     private final JwtUtil jwtUtil;
-    private final ProfileImageService profileImageService;
+    private final ProfileImageServiceImpl profileImageServiceImpl;
+    private final SystemRoleRepository systemRoleRepository;
+    private final MemberSystemRoleRepository memberSystemRoleRepository;
 
     @Override
     @Transactional
-    public SignupResponse signup(SignupRequest request) {
+    public SignupResponseDTO signup(SignupRequestDTO request) {
 
         // 1. 이메일 인증 확인
         if (!mailService.isEmailVerified(request.getEmail())) {
-            throw new AuthException(ErrorCode.EMAIL_NOT_VERIFIED);
+            throw new EmailNotVerifiedException();
         }
 
         // 2. 이메일 중복 확인
         if (memberRepository.existsByEmail(request.getEmail())) {
-            throw new AuthException(ErrorCode.EMAIL_ALREADY_EXISTS);
+            throw new EmailAlreadyExistsException();
         }
 
         // 3. 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         // 4. 랜덤 프로필 이미지 URL 생성
-        String profileImageUrl = profileImageService.getRandomProfileImageUrl();
+        String profileImageUrl = profileImageServiceImpl.getRandomProfileImageUrl();
 
         // 5. 회원 생성
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -64,11 +73,22 @@ public class MemberServiceImpl implements MemberService {
 
         Member savedMember = memberRepository.save(member);
 
-        // 6. 인증 상태 삭제 (회원가입 완료 후)
+        // 6. MEMBER 역할 부여
+        SystemRole memberRole = systemRoleRepository.findByName(Role.MEMBER)
+                .orElseThrow(() -> new IllegalStateException("MEMBER 역할이 존재하지 않습니다."));
+
+        MemberSystemRole memberSystemRole = MemberSystemRole.builder()
+                .member(savedMember)
+                .systemRole(memberRole)
+                .build();
+
+        memberSystemRoleRepository.save(memberSystemRole);
+
+        // 7. 인증 상태 삭제 (회원가입 완료 후)
         mailService.clearVerification(request.getEmail());
 
-        // 7. 응답 생성
-        return SignupResponse.builder()
+        // 8. 응답 생성
+        return SignupResponseDTO.builder()
                 .id(savedMember.getId())
                 .email(savedMember.getEmail())
                 .createdAt(savedMember.getCreatedAt())
@@ -77,32 +97,32 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional(readOnly = true)
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponseDTO login(LoginRequestDTO request) {
 
         // 1. 이메일로 회원 조회
         Member member = memberRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AuthException(ErrorCode.INVALID_CREDENTIALS));
+                .orElseThrow(InvalidCredentialsException::new);
 
         // 2. 로컬 회원인지 확인 (구글 회원은 비밀번호 로그인 불가)
         if (member.getProvider() != null) {
-            throw new AuthException(ErrorCode.SOCIAL_LOGIN_REQUIRED);
+            throw new SocialLoginRequiredException();
         }
 
         // 3. 비밀번호 확인
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            throw new AuthException(ErrorCode.INVALID_CREDENTIALS);
+            throw new InvalidCredentialsException();
         }
 
         // 4. 탈퇴한 회원인지 확인
         if (member.isDeleted()) {
-            throw new MemberException(ErrorCode.MEMBER_DELETED);
+            throw new MemberDeletedException();
         }
 
         // 5. JWT 토큰 생성
         String accessToken = jwtUtil.createAccessToken(member.getEmail());
 
         // 6. 응답 생성
-        return LoginResponse.builder()
+        return LoginResponseDTO.builder()
                 .accessToken(accessToken)
                 .email(member.getEmail())
                 .message("로그인 성공")

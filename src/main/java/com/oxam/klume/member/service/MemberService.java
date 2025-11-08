@@ -1,13 +1,13 @@
 package com.oxam.klume.member.service;
 
-import com.oxam.klume.member.dto.LoginRequest;
-import com.oxam.klume.member.dto.LoginResponse;
-import com.oxam.klume.member.dto.SignupRequest;
-import com.oxam.klume.member.dto.SignupResponse;
+import com.oxam.klume.member.dto.LoginRequestDTO;
+import com.oxam.klume.member.dto.LoginResponseDTO;
+import com.oxam.klume.member.dto.SignupRequestDTO;
+import com.oxam.klume.member.dto.SignupResponseDTO;
 
 public interface MemberService {
 
-    SignupResponse signup(SignupRequest request);
+    SignupResponseDTO signup(SignupRequestDTO request);
 
-    LoginResponse login(LoginRequest request);
+    LoginResponseDTO login(LoginRequestDTO request);
 }

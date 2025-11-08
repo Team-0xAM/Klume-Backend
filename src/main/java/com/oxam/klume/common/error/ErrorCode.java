@@ -16,6 +16,8 @@ public enum ErrorCode {
     SOCIAL_LOGIN_REQUIRED(HttpStatus.BAD_REQUEST, "AUTH004", "소셜 로그인 회원은 해당 소셜 계정으로 로그인해주세요."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH005", "유효하지 않은 토큰입니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH006", "만료된 토큰입니다."),
+    VERIFICATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTH007", "인증 코드가 존재하지 않거나 만료되었습니다."),
+    VERIFICATION_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "AUTH008", "인증 코드가 일치하지 않습니다."),
 
     /* MEMBER - 회원 */
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "존재하지 않는 회원입니다."),
