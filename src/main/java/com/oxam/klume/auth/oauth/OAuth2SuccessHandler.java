@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,9 @@ import java.io.IOException;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
+
+    @Value("${app.oauth2.redirect-url}")
+    private String redirectBaseUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -38,7 +42,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 프론트엔드로 리다이렉트 (토큰을 URL 파라미터로 전달)
         // 실제 프론트엔드 URL로 변경 필요(임시)
-        String redirectUrl = "http://localhost:3000/oauth/callback?token=" + accessToken + "&email=" + email;
+        String redirectUrl = String.format("%s?token=%s&email=%s", redirectBaseUrl, accessToken, email);
 
         log.info("리다이렉트 URL: {}", redirectUrl);
 
