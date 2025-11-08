@@ -14,10 +14,20 @@ public enum ErrorCode {
     ORGANIZATION_NOT_ADMIN(HttpStatus.FORBIDDEN, "ORGANIZATION002", "Organization not admin"),
 
     /* Organization Notice*/
-    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001","Organization notice not found");
+    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001","Organization notice not found"),
+
+    /* Room */
+    ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "ROOM001","Room not found"),
+
+
+    /* Available_Time */
+    AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "AVAILABLE_TIME001","Available time not found");
+
     private final HttpStatus status;
     private final String code;
     private final String message;
+
+
 
     ErrorCode(final HttpStatus status, final String code, final String message) {
         this.status = status;

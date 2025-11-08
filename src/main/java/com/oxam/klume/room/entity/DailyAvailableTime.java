@@ -1,10 +1,14 @@
 package com.oxam.klume.room.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
+@AllArgsConstructor
 @Table(name = "daily_available_time")
 @NoArgsConstructor
 @Entity
