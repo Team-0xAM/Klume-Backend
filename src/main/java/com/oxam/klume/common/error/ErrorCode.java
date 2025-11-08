@@ -20,7 +20,7 @@ public enum ErrorCode {
     /* Organization */
     ORGANIZATION_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION001", "Organization not found"),
     ORGANIZATION_NOT_ADMIN(HttpStatus.FORBIDDEN, "ORGANIZATION002", "Organization not admin"),
-    ORGANIZATION_MEMBER_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ORGANIZATION003", "Organization member access denied"),
+    ORGANIZATION_MEMBER_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ORGANIZATION003", "Not a member of the organization"),
     ORGANIZATION_MEMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "ORGANIZATION004", "Organization member already exists"),
     ORGANIZATION_INVITATION_CODE_INVALID(HttpStatus.BAD_REQUEST, "ORGANIZATION005", "Organization invitation code is expired or invalid"),
     ORGANIZATION_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION006", "Organization group not found"),
