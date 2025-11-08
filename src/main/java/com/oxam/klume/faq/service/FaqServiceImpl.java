@@ -56,6 +56,16 @@ public class FaqServiceImpl implements FaqService {
         return FaqResponse.of(faq);
     }
 
+    // FAQ 삭제
+    @Transactional
+    @Override
+    public void deleteFaq(int faqId, int memberId) {
+        checkMemberAndRole(memberId);
+        Faq faq = findFaqById(faqId);
+
+        faqRepository.delete(faq);
+    }
+
 
     // ============================== 공통 메서드 =====================================
     private Member checkMemberAndRole(final int memberId) {

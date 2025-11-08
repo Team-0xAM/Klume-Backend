@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class FaqController {
     private final FaqService faqService;
 
-    private final int memberId = 6;  // TODO: 현재 로그인한 사용자 ID 가져오기
+    private final int memberId = 5;  // TODO: 현재 로그인한 사용자 ID 가져오기
 
     @Operation(
             summary = "FAQ 등록",
@@ -39,5 +39,14 @@ public class FaqController {
     ) {
         FaqResponse response = faqService.updateFaq(faqId, memberId, request);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "FAQ 삭제",
+            description = "시스템 관리자는 FAQ 게시물을 삭제할 수 있다.")
+    @DeleteMapping("/{faqId}")
+    public ResponseEntity<String> deleteFAQ(@PathVariable final int faqId) {
+        faqService.deleteFaq(faqId, memberId);
+        return ResponseEntity.ok("FAQ 게시물이 삭제되었습니다.");
     }
 }

@@ -9,4 +9,6 @@ public interface FaqService {
     FaqResponse createFaq(final FaqRequest request, final int memberId);
 
     FaqResponse updateFaq(final int faqId,final int memberId, @Valid final FaqRequest request);
+
+    void deleteFaq(final int faqId, final int memberId);
 }
