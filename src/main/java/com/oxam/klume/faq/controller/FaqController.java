@@ -44,7 +44,7 @@ public class FaqController {
             summary = "FAQ 등록",
             description = "시스템 관리자가 새로운 FAQ 게시물을 등록할 수 있다." )
     @PostMapping
-    public ResponseEntity<FaqResponse> createFAQ(@RequestBody final FaqRequest request) {
+    public ResponseEntity<FaqResponse> createFAQ(@Valid @RequestBody final FaqRequest request) {
         FaqResponse response = faqService.createFaq(request, memberId);
         return ResponseEntity.ok(response);
     }
