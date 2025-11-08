@@ -7,7 +7,11 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     /* COMMON */
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON001", "Entity not found"),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON002", "Internal server error");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON002", "Internal server error"),
+
+    /* Member */
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "Member not found"),
+    MEMBER_SYSTEM_ROLE_NOT_ADMIN(HttpStatus.FORBIDDEN, "MEMBER002", "Member is not admin");
 
     private final HttpStatus status;
     private final String code;
