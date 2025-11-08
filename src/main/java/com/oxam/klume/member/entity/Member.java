@@ -21,7 +21,7 @@ public class Member {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = true)  // 구글 OAuth 회원은 비밀번호가 없을 수 있음
+    @Column  // 구글 OAuth 회원은 비밀번호가 없을 수 있음
     private String password;
 
     @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")

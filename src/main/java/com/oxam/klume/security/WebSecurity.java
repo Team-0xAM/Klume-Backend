@@ -15,8 +15,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurity {
 
+    // TODO: 테스트 후 삭제 - OAuth2 관련 의존성 (구글 로그인 불필요 시)
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
     private final JwtFilter jwtFilter;
 
     @Bean
@@ -45,24 +47,33 @@ public class WebSecurity {
                         .requestMatchers(
                                 "/auth/**",
                                 "/mail/**",
-                                "/oauth2/**",  // OAuth2 로그인
-                                "/test.html",  // 테스트 페이지
-                                "/*.html",     // 정적 HTML 파일
-                                "/css/**",     // CSS 파일
-                                "/js/**",      // JS 파일
-                                "/profile/**"  // 프로필 이미지
+                                "/oauth2/**",  // TODO: 테스트 후 삭제 - OAuth2 로그인 (구글 로그인 불필요 시)
+                                "/test.html",  // TODO: 테스트 후 삭제 - 테스트 페이지
+                                "/*.html",     // TODO: 테스트 후 삭제 - 정적 HTML 파일
+                                "/css/**",     // TODO: 테스트 후 삭제 - CSS 파일
+                                "/js/**",      // TODO: 테스트 후 삭제 - JS 파일
+                                "/profile/**"
                         ).permitAll()
                         // 그 외는 인증 필요
                         .anyRequest().authenticated()
                 )
 
-                // OAuth2 로그인 설정
+                // TODO: 테스트 후 삭제 - OAuth2 로그인 설정 (구글 로그인 불필요 시)
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/oauth2/authorization/google")  // 구글 로그인 시작 URL
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)  // 커스텀 OAuth2 사용자 서비스
                         )
                         .successHandler(oAuth2SuccessHandler)  // 로그인 성공 핸들러
+                )
+
+                // TODO: 테스트 후 삭제 - 로그아웃 설정 (세션 기반 로그아웃, JWT만 사용 시 불필요)
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")  // 로그아웃 URL
+                        .logoutSuccessUrl("/test.html")  // 로그아웃 성공 후 리다이렉트
+                        .invalidateHttpSession(true)  // 세션 무효화
+                        .deleteCookies("JSESSIONID")  // 쿠키 삭제
+                        .permitAll()
                 )
 
                 // JWT 필터 등록
