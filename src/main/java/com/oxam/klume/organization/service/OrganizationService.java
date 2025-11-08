@@ -16,4 +16,6 @@ public interface OrganizationService {
     OrganizationMember findOrganizationMemberRole(final int memberId, final int organizationId);
 
     List<OrganizationGroup> findOrganizationGroups(final int memberId, final int organizationId);
+
+    Organization validateInvitationCode(final int memberId, final String code);
 }

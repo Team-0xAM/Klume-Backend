@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class InviteCodeResponseDTO {
+public class OrganizationInvitationCodeResponseDTO {
     @Schema(description = "초대 코드", example = "2FkmBg")
     private String code;
 }

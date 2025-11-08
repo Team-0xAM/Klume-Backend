@@ -10,9 +10,7 @@ import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationGroup;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.entity.enums.OrganizationRole;
-import com.oxam.klume.organization.exception.OrganizationNotAdminException;
-import com.oxam.klume.organization.exception.OrganizationNotFoundException;
-import com.oxam.klume.organization.exception.OrganizationMemberAccessDeniedException;
+import com.oxam.klume.organization.exception.*;
 import com.oxam.klume.organization.repository.OrganizationGroupRepository;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
@@ -94,6 +92,34 @@ public class OrganizationServiceImpl implements OrganizationService {
         final List<OrganizationGroup> organizationGroups = organizationGroupRepository.findByOrganization(organization);
 
         return organizationGroups;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Organization validateInvitationCode(final int memberId, final String code) {
+        final int organizationId = getOrganizationIdFromRedis(code);
+
+        final Organization organization = findOrganizationById(organizationId);
+
+        validateMemberNotInOrganization(memberId, organization);
+
+        return organization;
+    }
+
+    private void validateMemberNotInOrganization(final int memberId, final Organization organization) {
+        if (organizationMemberRepository.findByMemberIdAndOrganization(memberId, organization).isPresent()) {
+            throw new OrganizationMemberAlreadyExistsException();
+        }
+    }
+
+    private int getOrganizationIdFromRedis(final String code) {
+        final String organizationId = redisService.get(INVITATION_CODE_PREFIX + code);
+
+        if (organizationId == null) {
+            throw new OrganizationInvitationCodeInvalidException();
+        }
+
+        return Integer.parseInt(organizationId);
     }
 
     private void saveInvitationCodeToRedis(final int organizationId, final String invitationCode) {

@@ -41,15 +41,15 @@ public class OrganizationController {
 
     @Operation(summary = "초대 코드 발급")
     @PostMapping("/{organizationId}/invitations")
-    public ResponseEntity<InviteCodeResponseDTO> createInvitationCode(@Parameter(name = "memberId") final int memberId,
-                                                                      @PathVariable("organizationId") final int organizationId) {
+    public ResponseEntity<OrganizationInvitationCodeResponseDTO> createInvitationCode(@Parameter(name = "memberId") final int memberId,
+                                                                                      @PathVariable("organizationId") final int organizationId) {
         // TODO 로그인한 회원 ID 가져오기  by 지륜
 
         final String invitationCode = organizationService.createInvitationCode(organizationId, memberId);
 
-        final InviteCodeResponseDTO inviteCodeResponseDTO = new InviteCodeResponseDTO(invitationCode);
+        final OrganizationInvitationCodeResponseDTO response = new OrganizationInvitationCodeResponseDTO(invitationCode);
 
-        return ResponseEntity.ok(inviteCodeResponseDTO);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "조직 내 로그인한 회원의 권한 조회")
@@ -78,6 +78,19 @@ public class OrganizationController {
         final List<OrganizationGroupResponseDTO> response = organizationGroup.stream()
                 .map(OrganizationGroupResponseDTO::of)
                 .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "초대 코드 검증")
+    @PostMapping("/invitations/validation")
+    public ResponseEntity<OrganizationResponseDTO> validateInvitationCode(@Parameter(name = "memberId") final int memberId,
+                                                                          @RequestBody @Valid final OrganizationInvitationCodeRequestDTO requestDTO) {
+        // TODO 로그인한 회원 ID 가져오기  by 지륜
+
+        final Organization organization = organizationService.validateInvitationCode(memberId, requestDTO.getCode());
+
+        final OrganizationResponseDTO response = OrganizationResponseDTO.of(organization);
 
         return ResponseEntity.ok(response);
     }
