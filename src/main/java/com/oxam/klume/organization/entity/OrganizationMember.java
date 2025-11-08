@@ -24,7 +24,7 @@ public class OrganizationMember {
     @Column(name = "banned_at")
     private String bannedAt;
 
-    @Column(nullable = false)
+    @Column(name = "organization_role", nullable = false)
     @Enumerated(EnumType.STRING)
     private OrganizationRole role;
 

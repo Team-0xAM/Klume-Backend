@@ -7,8 +7,14 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     /* COMMON */
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON001", "Entity not found"),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON002", "Internal server error");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON002", "Internal server error"),
 
+    /* Organization */
+    ORGANIZATION_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION001", "Organization not found"),
+    ORGANIZATION_NOT_ADMIN(HttpStatus.FORBIDDEN, "ORGANIZATION002", "Organization not admin"),
+
+    /* Organization Notice*/
+    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001","Organization notice not found");
     private final HttpStatus status;
     private final String code;
     private final String message;
