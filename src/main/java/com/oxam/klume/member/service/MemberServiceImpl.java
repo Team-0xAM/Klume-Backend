@@ -4,6 +4,7 @@ import com.oxam.klume.auth.service.MailService;
 import com.oxam.klume.common.error.ErrorCode;
 import com.oxam.klume.common.error.exception.AuthException;
 import com.oxam.klume.common.error.exception.MemberException;
+import com.oxam.klume.common.service.ProfileImageService;
 import com.oxam.klume.member.dto.LoginRequest;
 import com.oxam.klume.member.dto.LoginResponse;
 import com.oxam.klume.member.dto.SignupRequest;
@@ -27,6 +28,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
     private final JwtUtil jwtUtil;
+    private final ProfileImageService profileImageService;
 
     @Override
     @Transactional
@@ -45,12 +47,16 @@ public class MemberServiceImpl implements MemberService {
         // 3. 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
-        // 4. 회원 생성
+        // 4. 랜덤 프로필 이미지 URL 생성
+        String profileImageUrl = profileImageService.getRandomProfileImageUrl();
+
+        // 5. 회원 생성
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         Member member = Member.builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .provider(null)  // 로컬 회원은 null
+                .imageUrl(profileImageUrl)  // 랜덤 프로필 이미지
                 .createdAt(now)
                 .isDeleted(false)
                 .isNotificationEnabled(true)
@@ -58,10 +64,10 @@ public class MemberServiceImpl implements MemberService {
 
         Member savedMember = memberRepository.save(member);
 
-        // 5. 인증 상태 삭제 (회원가입 완료 후)
+        // 6. 인증 상태 삭제 (회원가입 완료 후)
         mailService.clearVerification(request.getEmail());
 
-        // 6. 응답 생성
+        // 7. 응답 생성
         return SignupResponse.builder()
                 .id(savedMember.getId())
                 .email(savedMember.getEmail())

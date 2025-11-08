@@ -49,7 +49,8 @@ public class WebSecurity {
                                 "/test.html",  // 테스트 페이지
                                 "/*.html",     // 정적 HTML 파일
                                 "/css/**",     // CSS 파일
-                                "/js/**"       // JS 파일
+                                "/js/**",      // JS 파일
+                                "/profile/**"  // 프로필 이미지
                         ).permitAll()
                         // 그 외는 인증 필요
                         .anyRequest().authenticated()
