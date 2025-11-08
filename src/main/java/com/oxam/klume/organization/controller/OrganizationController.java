@@ -94,4 +94,17 @@ public class OrganizationController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "조직 가입")
+    @PostMapping("/{organizationId}")
+    public ResponseEntity<OrganizationMemberResponseDTO> createOrganizationMember(@Parameter(name = "memberId") final int memberId,
+                                                                                  @PathVariable("organizationId") final int organizationId,
+                                                                                  @RequestBody @Valid final OrganizationMemberRequestDTO requestDTO) {
+        // TODO 로그인한 회원 ID 가져오기  by 지륜
+        final OrganizationMember organizationMember = organizationService.createOrganizationMember(memberId, organizationId, requestDTO);
+
+        final OrganizationMemberResponseDTO response = OrganizationMemberResponseDTO.of(organizationMember);
+
+        return ResponseEntity.ok(response);
+    }
 }
