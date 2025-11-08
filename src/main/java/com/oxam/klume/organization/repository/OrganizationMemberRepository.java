@@ -12,4 +12,6 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
                                                    final OrganizationRole role);
 
     Optional<OrganizationMember> findByMemberIdAndOrganization(final int memberId, final Organization organization);
+
+    Optional<OrganizationMember> findByOrganizationIdAndMemberId(int organizationId, int memberId);
 }
