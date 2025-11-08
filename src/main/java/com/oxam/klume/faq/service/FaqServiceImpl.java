@@ -7,17 +7,16 @@ import com.oxam.klume.faq.exception.FaqNotFoundException;
 import com.oxam.klume.faq.repository.FaqRepository;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.member.entity.MemberSystemRole;
-import com.oxam.klume.member.entity.SystemRole;
 import com.oxam.klume.member.entity.enums.Role;
 import com.oxam.klume.member.exception.MemberNotAdminException;
 import com.oxam.klume.member.exception.MemberNotFoundException;
 import com.oxam.klume.member.repository.MemberRepository;
 import com.oxam.klume.member.repository.MemberSystemRoleRepository;
-import com.oxam.klume.organization.dto.OrganizationNoticeRequest;
-import com.oxam.klume.organization.dto.OrganizationNoticeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -26,11 +25,28 @@ public class FaqServiceImpl implements FaqService {
     private final MemberRepository memberRepository;
     private final MemberSystemRoleRepository memberSystemRoleRepository;
 
+    // FAQ 전체 목록 조회
+    @Override
+    public List<FaqResponse> getFaqs() {
+        return faqRepository.findAll()
+                .stream()
+                .map(FaqResponse::of)
+                .toList();
+    }
+
+    // FAQ 상세 조회
+    @Override
+    public FaqResponse getFaqDetail(final int faqId) {
+        Faq faq = findFaqById(faqId);
+        return FaqResponse.of(faq);
+    }
+
     // FAQ 등록
     @Transactional
     @Override
     public FaqResponse createFaq(final FaqRequest request, final int memberId) {
-        Member member = checkMemberAndRole(memberId);
+        Member member = findMemberById(memberId);
+        findMemberSystemRole(memberId);
 
         Faq faq = Faq.create(
                 request.getTitle(),
@@ -48,7 +64,8 @@ public class FaqServiceImpl implements FaqService {
     @Transactional
     @Override
     public FaqResponse updateFaq(final int faqId, final int memberId, final FaqRequest request) {
-        Member member = checkMemberAndRole(memberId);
+        Member member = findMemberById(memberId);
+        findMemberSystemRole(memberId);
         Faq faq = findFaqById(faqId);
 
         faq.update(request.getTitle(), request.getContent(), request.getAnswer(), member);
@@ -60,7 +77,8 @@ public class FaqServiceImpl implements FaqService {
     @Transactional
     @Override
     public void deleteFaq(int faqId, int memberId) {
-        checkMemberAndRole(memberId);
+        findMemberById(memberId);
+        findMemberSystemRole(memberId);
         Faq faq = findFaqById(faqId);
 
         faqRepository.delete(faq);
@@ -68,17 +86,17 @@ public class FaqServiceImpl implements FaqService {
 
 
     // ============================== 공통 메서드 =====================================
-    private Member checkMemberAndRole(final int memberId) {
-        // 사용자가 존재하는지 확인
-       Member member = memberRepository.findMemberById(memberId)
-               .orElseThrow(() -> new MemberNotFoundException("사용자가 존재하지 않습니다."));
+    private Member findMemberById(final int memberId){
+        return memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("사용자가 존재하지 않습니다."));
+    }
 
-        // 사용자 시스템 관리자인지 확인
+    private MemberSystemRole findMemberSystemRole(final int memberId) {
         MemberSystemRole memberRole = memberSystemRoleRepository.findByMemberId(memberId);
         if(!memberRole.getSystemRole().getName().equals(Role.ADMIN)){
             throw new MemberNotAdminException("사용자가 시스템 관리자가 아닙니다.");
         }
-      return member;
+        return memberRole;
     }
 
     private Faq findFaqById(int faqId) {

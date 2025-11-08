@@ -30,7 +30,7 @@ public class OrganizationNoticeController {
 
     @Operation(summary = "공지사항 세부 조회")
     @GetMapping("/{noticeId}")
-    public ResponseEntity<OrganizationNoticeResponse> getNotices(
+    public ResponseEntity<OrganizationNoticeResponse> getNoticeDetail(
             @PathVariable final int organizationId,
             @PathVariable final int noticeId) {
         OrganizationNoticeResponse notice = organizationNoticeService.getNoticeDetail(organizationId,noticeId);
