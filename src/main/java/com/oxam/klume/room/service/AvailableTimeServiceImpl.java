@@ -81,11 +81,14 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
 
     // 예약 가능 시간 수정
     @Transactional
+    @Override
     public AvailableTimeResponseDTO updateAvailableTime(final int availableTimeId, final AvailableTimeRequestDTO request) {
         AvailableTime availableTime = availableTimeRepository.findById(availableTimeId)
                 .orElseThrow(AvailableTimeNotFoundException::new);
 
         // TODO 같은 회의실 예약 가능 시간이 겹치는 경우 예외 반환
+
+        // TODO 예약이 존재할 경우 예외 반환
 
         // 기존 DailyAvailableTime 모두 삭제
         dailyAvailableTimeRepository.deleteAllByAvailableTime(availableTime);
@@ -116,7 +119,19 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
         return AvailableTimeResponseDTO.of(saved);
     }
 
+    // 예약 가능 시간 삭제
+    @Transactional
+    @Override
+    public void deleteAvailableTime(final int availableTimeId) {
+        AvailableTime availableTime = availableTimeRepository.findById(availableTimeId)
+                .orElseThrow(AvailableTimeNotFoundException::new);
 
+        // TODO: 예약이 존재할 경우 예외 반환
+
+        dailyAvailableTimeRepository.deleteAllByAvailableTime(availableTime);
+
+        availableTimeRepository.delete(availableTime);
+    }
 
 
     public void createFromAvailableTime(AvailableTime availableTime) {

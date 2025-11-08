@@ -41,4 +41,12 @@ public class AvailableTimeController {
         return ResponseEntity.ok(updated);
     }
 
+    @Operation(summary = "예약 가능 시간 삭제")
+    @DeleteMapping("/{availableTimeId}")
+    public ResponseEntity<String> deleteAvailableTime(@PathVariable("availableTimeId") final int availableTimeId) {
+        availableTimeService.deleteAvailableTime(availableTimeId);
+
+        return ResponseEntity.ok("예약 가능 시간이 삭제되었습니다.");
+    }
+
 }

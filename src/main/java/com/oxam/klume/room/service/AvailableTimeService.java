@@ -8,4 +8,6 @@ public interface AvailableTimeService {
     AvailableTimeResponseDTO createAvailableTime(final int memberId, final int organizationId, final int roomId, final AvailableTimeRequestDTO request);
 
     AvailableTimeResponseDTO updateAvailableTime(final int availableTimeId, final AvailableTimeRequestDTO request);
+
+    void deleteAvailableTime(final int availableTimeId);
 }
