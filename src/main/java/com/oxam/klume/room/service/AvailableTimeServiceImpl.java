@@ -36,6 +36,15 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
     private final OrganizationMemberRepository organizationMemberRepository;
 
 
+    @Override
+    public List<AvailableTimeResponseDTO> getAvailableTimesByRoom(final int roomId, final int organizationId) {
+        findRoomByIdAndOrganization(roomId, organizationId);
+
+        List<AvailableTime> availableTimes = availableTimeRepository.findAllByRoomId(roomId);
+        return availableTimes.stream()
+                .map(AvailableTimeResponseDTO::of)
+                .toList();
+    }
 
     @Transactional
     @Override
@@ -46,8 +55,11 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
             final AvailableTimeRequestDTO request
     ) {
 
-        Room room = findRoomById(roomId);
-        Organization organization = findOrganizationById(organizationId);
+        Room room = findRoomByIdAndOrganization(roomId, organizationId);
+
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(OrganizationNotFoundException::new);
+
         validateAdminPermission(memberId, organization, OrganizationRole.ADMIN );
 
         // TODO 같은 회의실 예약 가능 시간이 겹치는 경우 예외 반환
@@ -209,14 +221,9 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
 
 
     // ================= 공통 메서드 =====================
-    private Room findRoomById(int roomId) {
-        return roomRepository.findById(roomId)
+    private Room findRoomByIdAndOrganization(int roomId, int organizationId) {
+        return roomRepository.findByIdAndOrganizationId(roomId, organizationId)
                 .orElseThrow(RoomNotFoundException::new);
-    }
-
-    private Organization findOrganizationById(int organizationId) {
-        return organizationRepository.findById(organizationId)
-                .orElseThrow(OrganizationNotFoundException::new);
     }
 
     private void validateAdminPermission(final int memberId, final Organization organization, final OrganizationRole role) {

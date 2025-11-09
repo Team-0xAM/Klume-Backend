@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Available_Time", description = "예약 가능 시간 설정 관련 API")
 @RequestMapping("/organizations/{organizationId}/rooms/{roomId}/available-times")
 @RequiredArgsConstructor
@@ -19,6 +21,15 @@ public class AvailableTimeController {
 
     // TODO 로그인한 사용자 id 가져오기
     private int memberId = 5;
+
+    @Operation(summary = "예약 가능 시간 조회")
+    @GetMapping
+    public ResponseEntity<List<AvailableTimeResponseDTO>> getAvailableTimesByRoom(
+            @PathVariable final int roomId,
+            @PathVariable final int organizationId) {
+        List<AvailableTimeResponseDTO> list = availableTimeService.getAvailableTimesByRoom(roomId, organizationId);
+        return ResponseEntity.ok(list);
+    }
 
     @Operation(summary = "예약 가능 시간 등록")
     @PostMapping
