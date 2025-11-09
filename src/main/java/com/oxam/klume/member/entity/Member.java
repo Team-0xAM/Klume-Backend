@@ -2,12 +2,16 @@ package com.oxam.klume.member.entity;
 
 import com.oxam.klume.member.entity.enums.Provider;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Getter
 @Table(name = "member")
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 public class Member {
     @Id
@@ -17,7 +21,7 @@ public class Member {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column 
     private String password;
 
     @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
