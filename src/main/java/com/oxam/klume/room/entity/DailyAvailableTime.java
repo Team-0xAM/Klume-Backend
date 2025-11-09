@@ -35,4 +35,20 @@ public class DailyAvailableTime {
     @JoinColumn(name = "available_time_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private AvailableTime availableTime;
+
+    public void update(
+            String date,
+            String availableStartTime,
+            String availableEndTime,
+            String reservationOpenDay,
+            String reservationOpenTime,
+            AvailableTime availableTime
+    ) {
+        this.date = date;
+        this.availableStartTime = availableStartTime;
+        this.availableEndTime = availableEndTime;
+        this.reservationOpenDay = reservationOpenDay;
+        this.reservationOpenTime = reservationOpenTime;
+        this.availableTime = availableTime;
+    }
 }

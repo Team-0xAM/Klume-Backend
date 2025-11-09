@@ -35,7 +35,10 @@ public enum ErrorCode {
 
 
     /* Available_Time */
-    AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "AVAILABLE_TIME001","Available time not found");
+    AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "AVAILABLE_TIME001","Available time not found"),
+
+    /* Daily_Available_Time */
+    DAILY_AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "DAILY_AVAILABLE_TIME001","Daily available time not found");
 
     private final HttpStatus status;
     private final String code;
