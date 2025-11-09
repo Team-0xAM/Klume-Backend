@@ -16,10 +16,10 @@ import java.io.IOException;
 /* 설명. OAuth2 로그인 성공 시 처리하는 핸들러
  *       로그인 성공 후 JWT 토큰 발급 및 프론트엔드로 리다이렉트
 * */
-@Slf4j
-@Component
-@RequiredArgsConstructor
-public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+        @Slf4j
+        @Component
+        @RequiredArgsConstructor
+        public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtUtil jwtUtil;
 
