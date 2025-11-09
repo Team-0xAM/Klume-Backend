@@ -33,16 +33,17 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 인증된 사용자 정보 가져오기
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getEmail();
+        String profileImage = oAuth2User.getImageUrl(); // 프로필 이미지 URL 가져오기
 
-        log.info("OAuth2 로그인 성공 - email: {}", email);
+        log.info("OAuth2 로그인 성공 - email: {}, profileImage: {}", email, profileImage);
 
         // JWT 토큰 생성
         String accessToken = jwtUtil.createAccessToken(email);
         log.info("JWT 토큰 생성 완료");
 
-        // 프론트엔드로 리다이렉트 (토큰을 URL 파라미터로 전달)
-        // 실제 프론트엔드 URL로 변경 필요(임시)
-        String redirectUrl = String.format("%s?token=%s&email=%s", redirectBaseUrl, accessToken, email);
+        // 프론트엔드로 리다이렉트 (토큰, 이메일, 프로필 이미지를 URL 파라미터로 전달)
+        String redirectUrl = String.format("%s?token=%s&email=%s&profileImage=%s",
+            redirectBaseUrl, accessToken, email, profileImage != null ? profileImage : "");
 
         log.info("리다이렉트 URL: {}", redirectUrl);
 

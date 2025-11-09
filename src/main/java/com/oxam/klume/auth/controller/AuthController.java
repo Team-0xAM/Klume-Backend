@@ -1,5 +1,6 @@
 package com.oxam.klume.auth.controller;
 
+import com.oxam.klume.auth.oauth.CustomOAuth2User;
 import com.oxam.klume.member.dto.LoginRequestDTO;
 import com.oxam.klume.member.dto.LoginResponseDTO;
 import com.oxam.klume.member.dto.SignupRequestDTO;
@@ -10,16 +11,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -52,4 +55,34 @@ public class AuthController {
         }
         return ResponseEntity.ok("로그아웃되었습니다.");
     }
+
+    @GetMapping("/status")
+    public ResponseEntity<Map<String, Object>> checkAuthStatus(Authentication authentication) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            result.put("authenticated", false);
+            result.put("email", null);
+            result.put("image", null);
+            return ResponseEntity.ok(result);
+        }
+
+        Object principal = authentication.getPrincipal();
+        String email = null;
+        String image = null;
+
+        if (principal instanceof CustomOAuth2User oAuth2User) {
+            email = oAuth2User.getEmail();
+            image = oAuth2User.getImageUrl();
+        }
+
+        result.put("authenticated", true);
+        result.put("email", email);
+        result.put("image", image);
+
+        return ResponseEntity.ok(result);
+    }
+
+
 }
