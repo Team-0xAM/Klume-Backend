@@ -1,14 +1,23 @@
-package com.oxam.klume.chat.dto;
+package com.oxam.klume.chat.document;
 
-
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-public class ChatMessageDTO {
+@Builder
+@Document(collection = "chat_messages") // MongoDB 컬렉션 이름
+public class ChatMessage {
+
+    @Id
+    private String id;
+
     private String roomId;      // 채팅방 번호
     private String senderId;    // 누가 보냈는지
     private boolean admin;      //  관리자인지 여부
@@ -19,7 +28,6 @@ public class ChatMessageDTO {
     public void updateRoomId(String roomId) {
         this.roomId = roomId;
     }
-
     // 발신자 ID 설정
     public void updateSenderId(String senderId) {
         this.senderId = senderId;
