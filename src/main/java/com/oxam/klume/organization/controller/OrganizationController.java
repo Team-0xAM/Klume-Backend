@@ -2,7 +2,6 @@ package com.oxam.klume.organization.controller;
 
 import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
-import com.oxam.klume.organization.entity.OrganizationGroup;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Tag(name = "organization", description = "조직 관련 API")
 @RequestMapping("/organizations")
@@ -180,11 +178,7 @@ public class OrganizationController {
                                                                                      @PathVariable("organizationId") final int organizationId) {
         // TODO 로그인한 회원 ID 가져오기  by 지륜
 
-        final List<OrganizationGroup> organizationGroup = organizationService.findOrganizationGroups(memberId, organizationId);
-
-        final List<OrganizationGroupResponseDTO> response = organizationGroup.stream()
-                .map(OrganizationGroupResponseDTO::of)
-                .collect(Collectors.toList());
+        final List<OrganizationGroupResponseDTO> response = organizationService.findOrganizationGroups(memberId, organizationId);
 
         return ResponseEntity.ok(response);
     }

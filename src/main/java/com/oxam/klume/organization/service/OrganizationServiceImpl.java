@@ -5,6 +5,7 @@ import com.oxam.klume.file.FileValidator;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.member.exception.MemberNotFoundException;
 import com.oxam.klume.member.repository.MemberRepository;
+import com.oxam.klume.organization.dto.OrganizationGroupResponseDTO;
 import com.oxam.klume.organization.dto.OrganizationMemberRequestDTO;
 import com.oxam.klume.organization.dto.OrganizationRequestDTO;
 import com.oxam.klume.organization.entity.Organization;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -118,12 +120,24 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     @Transactional(readOnly = true)
     @Override
-    public List<OrganizationGroup> findOrganizationGroups(int memberId, int organizationId) {
+    public List<OrganizationGroupResponseDTO> findOrganizationGroups(final int memberId, final int organizationId) {
         final Organization organization = findOrganizationById(organizationId);
 
         final List<OrganizationGroup> organizationGroups = organizationGroupRepository.findByOrganization(organization);
 
-        return organizationGroups;
+        final boolean isOrganizationAdmin = existsByMemberIdAndOrganizationAndRole(memberId, organization, OrganizationRole.ADMIN);
+
+        return organizationGroups.stream()
+                .map(group -> {
+                    Integer memberCount = null;
+
+                    if (isOrganizationAdmin) {
+                        memberCount = countByOrganizationAndOrganizationGroup(organization, group);
+                    }
+
+                    return OrganizationGroupResponseDTO.of(group, memberCount);
+                })
+                .collect(Collectors.toList());
     }
 
     /**
@@ -178,6 +192,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         return organizationMemberRepository.save(organizationMember);
     }
 
+    private int countByOrganizationAndOrganizationGroup(final Organization organization,
+                                                        final OrganizationGroup organizationGroup) {
+        return organizationMemberRepository.countByOrganizationAndOrganizationGroup(organization, organizationGroup);
+    }
+
     private void validateMemberNotInOrganization(final int memberId, final Organization organization) {
         if (organizationMemberRepository.findByMemberIdAndOrganization(memberId, organization).isPresent()) {
             throw new OrganizationMemberAlreadyExistsException();
@@ -209,6 +228,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (!organizationMemberRepository.existsByMemberIdAndOrganizationAndRole(memberId, organization, role)) {
             throw new OrganizationNotAdminException();
         }
+    }
+
+    private boolean existsByMemberIdAndOrganizationAndRole(final int memberId, final Organization organization,
+                                                           final OrganizationRole role) {
+        return organizationMemberRepository.existsByMemberIdAndOrganizationAndRole(memberId, organization, role);
     }
 
     private String generateRandomCode(final int length) {

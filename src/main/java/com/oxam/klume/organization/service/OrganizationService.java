@@ -1,9 +1,9 @@
 package com.oxam.klume.organization.service;
 
+import com.oxam.klume.organization.dto.OrganizationGroupResponseDTO;
 import com.oxam.klume.organization.dto.OrganizationMemberRequestDTO;
 import com.oxam.klume.organization.dto.OrganizationRequestDTO;
 import com.oxam.klume.organization.entity.Organization;
-import com.oxam.klume.organization.entity.OrganizationGroup;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,7 +16,7 @@ public interface OrganizationService {
 
     OrganizationMember findOrganizationMemberRole(final int memberId, final int organizationId);
 
-    List<OrganizationGroup> findOrganizationGroups(final int memberId, final int organizationId);
+    List<OrganizationGroupResponseDTO> findOrganizationGroups(final int memberId, final int organizationId);
 
     Organization validateInvitationCode(final int memberId, final String code);
 
