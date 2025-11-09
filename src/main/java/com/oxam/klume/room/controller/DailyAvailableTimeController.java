@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 public class DailyAvailableTimeController {
     private final DailyAvailableTimeService dailyAvailableTimeService;
 
+    // TODO 현재 사용자 ID 가져오기
+    int memberId = 5;
+
     @Operation(summary = "일자별 이용 가능 시간 수정")
     @PutMapping("/{dailyAvailableTimeId}")
     public ResponseEntity<DailyAvailableTimeResponseDTO> updateDailyAvailableTime(
@@ -26,15 +29,20 @@ public class DailyAvailableTimeController {
             @PathVariable final int dailyAvailableTimeId,
             @Valid @RequestBody final DailyAvailableTimeRequestDTO request
     ) {
-        // TODO 현재 사용자 ID 가져오기
-        int memberId = 5;
-
         DailyAvailableTimeResponseDTO response =
                 dailyAvailableTimeService.updateDailyAvailableTime(memberId, organizationId, dailyAvailableTimeId, request);
 
         return ResponseEntity.ok(response);
+    }
 
-
+    @Operation(summary = "일자별 이용 가능 시간 삭제")
+    @DeleteMapping("/{dailyAvailableTimeId}")
+    public ResponseEntity<String> deleteDailyAvailableTime(
+            @PathVariable final int organizationId,
+            @PathVariable final int dailyAvailableTimeId
+    ) {
+        dailyAvailableTimeService.deleteDailyAvailableTime(memberId, organizationId, dailyAvailableTimeId);
+        return ResponseEntity.ok("해당 일자별 이용 가능 시간이 삭제되었습니다.");
     }
 
 

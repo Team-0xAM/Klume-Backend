@@ -8,4 +8,6 @@ import jakarta.validation.Valid;
 public interface DailyAvailableTimeService {
 
     DailyAvailableTimeResponseDTO updateDailyAvailableTime(final int memberId, final int organizationId, final int dailyAvailableTimeId, @Valid final DailyAvailableTimeRequestDTO request);
+
+    void deleteDailyAvailableTime(final int memberId, final int organizationId, final int dailyAvailableTimeId);
 }

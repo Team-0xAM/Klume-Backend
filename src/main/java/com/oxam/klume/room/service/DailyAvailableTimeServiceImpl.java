@@ -30,7 +30,7 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
 
     @Transactional
     @Override
-    public DailyAvailableTimeResponseDTO updateDailyAvailableTime(int memberId, int organizationId, int dailyAvailableTimeId, DailyAvailableTimeRequestDTO request) {
+    public DailyAvailableTimeResponseDTO updateDailyAvailableTime(final int memberId, final int organizationId, final int dailyAvailableTimeId, final DailyAvailableTimeRequestDTO request) {
         Organization organization = findOrganizationById(organizationId);
         validateAdminPermission(memberId, organization, OrganizationRole.ADMIN);
 
@@ -49,6 +49,15 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
         );
 
         return DailyAvailableTimeResponseDTO.of(dailyAvailableTime);
+    }
+
+    @Override
+    public void deleteDailyAvailableTime(final int memberId, final int organizationId, final int dailyAvailableTimeId) {
+        Organization organization = findOrganizationById(organizationId);
+        validateAdminPermission(memberId, organization, OrganizationRole.ADMIN);
+        DailyAvailableTime dailyAvailableTime = findDailyAvailableTimeById(dailyAvailableTimeId);
+
+        dailyAvailableTimeRepository.delete(dailyAvailableTime);
     }
 
     // ============================== 공통 메서드 =====================================
