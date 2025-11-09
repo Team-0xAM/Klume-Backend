@@ -1,6 +1,11 @@
 package com.oxam.klume.room.service;
 
 import com.oxam.klume.organization.entity.Organization;
+import com.oxam.klume.organization.entity.OrganizationMember;
+import com.oxam.klume.organization.entity.enums.OrganizationRole;
+import com.oxam.klume.organization.exception.OrganizationNotAdminException;
+import com.oxam.klume.organization.exception.OrganizationNotFoundException;
+import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
 import com.oxam.klume.room.dto.RoomRequestDTO;
 import com.oxam.klume.room.dto.RoomResponseDTO;
@@ -21,11 +26,39 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final OrganizationRepository organizationRepository;
+    private final OrganizationMemberRepository organizationMemberRepository;
+
+    // 회의실 목록 조회
+    @Override
+    @Transactional(readOnly = true)
+    public List<RoomResponseDTO> getRooms(int organizationId, int memberId) {
+        Organization organization = getOrganizationOrThrow(organizationId);
+        findOrganizationMemberById(organizationId, memberId);
+        return roomRepository.findByOrganization(organization)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
+    // 회의실 상세 조회
+    @Override
+    @Transactional(readOnly = true)
+    public RoomResponseDTO getRoomDetail(int organizationId, int roomId, int memberId) {
+        Organization organization = getOrganizationOrThrow(organizationId);
+        findOrganizationMemberById(organizationId, memberId);
+        Room room = getRoomOrThrow(roomId, organization);
+        return toResponseDTO(room);
+    }
 
     // 회의실 + 이미지 등록
     @Override
-    public RoomResponseDTO createRoomWithImage(int organizationId, RoomRequestDTO dto, MultipartFile imageFile) {
+    public RoomResponseDTO createRoomWithImage(int organizationId, RoomRequestDTO dto, MultipartFile imageFile, int memberId) {
         Organization organization = getOrganizationOrThrow(organizationId);
+
+        OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
+        if(member.getRole() != OrganizationRole.ADMIN){
+            throw new OrganizationNotAdminException("회의실을 등록할 권한이 없습니다.");
+        }
 
         if (roomRepository.existsByOrganizationAndName(organization, dto.getName())) {
             throw new IllegalArgumentException("이미 동일한 이름의 회의실이 존재합니다.");
@@ -41,48 +74,40 @@ public class RoomServiceImpl implements RoomService {
                 .imageUrl(imageUrl)
                 .build();
 
+        // 유효성 검사
+        room.assignToOrganization(organization);
+        room.validateCapacity();
+
         Room saved = roomRepository.save(room);
         return toResponseDTO(saved);
     }
 
-    // 회의실 목록 조회
-    @Override
-    @Transactional(readOnly = true)
-    public List<RoomResponseDTO> getRooms(int organizationId) {
-        Organization organization = getOrganizationOrThrow(organizationId);
-        return roomRepository.findByOrganization(organization)
-                .stream()
-                .map(this::toResponseDTO)
-                .toList();
-    }
-
-    // 회의실 상세 조회
-    @Override
-    @Transactional(readOnly = true)
-    public RoomResponseDTO getRoomDetail(int organizationId, int roomId) {
-        Organization organization = getOrganizationOrThrow(organizationId);
-        Room room = getRoomOrThrow(roomId, organization);
-        return toResponseDTO(room);
-    }
-
     // 회의실 수정
     @Override
-    public RoomResponseDTO updateRoom(int organizationId, int roomId, RoomRequestDTO dto) {
+    public RoomResponseDTO updateRoom(int organizationId, int roomId, RoomRequestDTO dto, int memberId) {
         Organization organization = getOrganizationOrThrow(organizationId);
+
+        OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
+        if(member.getRole() != OrganizationRole.ADMIN){
+            throw new OrganizationNotAdminException("회의실을 수정할 권한이 없습니다.");
+        }
+
         Room room = getRoomOrThrow(roomId, organization);
 
-        room.setName(dto.getName());
-        room.setDescription(dto.getDescription());
-        room.setCapacity(dto.getCapacity());
-//        room.setImageUrl(dto.getImageUrl());
+        room.updateInfo(dto.getName(), dto.getDescription(), dto.getCapacity());
+        room.validateCapacity();
 
         return toResponseDTO(room);
     }
 
     // 회의실 삭제
     @Override
-    public void deleteRoom(int organizationId, int roomId) {
+    public void deleteRoom(int organizationId, int roomId, int memberId) {
         Organization organization = getOrganizationOrThrow(organizationId);
+        OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
+        if(member.getRole() != OrganizationRole.ADMIN){
+            throw new OrganizationNotAdminException("회의실을 삭제할 권한이 없습니다.");
+        }
         Room room = getRoomOrThrow(roomId, organization);
         roomRepository.delete(room);
     }
@@ -97,6 +122,12 @@ public class RoomServiceImpl implements RoomService {
                 .imageUrl(room.getImageUrl())
                 .organizationId(room.getOrganization().getId())
                 .build();
+    }
+
+    // 조직에 포함된 회원인지 검증
+    private OrganizationMember findOrganizationMemberById(int organizationId, int memberId){
+        return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
+                .orElseThrow(() -> new OrganizationNotFoundException("사용자가 가입하지 않은 조직입니다."));
     }
 
     // 조직 존재 여부 확인

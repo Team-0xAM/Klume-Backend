@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface RoomService {
 
-    RoomResponseDTO createRoomWithImage(int organizationId, RoomRequestDTO dto, MultipartFile imageFile);
+    RoomResponseDTO createRoomWithImage(int organizationId, RoomRequestDTO dto, MultipartFile imageFile, int memberId);
 
-    List<RoomResponseDTO> getRooms(int organizationId);
+    List<RoomResponseDTO> getRooms(int organizationId, int memberId);
 
-    RoomResponseDTO getRoomDetail(int organizationId, int roomId);
+    RoomResponseDTO getRoomDetail(int organizationId, int roomId, int memberId);
 
-    RoomResponseDTO updateRoom(int organizationId, int roomId, RoomRequestDTO dto);
+    RoomResponseDTO updateRoom(int organizationId, int roomId, RoomRequestDTO dto, int memberId);
 
-    void deleteRoom(int organizationId, int roomId);
+    void deleteRoom(int organizationId, int roomId, int memberId);
 }

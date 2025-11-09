@@ -6,7 +6,17 @@ import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.entity.enums.OrganizationRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface OrganizationMemberRepository extends JpaRepository<OrganizationMember, Integer> {
-    boolean existsByMemberAndOrganizationAndRole(final Member member, final Organization organization,
-                                                 final OrganizationRole role);
+    boolean existsByMemberIdAndOrganizationAndRole(final int memberId, final Organization organization,
+                                                   final OrganizationRole role);
+
+    Optional<OrganizationMember> findByMemberIdAndOrganization(final int memberId, final Organization organization);
+
+    Optional<OrganizationMember> findByOrganizationIdAndMemberId(int organizationId, int memberId);
+
+    boolean existsByMemberAndOrganizationAndRole(Member member, Organization organization, OrganizationRole role);
+
+    Member memberId(int memberId);
 }

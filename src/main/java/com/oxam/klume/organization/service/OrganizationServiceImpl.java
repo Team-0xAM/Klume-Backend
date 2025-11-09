@@ -61,7 +61,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         final Organization organization = findOrganizationById(organizationId);
 
-        validateAdminPermission(member, organization, OrganizationRole.ADMIN);
+        validateAdminPermission(memberId, organization, OrganizationRole.ADMIN);
 
         final String inviteCode = createRandomCode(6);
 
@@ -71,8 +71,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         return inviteCode;
     }
 
-    private void validateAdminPermission(final Member member, final Organization organization, final OrganizationRole role) {
-        if (!organizationMemberRepository.existsByMemberAndOrganizationAndRole(member, organization, role)) {
+    private void validateAdminPermission(final int memberId, final Organization organization, final OrganizationRole role) {
+        if (!organizationMemberRepository.existsByMemberIdAndOrganizationAndRole(memberId, organization, role)) {
             throw new OrganizationNotAdminException();
         }
     }
