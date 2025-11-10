@@ -61,7 +61,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         final Organization organization = findOrganizationById(organizationId);
 
-        validateAdminPermission(memberId, organization, OrganizationRole.ADMIN);
+        // 회원이 이미 조직에 가입되었는지 검증 (만약 가입했다면 이미 가입된 회원이라는 에러 발생)
+        validateMemberNotInOrganization(memberId, organization);
+
+        OrganizationGroup organizationGroup = null;
 
         final String inviteCode = createRandomCode(6);
 
@@ -69,6 +72,38 @@ public class OrganizationServiceImpl implements OrganizationService {
                 Duration.ofMinutes(30));
 
         return inviteCode;
+    }
+
+    private int countByOrganizationAndOrganizationGroup(final Organization organization,
+                                                        final OrganizationGroup organizationGroup) {
+        return organizationMemberRepository.countByOrganizationAndOrganizationGroup(organization, organizationGroup);
+    }
+
+    private void validateMemberNotInOrganization(final int memberId, final Organization organization) {
+        if (organizationMemberRepository.findByMemberIdAndOrganization(memberId, organization).isPresent()) {
+            throw new OrganizationMemberAlreadyExistsException();
+        }
+    }
+
+    private int getOrganizationIdFromRedis(final String code) {
+        final String organizationId = redisService.getData(INVITATION_CODE_PREFIX + code);
+
+        if (organizationId == null) {
+            throw new OrganizationInvitationCodeInvalidException();
+        }
+
+        return Integer.parseInt(organizationId);
+    }
+
+    private void saveInvitationCodeToRedis(final int organizationId, final String invitationCode) {
+        final String value = redisService.getData(ORGANIZATION_PREFIX + organizationId);
+
+        if (value != null) {
+            redisService.deleteData(INVITATION_CODE_PREFIX + value);
+        }
+
+        redisService.set(INVITATION_CODE_PREFIX + invitationCode, String.valueOf(organizationId), Duration.ofMinutes(30));
+        redisService.set(ORGANIZATION_PREFIX + organizationId, invitationCode, Duration.ofMinutes(30));
     }
 
     private void validateAdminPermission(final int memberId, final Organization organization, final OrganizationRole role) {

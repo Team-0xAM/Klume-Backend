@@ -10,16 +10,43 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON002", "Internal server error"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON003", "Bad request"),
 
-    /* Member */
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "Member not found"),
-
     /* File */
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE001", "File not found"),
     FILE_INVALID_EXTENSION(HttpStatus.BAD_REQUEST, "FILE002", "Invalid file extension"),
 
+    /* Member */
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "Member not found"),
+    MEMBER_SYSTEM_ROLE_NOT_ADMIN(HttpStatus.FORBIDDEN, "MEMBER002", "Member is not admin"),
+    MEMBER_DELETED(HttpStatus.FORBIDDEN, "MEMBER003", "탈퇴한 회원입니다."),
+
+    /* AUTH - 인증 */
+    EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "AUTH001", "이메일 인증이 완료되지 않았습니다."),
+    EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "AUTH002", "이미 가입된 이메일입니다."),
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "AUTH003", "이메일 또는 비밀번호가 일치하지 않습니다."),
+    SOCIAL_LOGIN_REQUIRED(HttpStatus.BAD_REQUEST, "AUTH004", "소셜 로그인 회원은 해당 소셜 계정으로 로그인해주세요."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH005", "유효하지 않은 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH006", "만료된 토큰입니다."),
+    VERIFICATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTH007", "인증 코드가 존재하지 않거나 만료되었습니다."),
+    VERIFICATION_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "AUTH008", "인증 코드가 일치하지 않습니다."),
+
     /* Organization */
     ORGANIZATION_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION001", "Organization not found"),
-    ORGANIZATION_NOT_ADMIN(HttpStatus.FORBIDDEN, "ORGANIZATION002", "Organization not admin");
+    ORGANIZATION_NOT_ADMIN(HttpStatus.FORBIDDEN, "ORGANIZATION002", "Organization not admin"),
+    ORGANIZATION_MEMBER_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ORGANIZATION003", "Not a member of the organization"),
+    ORGANIZATION_MEMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "ORGANIZATION004", "Organization member already exists"),
+    ORGANIZATION_INVITATION_CODE_INVALID(HttpStatus.BAD_REQUEST, "ORGANIZATION005", "Organization invitation code is expired or invalid"),
+    ORGANIZATION_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION006", "Organization group not found"),
+
+    /* Organization Notice */
+    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001","Organization notice not found"),
+
+    /* FAQ */
+    FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ001", "FAQ not found"),
+
+    /* S3 */
+    S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3001", "S3 upload failed"),
+    S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3002", "S3 Delete failed"),
+    S3_URL_INVALID(HttpStatus.BAD_REQUEST, "S3003", "Invalid S3 URL");
 
     private final HttpStatus status;
     private final String code;

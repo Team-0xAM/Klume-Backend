@@ -1,5 +1,6 @@
 package com.oxam.klume.organization.dto;
 
+import com.oxam.klume.organization.entity.enums.OrganizationRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class InviteCodeResponseDTO {
-    @Schema(description = "초대 코드", example = "2FkmBg")
-    private String code;
+public class OrganizationMemberRoleResponseDTO {
+    @Schema(description = "조직 권한", example = "MEMBER")
+    private OrganizationRole role;
 }

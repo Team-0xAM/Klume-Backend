@@ -49,6 +49,7 @@ public class OrganizationMember {
                               final Member member, final OrganizationGroup organizationGroup) {
         this.penaltyCount = 0;
         this.isBanned = false;
+        this.bannedAt = null;
         this.role = role;
         this.nickname = nickname;
         this.organization = organization;
