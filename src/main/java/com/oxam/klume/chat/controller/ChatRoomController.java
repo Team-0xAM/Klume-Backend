@@ -1,5 +1,6 @@
 package com.oxam.klume.chat.controller;
 
+import com.oxam.klume.chat.document.ChatMessage;
 import com.oxam.klume.chat.dto.ChatCreateRequest;
 import com.oxam.klume.chat.dto.ChatCreateResponse;
 import com.oxam.klume.chat.dto.ChatListDTO;
@@ -40,23 +41,33 @@ public class ChatRoomController {
     }
 
     @Operation(summary = "채팅방 담당하기 (관리자용)")
-    @PostMapping("/{chatRoomId}/assign")
+    @PostMapping("/{roomId}/assign")
     public ResponseEntity<Void> assignChatRoom(
             @PathVariable int organizationId,
-            @PathVariable int chatRoomId) {
+            @PathVariable int roomId) {
         String userEmail = getCurrentUserEmail();
-        chatService.assignChatRoom(chatRoomId, userEmail);
+        chatService.assignChatRoom(roomId, userEmail);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "채팅방 담당 해제 (관리자용)")
-    @DeleteMapping("/{chatRoomId}/assign")
+    @DeleteMapping("/{roomId}/assign")
     public ResponseEntity<Void> unassignChatRoom(
             @PathVariable int organizationId,
-            @PathVariable int chatRoomId) {
+            @PathVariable int roomId) {
         String userEmail = getCurrentUserEmail();
-        chatService.unassignChatRoom(chatRoomId, userEmail);
+        chatService.unassignChatRoom(roomId, userEmail);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "채팅 히스토리 조회")
+    @GetMapping("/{roomId}/messages")
+    public ResponseEntity<List<ChatMessage>> getChatHistory(
+            @PathVariable int organizationId,
+            @PathVariable int roomId) {
+        String userEmail = getCurrentUserEmail();
+        List<ChatMessage> messages = chatService.getChatHistory(roomId, userEmail);
+        return ResponseEntity.ok(messages);
     }
 
     // JWT에서 현재 사용자 이메일 가져오기

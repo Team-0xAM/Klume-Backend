@@ -29,6 +29,7 @@ public class ChatServiceImpl implements ChatService {
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final SequenceGeneratorService sequenceGenerator;
 
     // 채팅방 목록 조회 (관리자용)
     @Override
@@ -59,7 +60,8 @@ public class ChatServiceImpl implements ChatService {
         Member member = memberRepository.findByEmail(userEmail)
             .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 
-        Organization organization = organizationRepository.findById(organizationId)
+        // 조직 존재 확인
+        organizationRepository.findById(organizationId)
             .orElseThrow(() -> new RuntimeException("조직을 찾을 수 없습니다."));
 
         // 이미 생성된 채팅방이 있는지 확인
@@ -72,8 +74,11 @@ public class ChatServiceImpl implements ChatService {
             );
         }
 
+        // 새 roomId 생성 (auto-increment)
+        int nextRoomId = getNextRoomId();
+
         // 새 채팅방 생성
-        ChatRoom chatRoom = ChatRoom.create(organizationId, member.getId(), userEmail);
+        ChatRoom chatRoom = ChatRoom.create(nextRoomId, organizationId, member.getId(), userEmail);
         chatRepository.save(chatRoom);
 
         // 첫 메시지 저장 (MongoDB)
@@ -96,11 +101,11 @@ public class ChatServiceImpl implements ChatService {
 
     // 채팅방 담당하기 (관리자용)
     @Override
-    public void assignChatRoom(int chatRoomId, String userEmail) {
+    public void assignChatRoom(int roomId, String userEmail) {
         Member member = memberRepository.findByEmail(userEmail)
             .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 
-        ChatRoom chatRoom = chatRepository.findById(String.valueOf(chatRoomId))
+        ChatRoom chatRoom = chatRepository.findByRoomId(roomId)
             .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
 
         // 권한 확인: 해당 조직의 관리자인지 확인
@@ -119,11 +124,11 @@ public class ChatServiceImpl implements ChatService {
 
     // 채팅방 담당 해제 (관리자용)
     @Override
-    public void unassignChatRoom(int chatRoomId, String userEmail) {
+    public void unassignChatRoom(int roomId, String userEmail) {
         Member member = memberRepository.findByEmail(userEmail)
             .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 
-        ChatRoom chatRoom = chatRepository.findById(String.valueOf(chatRoomId))
+        ChatRoom chatRoom = chatRepository.findByRoomId(roomId)
             .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
 
         // 권한 확인: 현재 담당자인지 확인
@@ -141,5 +146,50 @@ public class ChatServiceImpl implements ChatService {
         // 담당 해제
         chatRoom.unassign();
         chatRepository.save(chatRoom);
+    }
+
+    // 채팅 히스토리 조회
+    @Override
+    public List<ChatMessage> getChatHistory(int roomId, String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+
+        ChatRoom chatRoom = chatRepository.findByRoomId(roomId)
+            .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
+
+        // 권한 확인: 채팅방을 조회할 수 있는지 확인
+        boolean canView = canViewChatRoom(chatRoom, member);
+        if (!canView) {
+            throw new RuntimeException("채팅방을 조회할 권한이 없습니다.");
+        }
+
+        // 메시지 조회 (시간 오름차순)
+        return chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+    }
+
+    /**
+     * 채팅방 조회 권한 확인
+     * - 일반 회원: 자기가 만든 채팅방만 조회 가능
+     * - 관리자: 해당 조직의 모든 채팅방 조회 가능
+     */
+    private boolean canViewChatRoom(ChatRoom chatRoom, Member member) {
+        // 일반 회원인 경우: 자기가 만든 채팅방인지 확인
+        if (chatRoom.getCreatedById() == member.getId()) {
+            return true;
+        }
+
+        // 관리자인 경우: 해당 조직의 관리자인지 확인
+        OrganizationMember orgMember = organizationMemberRepository
+            .findByOrganizationIdAndMemberId(chatRoom.getOrganizationId(), member.getId())
+            .orElse(null);
+
+        return orgMember != null && orgMember.getRole() == OrganizationRole.ADMIN;
+    }
+
+    /**
+     * 다음 roomId 생성 (auto-increment)
+     */
+    private int getNextRoomId() {
+        return sequenceGenerator.getNextSequence("chat_room_id");
     }
 }

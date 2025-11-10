@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
@@ -20,7 +19,7 @@ public class ChatRoom {
     @Id
     private String id;
 
-    private String roomId;           // UUID
+    private int roomId;              // auto-increment ID
     private int organizationId;      // 어느 조직의 채팅인지
     private int createdById;         // 채팅 시작한 일반 회원 ID
     private String createdByEmail;   // 채팅 시작한 회원 이메일
@@ -29,11 +28,11 @@ public class ChatRoom {
     private String createdAt;
     private String lastMessageAt;    // 마지막 메시지 시각 (정렬용)
 
-    // 채팅방 생성 (일반 회원이 관리자에게 문의 시작)
-    public static ChatRoom create(int organizationId, int createdById, String createdByEmail) {
+    // 채팅방 생성 (일반 회원이 관리자에게 문의 시작) - roomId는 외부에서 주입
+    public static ChatRoom create(int roomId, int organizationId, int createdById, String createdByEmail) {
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         return ChatRoom.builder()
-                .roomId(UUID.randomUUID().toString())
+                .roomId(roomId)
                 .organizationId(organizationId)
                 .createdById(createdById)
                 .createdByEmail(createdByEmail)

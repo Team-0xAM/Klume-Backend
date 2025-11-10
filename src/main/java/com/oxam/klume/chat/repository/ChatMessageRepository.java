@@ -10,5 +10,5 @@ import java.util.List;
 public interface ChatMessageRepository extends MongoRepository<ChatMessage, String> {
 
     // 특정 방(roomId)의 메시지를 생성 시간(createdAt) 순으로 조회
-    List<ChatMessage> findByRoomIdOrderByCreatedAtAsc(String roomId);
+    List<ChatMessage> findByRoomIdOrderByCreatedAtAsc(int roomId);
 }

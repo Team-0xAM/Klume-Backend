@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ChatCreateResponse {
-    private String roomId;
+    private int roomId;
     private String message;
 }

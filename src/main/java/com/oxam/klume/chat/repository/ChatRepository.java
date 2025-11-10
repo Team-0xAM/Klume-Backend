@@ -11,7 +11,7 @@ public interface ChatRepository extends MongoRepository<ChatRoom, String> {
     List<ChatRoom> findByOrganizationIdOrderByLastMessageAtDesc(int organizationId);
 
     // roomId로 채팅방 조회
-    Optional<ChatRoom> findByRoomId(String roomId);
+    Optional<ChatRoom> findByRoomId(int roomId);
 
     // 특정 회원이 특정 조직에 생성한 채팅방 조회 (일반 회원용)
     Optional<ChatRoom> findByOrganizationIdAndCreatedById(int organizationId, int memberId);
@@ -19,6 +19,6 @@ public interface ChatRepository extends MongoRepository<ChatRoom, String> {
     // 담당자가 배정된 채팅방 조회
     List<ChatRoom> findByAssignedToIdOrderByLastMessageAtDesc(int assignedToId);
 
-    // 미배정 채팅방 조회 (assignedTo가 null인 것들)
-    List<ChatRoom> findByOrganizationIdAndAssignedToIsNullOrderByLastMessageAtDesc(int organizationId);
+    // 미배정 채팅방 조회 (assignedToId가 null인 것들)
+    List<ChatRoom> findByOrganizationIdAndAssignedToIdIsNullOrderByLastMessageAtDesc(int organizationId);
 }

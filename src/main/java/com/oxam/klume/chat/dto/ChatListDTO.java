@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ChatListDTO {
     private String id;                  // MongoDB _id
-    private String roomId;
+    private int roomId;
     private String createdByEmail;      // 문의자 이메일
     private String assignedToName;      // 담당자 이름 (null이면 "미배정")
     private Integer assignedToId;       // 담당자 ID
