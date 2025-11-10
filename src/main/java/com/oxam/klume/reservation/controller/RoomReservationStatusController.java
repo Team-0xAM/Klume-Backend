@@ -10,7 +10,7 @@ import java.util.List;
 
 @Tag(name = "회의실별 예약 현황 조회 API")
 @RestController
-@RequestMapping("/organizations/{organizationId}/rooms/{roomId}/status")
+@RequestMapping("/organizations/{organizationId}/rooms/{roomId}/reservations/status")
 @RequiredArgsConstructor
 public class RoomReservationStatusController {
 

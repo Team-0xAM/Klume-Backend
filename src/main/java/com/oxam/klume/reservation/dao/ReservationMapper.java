@@ -10,4 +10,8 @@ public interface ReservationMapper {
     List<ReservationResponseDTO> selectRoomStatusByDay(int organizationId, int roomId, String date);
 
     List<ReservationResponseDTO> selectRoomStatusByWeek(int organizationId, int roomId, String startDate, String endDate);
+
+    List<ReservationResponseDTO> selectOrganizationRoomStatusByDay(int organizationId, String date);
+
+    List<ReservationResponseDTO> selectOrganizationRoomStatusByWeek(int organizationId, String startDate, String endDate);
 }
