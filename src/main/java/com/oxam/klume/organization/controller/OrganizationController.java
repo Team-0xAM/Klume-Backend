@@ -7,7 +7,6 @@ import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -69,12 +68,12 @@ public class OrganizationController {
             }))
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<OrganizationResponseDTO> createOrganization(@Parameter(name = "memberId") final int memberId,
+    public ResponseEntity<OrganizationResponseDTO> createOrganization(final Authentication authentication,
                                                                       @RequestPart(value = "image", required = false) final MultipartFile file,
                                                                       @RequestPart("requestDTO") @Valid final OrganizationRequestDTO requestDTO) {
-        // TODO 로그인한 회원 ID 가져오기
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
 
-        final Organization organization = organizationService.createOrganization(memberId, file, requestDTO);
+        final Organization organization = organizationService.createOrganization(member, file, requestDTO);
 
         final OrganizationResponseDTO response = OrganizationResponseDTO.of(organization);
 
@@ -112,9 +111,9 @@ public class OrganizationController {
             }))
     })
     @PostMapping("/{organizationId}/invitations")
-    public ResponseEntity<OrganizationInvitationCodeResponseDTO> createInvitationCode(@Parameter(name = "memberId") final int memberId,
+    public ResponseEntity<OrganizationInvitationCodeResponseDTO> createInvitationCode(final Authentication authentication,
                                                                                       @PathVariable("organizationId") final int organizationId) {
-        // TODO 로그인한 회원 ID 가져오기  by 지륜
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
 
         final String invitationCode = organizationService.createInvitationCode(organizationId, memberId);
 
@@ -147,10 +146,9 @@ public class OrganizationController {
             }))
     })
     @GetMapping("/{organizationId}/role")
-    public ResponseEntity<OrganizationMemberRoleResponseDTO> findOrganizationMemberRole(
-            @Parameter(name = "memberId") final int memberId,
-            @PathVariable("organizationId") final int organizationId) {
-        // TODO 로그인한 회원 ID 가져오기  by 지륜
+    public ResponseEntity<OrganizationMemberRoleResponseDTO> findOrganizationMemberRole(final Authentication authentication,
+                                                                                        @PathVariable("organizationId") final int organizationId) {
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
 
         final OrganizationMember organizationMember =
                 organizationService.findOrganizationMemberRole(memberId, organizationId);
@@ -178,9 +176,9 @@ public class OrganizationController {
             }))
     })
     @GetMapping("/{organizationId}/groups")
-    public ResponseEntity<List<OrganizationGroupResponseDTO>> findOrganizationGroups(@Parameter(name = "memberId") final int memberId,
+    public ResponseEntity<List<OrganizationGroupResponseDTO>> findOrganizationGroups(final Authentication authentication,
                                                                                      @PathVariable("organizationId") final int organizationId) {
-        // TODO 로그인한 회원 ID 가져오기  by 지륜
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
 
         final List<OrganizationGroupResponseDTO> response = organizationService.findOrganizationGroups(memberId, organizationId);
 
@@ -219,9 +217,9 @@ public class OrganizationController {
             }))
     })
     @PostMapping("/invitations/validation")
-    public ResponseEntity<OrganizationResponseDTO> validateInvitationCode(@Parameter(name = "memberId") final int memberId,
+    public ResponseEntity<OrganizationResponseDTO> validateInvitationCode(final Authentication authentication,
                                                                           @RequestBody @Valid final OrganizationInvitationCodeRequestDTO requestDTO) {
-        // TODO 로그인한 회원 ID 가져오기  by 지륜
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
 
         final Organization organization = organizationService.validateInvitationCode(memberId, requestDTO.getCode());
 
@@ -274,11 +272,12 @@ public class OrganizationController {
             }))
     })
     @PostMapping("/{organizationId}")
-    public ResponseEntity<OrganizationMemberResponseDTO> createOrganizationMember(@Parameter(name = "memberId") final int memberId,
+    public ResponseEntity<OrganizationMemberResponseDTO> createOrganizationMember(final Authentication authentication,
                                                                                   @PathVariable("organizationId") final int organizationId,
                                                                                   @RequestBody @Valid final OrganizationMemberRequestDTO requestDTO) {
-        // TODO 로그인한 회원 ID 가져오기  by 지륜
-        final OrganizationMember organizationMember = organizationService.createOrganizationMember(memberId, organizationId, requestDTO);
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationMember organizationMember = organizationService.createOrganizationMember(member, organizationId, requestDTO);
 
         final OrganizationMemberResponseDTO response = OrganizationMemberResponseDTO.of(organizationMember);
 

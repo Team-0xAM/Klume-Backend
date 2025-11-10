@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface OrganizationService {
-    Organization createOrganization(final int memberId, final MultipartFile file, final OrganizationRequestDTO requestDTO);
+    Organization createOrganization(final Member member, final MultipartFile file, final OrganizationRequestDTO requestDTO);
 
     String createInvitationCode(final int organizationId, final int memberId);
 
@@ -22,7 +22,7 @@ public interface OrganizationService {
 
     Organization validateInvitationCode(final int memberId, final String code);
 
-    OrganizationMember createOrganizationMember(final int memberId, final int organizationId,
+    OrganizationMember createOrganizationMember(final Member member, final int organizationId,
                                                 final OrganizationMemberRequestDTO requestDTO);
 
     List<Organization> findOrganizationByMember(final Member member);
