@@ -1,11 +1,7 @@
 package com.oxam.klume.member.service;
 
 import com.oxam.klume.auth.service.MailService;
-import com.oxam.klume.common.error.exception.EmailAlreadyExistsException;
-import com.oxam.klume.common.error.exception.EmailNotVerifiedException;
-import com.oxam.klume.common.error.exception.InvalidCredentialsException;
-import com.oxam.klume.common.error.exception.MemberDeletedException;
-import com.oxam.klume.common.error.exception.SocialLoginRequiredException;
+import com.oxam.klume.common.error.exception.*;
 import com.oxam.klume.common.service.ProfileImageServiceImpl;
 import com.oxam.klume.member.dto.LoginRequestDTO;
 import com.oxam.klume.member.dto.LoginResponseDTO;
@@ -128,5 +124,10 @@ public class MemberServiceImpl implements MemberService {
                 .profileImage(member.getImageUrl())
                 .message("로그인 성공")
                 .build();
+    }
+
+    @Override
+    public Member findMemberByEmail(final String email) {
+        return memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
     }
 }

@@ -1,5 +1,6 @@
 package com.oxam.klume.room.controller;
 
+import com.oxam.klume.member.service.MemberService;
 import com.oxam.klume.room.dto.AvailableTimeRequestDTO;
 import com.oxam.klume.room.dto.AvailableTimeResponseDTO;
 import com.oxam.klume.room.service.AvailableTimeService;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,15 +20,16 @@ import java.util.List;
 @RestController
 public class AvailableTimeController {
     private final AvailableTimeService availableTimeService;
-
-    // TODO 로그인한 사용자 id 가져오기
-    private int memberId = 5;
+    private final MemberService memberService;;
 
     @Operation(summary = "예약 가능 시간 조회")
     @GetMapping
     public ResponseEntity<List<AvailableTimeResponseDTO>> getAvailableTimesByRoom(
+            final Authentication authentication,
             @PathVariable final int roomId,
             @PathVariable final int organizationId) {
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
+
         List<AvailableTimeResponseDTO> list = availableTimeService.getAvailableTimesByRoom(memberId, roomId, organizationId);
         return ResponseEntity.ok(list);
     }
@@ -34,10 +37,13 @@ public class AvailableTimeController {
     @Operation(summary = "예약 가능 시간 등록")
     @PostMapping
     public ResponseEntity<AvailableTimeResponseDTO> createAvailableTime(
+            final Authentication authentication,
             @PathVariable final int organizationId,
             @PathVariable final int roomId,
             @Valid@RequestBody final AvailableTimeRequestDTO request
     ) {
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
+
         AvailableTimeResponseDTO response = availableTimeService.createAvailableTime(memberId, organizationId, roomId, request);
         return ResponseEntity.ok(response);
     }
@@ -45,11 +51,14 @@ public class AvailableTimeController {
     @Operation(summary = "예약 가능 시간 수정")
     @PutMapping("/{availableTimeId}")
     public ResponseEntity<AvailableTimeResponseDTO> updateAvailableTime(
+            final Authentication authentication,
             @PathVariable final int organizationId,
             @PathVariable final int roomId,
             @PathVariable final int availableTimeId,
             @Valid @RequestBody final AvailableTimeRequestDTO request
     ) {
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
+
         AvailableTimeResponseDTO updated = availableTimeService.updateAvailableTime(memberId, organizationId, availableTimeId, request);
         return ResponseEntity.ok(updated);
     }
@@ -57,10 +66,14 @@ public class AvailableTimeController {
     @Operation(summary = "예약 가능 시간 삭제")
     @DeleteMapping("/{availableTimeId}")
     public ResponseEntity<String> deleteAvailableTime(
+            final Authentication authentication,
             @PathVariable final int organizationId,
             @PathVariable final int roomId,
             @PathVariable final int availableTimeId
     ) {
+
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
+
         availableTimeService.deleteAvailableTime(memberId, organizationId, availableTimeId);
 
         return ResponseEntity.ok("예약 가능 시간이 삭제되었습니다.");
