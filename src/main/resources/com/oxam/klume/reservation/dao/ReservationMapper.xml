@@ -13,6 +13,7 @@
             c.available_start_time AS startTime,
             c.available_end_time AS endTime,
         CASE WHEN d.id IS NOT NULL THEN 'RESERVED' ELSE 'AVAILABLE' END AS status,
+        CASE WHEN d.id IS NULL THEN c.reservation_open_time ELSE NULL END AS reservationOpenTime,
         COALESCE(f.nickname, '-') AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
@@ -35,6 +36,7 @@
             c.available_start_time AS startTime,
             c.available_end_time AS endTime,
         CASE WHEN d.id IS NOT NULL THEN 'RESERVED' ELSE 'AVAILABLE' END AS status,
+        CASE WHEN d.id IS NULL THEN c.reservation_open_time ELSE NULL END AS reservationOpenTime,
         COALESCE(f.nickname, '-') AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
