@@ -36,9 +36,15 @@ public enum ErrorCode {
 
     /* Available_Time */
     AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "AVAILABLE_TIME001","Available time not found"),
+    AVAILABLE_TIME_OVERLAP(HttpStatus.FORBIDDEN, "AVAILABLE_TIME002", "Available time overlap"),
 
     /* Daily_Available_Time */
-    DAILY_AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "DAILY_AVAILABLE_TIME001","Daily available time not found");
+    DAILY_AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "DAILY_AVAILABLE_TIME001","Daily available time not found"),
+
+
+    /* Reservation */
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION001","Reservation not found"),
+    RESERVATION_ALREADY_EXISTS(HttpStatus.FORBIDDEN, "RESERVATION002", "Reservation cannot be deleted: reservation exists");
 
     private final HttpStatus status;
     private final String code;

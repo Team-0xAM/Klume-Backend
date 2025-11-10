@@ -27,7 +27,7 @@ public class AvailableTimeController {
     public ResponseEntity<List<AvailableTimeResponseDTO>> getAvailableTimesByRoom(
             @PathVariable final int roomId,
             @PathVariable final int organizationId) {
-        List<AvailableTimeResponseDTO> list = availableTimeService.getAvailableTimesByRoom(roomId, organizationId);
+        List<AvailableTimeResponseDTO> list = availableTimeService.getAvailableTimesByRoom(memberId, roomId, organizationId);
         return ResponseEntity.ok(list);
     }
 
@@ -45,17 +45,23 @@ public class AvailableTimeController {
     @Operation(summary = "예약 가능 시간 수정")
     @PutMapping("/{availableTimeId}")
     public ResponseEntity<AvailableTimeResponseDTO> updateAvailableTime(
-            @PathVariable("availableTimeId") final int availableTimeId,
+            @PathVariable final int organizationId,
+            @PathVariable final int roomId,
+            @PathVariable final int availableTimeId,
             @Valid @RequestBody final AvailableTimeRequestDTO request
     ) {
-        AvailableTimeResponseDTO updated = availableTimeService.updateAvailableTime(availableTimeId, request);
+        AvailableTimeResponseDTO updated = availableTimeService.updateAvailableTime(memberId, organizationId, availableTimeId, request);
         return ResponseEntity.ok(updated);
     }
 
     @Operation(summary = "예약 가능 시간 삭제")
     @DeleteMapping("/{availableTimeId}")
-    public ResponseEntity<String> deleteAvailableTime(@PathVariable("availableTimeId") final int availableTimeId) {
-        availableTimeService.deleteAvailableTime(availableTimeId);
+    public ResponseEntity<String> deleteAvailableTime(
+            @PathVariable final int organizationId,
+            @PathVariable final int roomId,
+            @PathVariable final int availableTimeId
+    ) {
+        availableTimeService.deleteAvailableTime(memberId, organizationId, availableTimeId);
 
         return ResponseEntity.ok("예약 가능 시간이 삭제되었습니다.");
     }

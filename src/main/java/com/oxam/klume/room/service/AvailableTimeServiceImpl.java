@@ -6,12 +6,15 @@ import com.oxam.klume.organization.exception.OrganizationNotAdminException;
 import com.oxam.klume.organization.exception.OrganizationNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
+import com.oxam.klume.reservation.exception.ReservationExistsException;
+import com.oxam.klume.reservation.repository.DailyReservationRepository;
 import com.oxam.klume.room.dto.AvailableTimeRequestDTO;
 import com.oxam.klume.room.dto.AvailableTimeResponseDTO;
 import com.oxam.klume.room.entity.AvailableTime;
 import com.oxam.klume.room.entity.DailyAvailableTime;
 import com.oxam.klume.room.entity.Room;
 import com.oxam.klume.room.exception.AvailableTimeNotFoundException;
+import com.oxam.klume.room.exception.AvailableTimeOverlapException;
 import com.oxam.klume.room.exception.RoomNotFoundException;
 import com.oxam.klume.room.repository.AvailableTimeRepository;
 import com.oxam.klume.room.repository.DailyAvailableTimeRepository;
@@ -34,11 +37,14 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
     private final AvailableTimeRepository availableTimeRepository;
     private final DailyAvailableTimeRepository dailyAvailableTimeRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
+    private final DailyReservationRepository dailyReservationRepository;
 
 
     @Override
-    public List<AvailableTimeResponseDTO> getAvailableTimesByRoom(final int roomId, final int organizationId) {
+    public List<AvailableTimeResponseDTO> getAvailableTimesByRoom(final int memberId, final int roomId, final int organizationId) {
         findRoomByIdAndOrganization(roomId, organizationId);
+        Organization organization = findOrganizationById(organizationId);
+        validateAdminPermission(memberId, organization, OrganizationRole.ADMIN );
 
         List<AvailableTime> availableTimes = availableTimeRepository.findAllByRoomId(roomId);
         return availableTimes.stream()
@@ -56,13 +62,12 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
     ) {
 
         Room room = findRoomByIdAndOrganization(roomId, organizationId);
-
-        Organization organization = organizationRepository.findById(organizationId)
-                .orElseThrow(OrganizationNotFoundException::new);
-
+        Organization organization = findOrganizationById(organizationId);
         validateAdminPermission(memberId, organization, OrganizationRole.ADMIN );
 
-        // TODO 같은 회의실 예약 가능 시간이 겹치는 경우 예외 반환
+        // 해당 회의실의 기존의 예약 가능 시간과 겹치는 시간이 있는지 확인
+        List<AvailableTime> otherTimes = availableTimeRepository.findAllByRoomId(roomId);
+        validateNoOverlap(request, otherTimes);
 
         AvailableTime availableTime = AvailableTime.create(
                 request.isMon(),
@@ -94,13 +99,24 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
     // 예약 가능 시간 수정
     @Transactional
     @Override
-    public AvailableTimeResponseDTO updateAvailableTime(final int availableTimeId, final AvailableTimeRequestDTO request) {
+    public AvailableTimeResponseDTO updateAvailableTime(final int memberId, final int organizationId, final int availableTimeId, final AvailableTimeRequestDTO request) {
+        Organization organization = findOrganizationById(organizationId);
+        validateAdminPermission(memberId, organization, OrganizationRole.ADMIN);
+
         AvailableTime availableTime = availableTimeRepository.findById(availableTimeId)
                 .orElseThrow(AvailableTimeNotFoundException::new);
 
-        // TODO 같은 회의실 예약 가능 시간이 겹치는 경우 예외 반환
+        // 예약이 존재하지 않는지 확인
+        validateNoReservation(availableTimeId);
 
-        // TODO 예약이 존재할 경우 예외 반환
+        // 현재 회의실의 다른 예약 가능 시간 가져오기
+        List<AvailableTime> otherTimes = availableTimeRepository.findAllByRoomId(availableTime.getRoom().getId())
+                .stream()
+                .filter(t -> t.getId() != availableTimeId)
+                .toList();
+
+        // 요일 + 시간 + 기간 겹침여부 확인
+        validateNoOverlap(request, otherTimes);
 
         // 기존 DailyAvailableTime 모두 삭제
         dailyAvailableTimeRepository.deleteAllByAvailableTime(availableTime);
@@ -125,20 +141,25 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
 
         AvailableTime saved = availableTimeRepository.save(availableTime);
 
-        // 수정된 예약 가능 시간에 맞춰 DailyAvailableTime 생성
+        // 수정된 예약 가능 시간에 맞춰 DailyAvailableTime 재생성
         createFromAvailableTime(saved);
 
         return AvailableTimeResponseDTO.of(saved);
     }
 
+
     // 예약 가능 시간 삭제
     @Transactional
     @Override
-    public void deleteAvailableTime(final int availableTimeId) {
+    public void deleteAvailableTime(final int memberId, final int organizationId, final int availableTimeId) {
+        Organization organization = findOrganizationById(organizationId);
+        validateAdminPermission(memberId, organization, OrganizationRole.ADMIN );
+
         AvailableTime availableTime = availableTimeRepository.findById(availableTimeId)
                 .orElseThrow(AvailableTimeNotFoundException::new);
 
-        // TODO: 예약이 존재할 경우 예외 반환
+        // 예약이 존재한다면 예외
+        validateNoReservation(availableTimeId);
 
         dailyAvailableTimeRepository.deleteAllByAvailableTime(availableTime);
 
@@ -226,9 +247,62 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
                 .orElseThrow(RoomNotFoundException::new);
     }
 
+    private Organization findOrganizationById(final int organizationId){
+        return organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException("조직이 존재하지 않습니다"));
+    }
+
     private void validateAdminPermission(final int memberId, final Organization organization, final OrganizationRole role) {
         if (!organizationMemberRepository.existsByMemberIdAndOrganizationAndRole(memberId, organization, role)) {
             throw new OrganizationNotAdminException();
         }
     }
+
+    // 해당 예약 가능 시간에 예약이 존재하는지 확인
+    private void validateNoReservation(int availableTimeId) {
+        AvailableTime availableTime = availableTimeRepository.findById(availableTimeId)
+                .orElseThrow(AvailableTimeNotFoundException::new);
+
+        boolean hasReservation = dailyReservationRepository.existsByDailyAvailableTime_AvailableTime(availableTime);
+        if (hasReservation) {
+            throw new ReservationExistsException();
+        }
+    }
+
+    // 설명: 예약 등록, 수정, 삭제시 기존의 회의실 예약 가능 시간과 겹치는 부분이 있는지 확인
+    private void validateNoOverlap(AvailableTimeRequestDTO request, List<AvailableTime> otherTimes) {
+        LocalDate reqStart = LocalDate.parse(request.getRepeatStartDay());
+        LocalDate reqEnd = LocalDate.parse(request.getRepeatEndDay());
+
+        for (AvailableTime other : otherTimes) {
+            LocalDate otherStart = LocalDate.parse(other.getRepeatStartDay());
+            LocalDate otherEnd = LocalDate.parse(other.getRepeatEndDay());
+
+            // 기간이 겹치는지 확인
+            boolean periodOverlap = !(reqEnd.isBefore(otherStart) || reqStart.isAfter(otherEnd));
+
+            if (!periodOverlap) continue;
+
+            // 요일이 겹치는지 확인
+            boolean dayOverlap =
+                    (request.isMon() && other.isMon()) ||
+                            (request.isTue() && other.isTue()) ||
+                            (request.isWed() && other.isWed()) ||
+                            (request.isThu() && other.isThu()) ||
+                            (request.isFri() && other.isFri()) ||
+                            (request.isSat() && other.isSat()) ||
+                            (request.isSun() && other.isSun());
+
+            if (!dayOverlap) continue;
+
+            // 시간대가 겹치는지 확인
+            boolean timeOverlap = !(request.getAvailableEndTime().compareTo(other.getAvailableStartTime()) <= 0
+                    || request.getAvailableStartTime().compareTo(other.getAvailableEndTime()) >= 0);
+
+            if (timeOverlap) {
+                throw new AvailableTimeOverlapException();
+            }
+        }
+    }
+
 }
