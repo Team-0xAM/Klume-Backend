@@ -10,9 +10,6 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON002", "Internal server error"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON003", "Bad request"),
 
-    /* Member */
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "Member not found"),
-
     /* File */
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "FILE001", "File not found"),
     FILE_INVALID_EXTENSION(HttpStatus.BAD_REQUEST, "FILE002", "Invalid file extension"),
@@ -44,7 +41,12 @@ public enum ErrorCode {
     ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001","Organization notice not found"),
 
     /* FAQ */
-    FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ001", "FAQ not found");
+    FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ001", "FAQ not found"),
+
+    /* S3 */
+    S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3001", "S3 upload failed"),
+    S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3002", "S3 Delete failed"),
+    S3_URL_INVALID(HttpStatus.BAD_REQUEST, "S3003", "Invalid S3 URL");
 
     private final HttpStatus status;
     private final String code;
