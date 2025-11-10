@@ -46,9 +46,6 @@ dependencies {
 	/* 이메일 발송 (SMTP) */
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-	/* Redis (인증코드 TTL 관리) */
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
 	/* Spring Security (비밀번호 암호화용) */
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
@@ -63,6 +60,12 @@ dependencies {
 	/* Test */
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	/* Redis */
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	/* S3 */
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
 }
 
 tasks.named('test') {

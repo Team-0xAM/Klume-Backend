@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MemberSystemRoleRepository extends JpaRepository<MemberSystemRole, Integer> {
     List<MemberSystemRole> findByMemberId(int memberId);
+    MemberSystemRole findFirstByMemberId(int memberId);
+
 }

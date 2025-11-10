@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Getter
 @Table(name = "faq")
 @NoArgsConstructor
@@ -32,4 +35,28 @@ public class Faq {
     @JoinColumn(name = "member_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
+
+    public static Faq create(
+            String title,
+            String content,
+            String answer,
+            Member member
+    ) {
+        Faq faq = new Faq();
+        faq.questionTitle = title;
+        faq.questionContent = content;
+        faq.answer = answer;
+        faq.createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        faq.updatedAt = null;
+        faq.member = member;
+        return faq;
+    }
+
+    public void update(String title, String content, String answer, Member member) {
+        this.questionTitle = title;
+        this.questionContent = content;
+        this.answer = answer;
+        this.member = member;
+        this.updatedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
 }

@@ -66,7 +66,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.debug("JWT 인증 성공 - email: {}, authorities: {}", email, authorities);
+                    log.info("JWT 인증 성공 - email: {}, authorities: {}", email, authorities);
                 } else {
                     log.warn("JWT 토큰의 이메일에 해당하는 회원이 존재하지 않음: {}", email);
                 }

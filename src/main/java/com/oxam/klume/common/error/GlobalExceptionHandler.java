@@ -3,6 +3,7 @@ package com.oxam.klume.common.error;
 import com.oxam.klume.common.error.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -14,6 +15,15 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage(), e);
         final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse errorResponse = ErrorResponse.of(errorCode.getCode(), errorCode.getMessage());
+        return new ResponseEntity<>(errorResponse, errorCode.getStatus());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error(e.getMessage(), e);
+        final ErrorCode errorCode = ErrorCode.BAD_REQUEST;
+        final String message = e.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        final ErrorResponse errorResponse = ErrorResponse.of(errorCode.getCode(), message);
         return new ResponseEntity<>(errorResponse, errorCode.getStatus());
     }
 
