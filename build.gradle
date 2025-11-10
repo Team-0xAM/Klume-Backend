@@ -35,8 +35,7 @@ dependencies {
 
 	/* Database */
 //	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
-//	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	/* Google oAuth */
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
