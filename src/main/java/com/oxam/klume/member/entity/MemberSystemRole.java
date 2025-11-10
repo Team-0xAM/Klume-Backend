@@ -22,6 +22,6 @@ public class MemberSystemRole {
     private Member member;
 
     @JoinColumn(name = "system_role_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private SystemRole systemRole;
 }
