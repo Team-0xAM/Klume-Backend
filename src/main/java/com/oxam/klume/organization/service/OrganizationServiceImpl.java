@@ -255,7 +255,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (file != null) {
             fileValidator.validateImage(file);
 
-            return s3Uploader.upload("/organization", file);
+            return s3Uploader.upload("organization/", file);
         }
         return null;
     }
