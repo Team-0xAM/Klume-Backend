@@ -38,7 +38,7 @@ public enum ErrorCode {
     ORGANIZATION_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION006", "Organization group not found"),
 
     /* Organization Notice */
-    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001","Organization notice not found"),
+    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001", "Organization notice not found"),
 
     /* FAQ */
     FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ001", "FAQ not found"),
@@ -46,7 +46,10 @@ public enum ErrorCode {
     /* S3 */
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3001", "S3 upload failed"),
     S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3002", "S3 Delete failed"),
-    S3_URL_INVALID(HttpStatus.BAD_REQUEST, "S3003", "Invalid S3 URL");
+    S3_URL_INVALID(HttpStatus.BAD_REQUEST, "S3003", "Invalid S3 URL"),
+
+    /* Organization Member */
+    ORGANIZATION_MEMBER_NOT_FOUNT(HttpStatus.NOT_FOUND, "ORGANIZATIONMEMBER001", "Organization member not found");
 
     private final HttpStatus status;
     private final String code;

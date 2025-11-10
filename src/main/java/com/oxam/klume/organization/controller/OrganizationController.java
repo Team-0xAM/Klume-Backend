@@ -1,5 +1,7 @@
 package com.oxam.klume.organization.controller;
 
+import com.oxam.klume.member.entity.Member;
+import com.oxam.klume.member.service.MemberService;
 import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationMember;
@@ -17,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 public class OrganizationController {
+    private final MemberService memberService;
     private final OrganizationService organizationService;
 
     @Operation(summary = "조직 생성")
@@ -279,5 +283,19 @@ public class OrganizationController {
         final OrganizationMemberResponseDTO response = OrganizationMemberResponseDTO.of(organizationMember);
 
         return ResponseEntity.ok(response);
+    }
+
+
+    @Operation(summary = "권한 변경")
+    @PostMapping("{organizationId}/members/{organizationMemberId}/role")
+    public ResponseEntity<OrganizationMemberRoleUpdateResponseDTO> updateOrganizationMemberRole(final Authentication authentication,
+                                                                                                @PathVariable(name = "organizationMemberId") final int organizationMemberId,
+                                                                                                @PathVariable("organizationId") final int organizationId,
+                                                                                                @RequestBody @Valid final OrganizationMemberRoleRequestDTO requestDTO) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationMember organizationMember = organizationService.updateOrganizationMemberRole(member, organizationMemberId, organizationId, requestDTO);
+
+        return ResponseEntity.ok(OrganizationMemberRoleUpdateResponseDTO.of(organizationMember));
     }
 }

@@ -56,4 +56,12 @@ public class OrganizationMember {
         this.member = member;
         this.organizationGroup = organizationGroup;
     }
+
+    public void updateRole(final OrganizationRole role) {
+        this.role = role;
+    }
+
+    public void updateOrganizationGroup(final OrganizationGroup organizationGroup) {
+        this.organizationGroup = organizationGroup;
+    }
 }

@@ -8,6 +8,7 @@ import com.oxam.klume.member.exception.MemberNotFoundException;
 import com.oxam.klume.member.repository.MemberRepository;
 import com.oxam.klume.organization.dto.OrganizationGroupResponseDTO;
 import com.oxam.klume.organization.dto.OrganizationMemberRequestDTO;
+import com.oxam.klume.organization.dto.OrganizationMemberRoleRequestDTO;
 import com.oxam.klume.organization.dto.OrganizationRequestDTO;
 import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationGroup;
@@ -197,6 +198,26 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public List<Organization> findOrganizationByMember(final Member member) {
         return organizationMemberRepository.findOrganizationByMember(member);
+    }
+
+    @Transactional
+    @Override
+    public OrganizationMember updateOrganizationMemberRole(final Member member, final int organizationMemberId,
+                                                           final int organizationId, final OrganizationMemberRoleRequestDTO requestDTO) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        final OrganizationMember organizationMember = organizationMemberRepository.findById(organizationMemberId)
+                .orElseThrow(OrganizationMemberNotFoundException::new);
+
+        organizationMember.updateRole(requestDTO.getOrganizationRole());
+
+        if (requestDTO.getOrganizationRole() == OrganizationRole.ADMIN) {
+            organizationMember.updateOrganizationGroup(null);
+        }
+
+        return organizationMember;
     }
 
     private int countByOrganizationAndOrganizationGroup(final Organization organization,

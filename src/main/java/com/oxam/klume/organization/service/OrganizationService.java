@@ -3,6 +3,7 @@ package com.oxam.klume.organization.service;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.organization.dto.OrganizationGroupResponseDTO;
 import com.oxam.klume.organization.dto.OrganizationMemberRequestDTO;
+import com.oxam.klume.organization.dto.OrganizationMemberRoleRequestDTO;
 import com.oxam.klume.organization.dto.OrganizationRequestDTO;
 import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationMember;
@@ -21,7 +22,11 @@ public interface OrganizationService {
 
     Organization validateInvitationCode(final int memberId, final String code);
 
-    OrganizationMember createOrganizationMember(final int memberId, final int organizationId, final OrganizationMemberRequestDTO requestDTO);
+    OrganizationMember createOrganizationMember(final int memberId, final int organizationId,
+                                                final OrganizationMemberRequestDTO requestDTO);
 
     List<Organization> findOrganizationByMember(final Member member);
+
+    OrganizationMember updateOrganizationMemberRole(final Member member, final int organizationMemberId,
+                                                    final int organizationId, final OrganizationMemberRoleRequestDTO requestDTO);
 }
