@@ -36,6 +36,7 @@ public enum ErrorCode {
     ORGANIZATION_MEMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "ORGANIZATION004", "Organization member already exists"),
     ORGANIZATION_INVITATION_CODE_INVALID(HttpStatus.BAD_REQUEST, "ORGANIZATION005", "Organization invitation code is expired or invalid"),
     ORGANIZATION_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION006", "Organization group not found"),
+    ORGANIZATION_GROUP_NAME_DUPLICATED(HttpStatus.CONFLICT, "ORGANIZATION007", "Organization group name duplicated"),
 
     /* Organization Notice */
     ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001", "Organization notice not found"),

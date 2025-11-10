@@ -4,6 +4,7 @@ import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.member.service.MemberService;
 import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
+import com.oxam.klume.organization.entity.OrganizationGroup;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -296,5 +297,18 @@ public class OrganizationController {
         final OrganizationMember organizationMember = organizationService.updateOrganizationMemberRole(member, organizationMemberId, organizationId, requestDTO);
 
         return ResponseEntity.ok(OrganizationMemberRoleUpdateResponseDTO.of(organizationMember));
+    }
+
+    @Operation(summary = "그룹 생성")
+    @PostMapping("{organizationId}/groups")
+    public ResponseEntity<OrganizationGroupResponseDTO> createOrganizationGroup(final Authentication authentication,
+                                                                                @PathVariable(name = "organizationId") final int organizationId,
+                                                                                @RequestBody @Valid final OrganizationGroupRequestDTO requestDTO) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationGroup organizationGroup =
+                organizationService.createOrganizationGroup(member, organizationId, OrganizationGroupRequestDTO.toEntity(requestDTO));
+
+        return ResponseEntity.ok(OrganizationGroupResponseDTO.of(organizationGroup, null));
     }
 }

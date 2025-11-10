@@ -6,10 +6,7 @@ import com.oxam.klume.file.infra.S3Uploader;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.member.exception.MemberNotFoundException;
 import com.oxam.klume.member.repository.MemberRepository;
-import com.oxam.klume.organization.dto.OrganizationGroupResponseDTO;
-import com.oxam.klume.organization.dto.OrganizationMemberRequestDTO;
-import com.oxam.klume.organization.dto.OrganizationMemberRoleRequestDTO;
-import com.oxam.klume.organization.dto.OrganizationRequestDTO;
+import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationGroup;
 import com.oxam.klume.organization.entity.OrganizationMember;
@@ -167,6 +164,24 @@ public class OrganizationServiceImpl implements OrganizationService {
         return organizationMember;
     }
 
+    @Transactional
+    @Override
+    public OrganizationGroup createOrganizationGroup(final Member member, final int organizationId,
+                                                     final OrganizationGroup organizationGroup) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        validateOrganizationGroupName(organizationGroup.getName(), organization);
+
+        organizationGroup.updateOrganization(organization);
+
+        return organizationGroupRepository.save(organizationGroup);
+
+    }
+
     private int countByOrganizationAndOrganizationGroup(final Organization organization,
                                                         final OrganizationGroup organizationGroup) {
         return organizationMemberRepository.countByOrganizationAndOrganizationGroup(organization, organizationGroup);
@@ -233,10 +248,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         return null;
     }
 
-    private Member findMemberById(final int memberId) {
-        return memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
-    }
-
     private Organization findOrganizationById(final int organizationId) {
         return organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
     }
@@ -249,5 +260,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private OrganizationGroup findOrganizationGroupById(final int groupId) {
         return organizationGroupRepository.findById(groupId).orElseThrow(OrganizationGroupNotFoundException::new);
+    }
+
+    private void validateOrganizationGroupName(final String name, final Organization organization) {
+        if (organizationGroupRepository.findByNameAndOrganization(name, organization).isPresent()) {
+            throw new OrganizationGroupNameDuplicatedException();
+        }
     }
 }

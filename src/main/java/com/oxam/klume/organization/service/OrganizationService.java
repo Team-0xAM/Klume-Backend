@@ -1,11 +1,9 @@
 package com.oxam.klume.organization.service;
 
 import com.oxam.klume.member.entity.Member;
-import com.oxam.klume.organization.dto.OrganizationGroupResponseDTO;
-import com.oxam.klume.organization.dto.OrganizationMemberRequestDTO;
-import com.oxam.klume.organization.dto.OrganizationMemberRoleRequestDTO;
-import com.oxam.klume.organization.dto.OrganizationRequestDTO;
+import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
+import com.oxam.klume.organization.entity.OrganizationGroup;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,4 +27,6 @@ public interface OrganizationService {
 
     OrganizationMember updateOrganizationMemberRole(final Member member, final int organizationMemberId,
                                                     final int organizationId, final OrganizationMemberRoleRequestDTO requestDTO);
+
+    OrganizationGroup createOrganizationGroup(final Member member, final int organizationId, final OrganizationGroup organizationGroup);
 }
