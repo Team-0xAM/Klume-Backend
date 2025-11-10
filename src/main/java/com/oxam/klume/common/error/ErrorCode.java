@@ -9,6 +9,11 @@ public enum ErrorCode {
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMON001", "Entity not found"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON002", "Internal server error"),
 
+    /* Member */
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "Member not found"),
+    MEMBER_SYSTEM_ROLE_NOT_ADMIN(HttpStatus.FORBIDDEN, "MEMBER002", "Member is not admin"),
+    MEMBER_DELETED(HttpStatus.FORBIDDEN, "MEMBER003", "탈퇴한 회원입니다."),
+
     /* AUTH - 인증 */
     EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "AUTH001", "이메일 인증이 완료되지 않았습니다."),
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "AUTH002", "이미 가입된 이메일입니다."),
@@ -19,16 +24,16 @@ public enum ErrorCode {
     VERIFICATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTH007", "인증 코드가 존재하지 않거나 만료되었습니다."),
     VERIFICATION_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "AUTH008", "인증 코드가 일치하지 않습니다."),
 
-    /* MEMBER - 회원 */
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "존재하지 않는 회원입니다."),
-    MEMBER_DELETED(HttpStatus.FORBIDDEN, "MEMBER002", "탈퇴한 회원입니다."),
-
     /* Organization */
     ORGANIZATION_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION001", "Organization not found"),
     ORGANIZATION_NOT_ADMIN(HttpStatus.FORBIDDEN, "ORGANIZATION002", "Organization not admin"),
 
-    /* Organization Notice*/
-    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001","Organization notice not found");
+    /* Organization Notice */
+    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001","Organization notice not found"),
+
+    /* FAQ */
+    FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ001", "FAQ not found");
+
     private final HttpStatus status;
     private final String code;
     private final String message;
