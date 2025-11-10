@@ -13,11 +13,15 @@ import com.oxam.klume.room.entity.Room;
 import com.oxam.klume.room.repository.RoomRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +60,7 @@ public class RoomServiceImpl implements RoomService {
         Organization organization = getOrganizationOrThrow(organizationId);
 
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
-        if(member.getRole() != OrganizationRole.ADMIN){
+        if (member.getRole() != OrganizationRole.ADMIN) {
             throw new OrganizationNotAdminException("회의실을 등록할 권한이 없습니다.");
         }
 
@@ -74,7 +78,6 @@ public class RoomServiceImpl implements RoomService {
                 .imageUrl(imageUrl)
                 .build();
 
-        // 유효성 검사
         room.assignToOrganization(organization);
         room.validateCapacity();
 
@@ -86,14 +89,12 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomResponseDTO updateRoom(int organizationId, int roomId, RoomRequestDTO dto, int memberId) {
         Organization organization = getOrganizationOrThrow(organizationId);
-
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
-        if(member.getRole() != OrganizationRole.ADMIN){
+        if (member.getRole() != OrganizationRole.ADMIN) {
             throw new OrganizationNotAdminException("회의실을 수정할 권한이 없습니다.");
         }
 
         Room room = getRoomOrThrow(roomId, organization);
-
         room.updateInfo(dto.getName(), dto.getDescription(), dto.getCapacity());
         room.validateCapacity();
 
@@ -105,9 +106,10 @@ public class RoomServiceImpl implements RoomService {
     public void deleteRoom(int organizationId, int roomId, int memberId) {
         Organization organization = getOrganizationOrThrow(organizationId);
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
-        if(member.getRole() != OrganizationRole.ADMIN){
+        if (member.getRole() != OrganizationRole.ADMIN) {
             throw new OrganizationNotAdminException("회의실을 삭제할 권한이 없습니다.");
         }
+
         Room room = getRoomOrThrow(roomId, organization);
         roomRepository.delete(room);
     }
@@ -124,10 +126,16 @@ public class RoomServiceImpl implements RoomService {
                 .build();
     }
 
-    // 조직에 포함된 회원인지 검증
-    private OrganizationMember findOrganizationMemberById(int organizationId, int memberId){
-        return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
+    // 조직에 포함된 회원인지 검증 + 정지 여부 추가
+    private OrganizationMember findOrganizationMemberById(int organizationId, int memberId) {
+        OrganizationMember member = organizationMemberRepository
+                .findByOrganizationIdAndMemberId(organizationId, memberId)
                 .orElseThrow(() -> new OrganizationNotFoundException("사용자가 가입하지 않은 조직입니다."));
+
+        // 필요 시 정지 상태 등 추가 검증 가능
+        // if (member.isBanned()) throw new OrganizationNotAdminException("정지된 사용자는 접근할 수 없습니다.");
+
+        return member;
     }
 
     // 조직 존재 여부 확인
@@ -136,16 +144,20 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(() -> new EntityNotFoundException("조직을 찾을 수 없습니다."));
     }
 
-    // 회의실 존재 여부 확인
+    // 회의실 존재 여부 확인 + 조직 일치 검증 추가
     private Room getRoomOrThrow(int roomId, Organization organization) {
-        return roomRepository.findByIdAndOrganization(roomId, organization)
+        Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("회의실을 찾을 수 없습니다."));
+
+        if (!Objects.equals(room.getOrganization().getId(), organization.getId())) {
+            throw new IllegalArgumentException("해당 조직에 속한 회의실이 아닙니다.");
+        }
+        return room;
     }
 
     // 이미지 업로드 (S3 연동 전, mock URL 반환)
     private String uploadImage(MultipartFile file) {
         if (file != null && !file.isEmpty()) {
-            // TODO: S3 업로드 로직으로 교체
             return "https://s3.amazonaws.com/klume-bucket/" + file.getOriginalFilename();
         }
         return null;

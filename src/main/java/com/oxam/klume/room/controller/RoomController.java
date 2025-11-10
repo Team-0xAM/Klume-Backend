@@ -27,7 +27,7 @@ public class RoomController {
     public ResponseEntity<List<RoomResponseDTO>> getRooms(@PathVariable int organizationId) {
 
         // 테스트용 사용자ID
-        int memberId = 5;
+        int memberId = 7;
         return ResponseEntity.ok(roomService.getRooms(organizationId, memberId));
     }
 
@@ -40,7 +40,7 @@ public class RoomController {
             @PathVariable int roomId) {
 
         // 테스트용 사용자ID
-        int memberId = 5;
+        int memberId = 7;
         return ResponseEntity.ok(roomService.getRoomDetail(organizationId, roomId, memberId));
     }
 
@@ -54,7 +54,7 @@ public class RoomController {
             @RequestPart(value = "image", required = false) MultipartFile imageFile) {
 
         // 테스트용 사용자ID
-        int memberId = 5;
+        int memberId = 7;
         RoomResponseDTO response = roomService.createRoomWithImage(organizationId, dto, imageFile, memberId);
         return ResponseEntity.ok(response);
     }
@@ -69,7 +69,7 @@ public class RoomController {
             @RequestBody RoomRequestDTO dto) {
 
         // 테스트용 사용자ID
-        int memberId = 5;
+        int memberId = 7;
         return ResponseEntity.ok(roomService.updateRoom(organizationId, roomId, dto, memberId));
     }
 
@@ -82,7 +82,7 @@ public class RoomController {
             @PathVariable int roomId) {
 
         // 테스트용 사용자ID
-        int memberId = 5;
+        int memberId = 7;
         roomService.deleteRoom(organizationId, roomId, memberId);
         return ResponseEntity.noContent().build();
     }
