@@ -3,6 +3,7 @@ package com.oxam.klume.auth.service;
 
 import com.oxam.klume.common.error.exception.VerificationCodeMismatchException;
 import com.oxam.klume.common.error.exception.VerificationCodeNotFoundException;
+import com.oxam.klume.common.redis.RedisService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

@@ -1,11 +1,14 @@
 package com.oxam.klume.common.redis;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public interface RedisService {
     void set(final String key, final String value, final Duration duration);
 
-    String get(final String key);
+    void setDataExpire(final String key, final String value, final long duration, final TimeUnit timeUnit);
 
-    void delete(final String key);
+    String getData(final String key);
+
+    void deleteData(final String key);
 }
