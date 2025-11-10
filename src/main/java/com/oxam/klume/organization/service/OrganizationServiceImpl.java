@@ -2,6 +2,7 @@ package com.oxam.klume.organization.service;
 
 import com.oxam.klume.common.redis.RedisService;
 import com.oxam.klume.file.FileValidator;
+import com.oxam.klume.file.infra.S3Uploader;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.member.exception.MemberNotFoundException;
 import com.oxam.klume.member.repository.MemberRepository;
@@ -39,6 +40,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private final FileValidator fileValidator;
     private final RedisService redisService;
+    private final S3Uploader s3Uploader;
 
     /**
      * 조직 생성
@@ -204,7 +206,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     private int getOrganizationIdFromRedis(final String code) {
-        final String organizationId = redisService.get(INVITATION_CODE_PREFIX + code);
+        final String organizationId = redisService.getData(INVITATION_CODE_PREFIX + code);
 
         if (organizationId == null) {
             throw new OrganizationInvitationCodeInvalidException();
@@ -214,10 +216,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     private void saveInvitationCodeToRedis(final int organizationId, final String invitationCode) {
-        final String value = redisService.get(ORGANIZATION_PREFIX + organizationId);
+        final String value = redisService.getData(ORGANIZATION_PREFIX + organizationId);
 
         if (value != null) {
-            redisService.delete(INVITATION_CODE_PREFIX + value);
+            redisService.deleteData(INVITATION_CODE_PREFIX + value);
         }
 
         redisService.set(INVITATION_CODE_PREFIX + invitationCode, String.valueOf(organizationId), Duration.ofMinutes(30));
@@ -253,8 +255,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (file != null) {
             fileValidator.validateImage(file);
 
-            // TODO s3 업로드 후 이미지 url 반환
-            return "https://~";
+            return s3Uploader.upload("/organization", file);
         }
         return null;
     }
