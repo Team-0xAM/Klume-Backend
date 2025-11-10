@@ -34,7 +34,7 @@ public class FaqController {
             summary = "FAQ 상세 조회",
             description = "모든 사용자와 관리자는 FAQ 게시물을 상세 조회할 수 있다." )
     @GetMapping("/{faqId}")
-    public ResponseEntity<FaqResponse> getFaqDetail(final int faqId) {
+    public ResponseEntity<FaqResponse> getFaqDetail(@PathVariable final int faqId) {
         FaqResponse faq = faqService.getFaqDetail(faqId);
         return ResponseEntity.ok(faq);
     }
@@ -44,7 +44,7 @@ public class FaqController {
             summary = "FAQ 등록",
             description = "시스템 관리자가 새로운 FAQ 게시물을 등록할 수 있다." )
     @PostMapping
-    public ResponseEntity<FaqResponse> createFAQ(@Valid @RequestBody final FaqRequest request) {
+    public ResponseEntity<FaqResponse> createFaq(@Valid @RequestBody final FaqRequest request) {
         FaqResponse response = faqService.createFaq(request, memberId);
         return ResponseEntity.ok(response);
     }
@@ -53,7 +53,7 @@ public class FaqController {
             summary = "FAQ 수정",
             description = "시스템 관리자는 기존의 FAQ 게시물을 수정할 수 있다." )
     @PutMapping("/{faqId}")
-    public ResponseEntity<FaqResponse> updateFAQ( @PathVariable final int faqId,
+    public ResponseEntity<FaqResponse> updateFaq( @PathVariable final int faqId,
                                                   @Valid @RequestBody final FaqRequest request
     ) {
         FaqResponse response = faqService.updateFaq(faqId, memberId, request);
@@ -64,7 +64,7 @@ public class FaqController {
             summary = "FAQ 삭제",
             description = "시스템 관리자는 FAQ 게시물을 삭제할 수 있다.")
     @DeleteMapping("/{faqId}")
-    public ResponseEntity<String> deleteFAQ(@PathVariable final int faqId) {
+    public ResponseEntity<String> deleteFaq(@PathVariable final int faqId) {
         faqService.deleteFaq(faqId, memberId);
         return ResponseEntity.ok("FAQ 게시물이 삭제되었습니다.");
     }
