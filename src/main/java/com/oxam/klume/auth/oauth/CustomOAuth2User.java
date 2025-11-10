@@ -30,12 +30,19 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // 현재는 권한 관리가 없으므로 빈 컬렉션 반환
         return Collections.emptyList();
     }
 
     @Override
     public String getName() {
         return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 }
