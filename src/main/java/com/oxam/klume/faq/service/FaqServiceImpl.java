@@ -87,12 +87,12 @@ public class FaqServiceImpl implements FaqService {
 
     // ============================== 공통 메서드 =====================================
     private Member findMemberById(final int memberId){
-        return memberRepository.findMemberById(memberId)
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("사용자가 존재하지 않습니다."));
     }
 
     private MemberSystemRole findMemberSystemRole(final int memberId) {
-        MemberSystemRole memberRole = memberSystemRoleRepository.findByMemberId(memberId);
+        MemberSystemRole memberRole = memberSystemRoleRepository.findFirstByMemberId(memberId);
         if(!memberRole.getSystemRole().getName().equals(Role.ADMIN)){
             throw new MemberNotAdminException("사용자가 시스템 관리자가 아닙니다.");
         }
