@@ -44,14 +44,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Map<String, Object> attributes = oauth2User.getAttributes();
         String email = (String) attributes.get("email");
         String name = (String) attributes.get("name");
-        String picture = (String) attributes.get("picture");
+        String imageUrl = (String) attributes.get("picture");
         String providerId = (String) attributes.get("sub");  // 구글 고유 ID
 
         log.info("구글 로그인 시도 - email: {}, name: {}", email, name);
 
         // 3. DB에서 회원 조회 또는 생성
         Member member = memberRepository.findByEmail(email)
-                .orElseGet(() -> createMember(email, name, picture, providerId));
+                .orElseGet(() -> createMember(email, name, imageUrl, providerId));
 
         log.info("회원 처리 완료 - memberId: {}, email: {}", member.getId(), member.getEmail());
 
@@ -59,14 +59,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return new CustomOAuth2User(
                 member.getEmail(),
                 name,
-                picture,
+                imageUrl,
                 providerId,
                 attributes
         );
     }
 
     /* 설명. 새로운 구글 회원 생성 */
-    private Member createMember(String email, String name, String picture, String providerId) {
+    private Member createMember(String email, String name, String imageUrl, String providerId) {
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         Member member = Member.builder()
@@ -74,7 +74,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .password(null)  // 구글 로그인은 비밀번호 없음
                 .provider(Provider.GOOGLE)
                 .providerId(providerId)
-                .imageUrl(picture)
+                .imageUrl(imageUrl)
                 .createdAt(now)
                 .isDeleted(false)
                 .isNotificationEnabled(true)

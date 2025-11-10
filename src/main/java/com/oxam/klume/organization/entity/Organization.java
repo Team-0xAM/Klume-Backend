@@ -21,4 +21,10 @@ public class Organization {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    public Organization(final String name, final String description, final String imageUrl) {
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
 }

@@ -125,6 +125,7 @@ public class MemberServiceImpl implements MemberService {
         return LoginResponseDTO.builder()
                 .accessToken(accessToken)
                 .email(member.getEmail())
+                .profileImage(member.getImageUrl())
                 .message("로그인 성공")
                 .build();
     }
