@@ -16,6 +16,7 @@ public class ReservationResponseDTO {
     private String startTime;
     private String endTime;
     private String status;
+    private int reservationOpenDay;
     private String reservationOpenTime;
     private String reservedMember;
 }

@@ -13,8 +13,13 @@
             c.date AS date,
             c.available_start_time AS startTime,
             c.available_end_time AS endTime,
-        CASE WHEN d.id IS NOT NULL THEN 'RESERVED' ELSE 'AVAILABLE' END AS status,
-        CASE WHEN d.id IS NULL THEN c.reservation_open_time ELSE NULL END AS reservationOpenTime,
+            b.reservation_open_day AS reservationOpenDay,
+            c.reservation_open_time AS reservationOpenTime,
+        CASE
+            WHEN d.id IS NOT NULL THEN 'RESERVED'
+            WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
+            ELSE 'AVAILABLE'
+        END AS status,
         COALESCE(f.nickname, '-') AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
@@ -36,8 +41,13 @@
             c.date AS date,
             c.available_start_time AS startTime,
             c.available_end_time AS endTime,
-        CASE WHEN d.id IS NOT NULL THEN 'RESERVED' ELSE 'AVAILABLE' END AS status,
-        CASE WHEN d.id IS NULL THEN c.reservation_open_time ELSE NULL END AS reservationOpenTime,
+            b.reservation_open_day AS reservationOpenDay,
+            c.reservation_open_time AS reservationOpenTime,
+        CASE
+            WHEN d.id IS NOT NULL THEN 'RESERVED'
+            WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
+            ELSE 'AVAILABLE'
+        END AS status,
         COALESCE(f.nickname, '-') AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
@@ -61,9 +71,14 @@
         c.date AS date,
         c.available_start_time AS startTime,
         c.available_end_time AS endTime,
-        CASE WHEN d.id IS NOT NULL THEN 'RESERVED' ELSE 'AVAILABLE' END AS status,
-        COALESCE(f.nickname, '-') AS reservedMember,
-        CASE WHEN d.id IS NULL THEN c.reservation_open_time ELSE NULL END AS reservationOpenTime
+        b.reservation_open_day AS reservationOpenDay,
+        c.reservation_open_time AS reservationOpenTime,
+        CASE
+            WHEN d.id IS NOT NULL THEN 'RESERVED'
+            WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
+            ELSE 'AVAILABLE'
+        END AS status,
+        COALESCE(f.nickname, '-') AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
         JOIN daily_available_time c ON c.available_time_id = b.id
@@ -83,9 +98,14 @@
         c.date AS date,
         c.available_start_time AS startTime,
         c.available_end_time AS endTime,
-        CASE WHEN d.id IS NOT NULL THEN 'RESERVED' ELSE 'AVAILABLE' END AS status,
-        COALESCE(f.nickname, '-') AS reservedMember,
-        CASE WHEN d.id IS NULL THEN c.reservation_open_time ELSE NULL END AS reservationOpenTime
+        b.reservation_open_day AS reservationOpenDay,
+        c.reservation_open_time AS reservationOpenTime,
+        CASE
+            WHEN d.id IS NOT NULL THEN 'RESERVED'
+            WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
+            ELSE 'AVAILABLE'
+        END AS status,
+        COALESCE(f.nickname, '-') AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
         JOIN daily_available_time c ON c.available_time_id = b.id
