@@ -39,7 +39,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                 Principal principal = new UsernamePasswordAuthenticationToken(email, null);
                 accessor.setUser(principal);
                 
-                log.debug("WebSocket JWT 인증 성공 - email: {}", email);  //임시 로그 (인증 되는지)
+                log.info("WebSocket JWT 인증 성공 - email: {}", email);  //임시 로그 (인증 되는지)
             } else {
                 log.warn("WebSocket JWT 인증 실패 - token: {}", token != null ? "invalid" : "null");
             }

@@ -33,7 +33,7 @@ public class ChatController {
 
         // DB에 저장할 document 생성
         ChatMessage chatMessage = ChatMessage.builder()
-                .roomId(requestDTO.getRoomId() == null ? "default" : requestDTO.getRoomId())
+                .roomId(requestDTO.getRoomId())
                 .senderId(senderId)
                 .admin(requestDTO.isAdmin())
                 .content(requestDTO.getContent())
