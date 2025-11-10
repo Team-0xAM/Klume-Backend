@@ -311,4 +311,31 @@ public class OrganizationController {
 
         return ResponseEntity.ok(OrganizationGroupResponseDTO.of(organizationGroup, null));
     }
+
+    @Operation(summary = "그룹 수정")
+    @PutMapping("/{organizationId}/groups/{organizationGroupId}")
+    public ResponseEntity<OrganizationGroupResponseDTO> updateOrganizationGroup(final Authentication authentication,
+                                                                                @PathVariable(name = "organizationId") final int organizationId,
+                                                                                @PathVariable(name = "organizationGroupId") final int organizationGroupId,
+                                                                                @RequestBody @Valid final OrganizationGroupRequestDTO requestDTO) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationGroup organizationGroup =
+                organizationService.updateOrganizationGroup(member, organizationId, organizationGroupId,
+                        OrganizationGroupRequestDTO.toEntity(requestDTO));
+
+        return ResponseEntity.ok(OrganizationGroupResponseDTO.of(organizationGroup, null));
+    }
+
+    @Operation(summary = "그룹 삭제")
+    @DeleteMapping("/{organizationId}/groups/{organizationGroupId}")
+    public ResponseEntity<?> deleteOrganizationGroup(final Authentication authentication,
+                                                     @PathVariable(name = "organizationId") final int organizationId,
+                                                     @PathVariable(name = "organizationGroupId") final int organizationGroupId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        organizationService.deleteOrganizationGroup(member, organizationId, organizationGroupId);
+
+        return ResponseEntity.noContent().build();
+    }
 }

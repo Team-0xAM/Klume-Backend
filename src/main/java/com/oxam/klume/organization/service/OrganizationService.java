@@ -29,4 +29,9 @@ public interface OrganizationService {
                                                     final int organizationId, final OrganizationMemberRoleRequestDTO requestDTO);
 
     OrganizationGroup createOrganizationGroup(final Member member, final int organizationId, final OrganizationGroup organizationGroup);
+
+    OrganizationGroup updateOrganizationGroup(final Member member, final int organizationId, final int organizationGroupId,
+                                              final OrganizationGroup organizationGroup);
+
+    void deleteOrganizationGroup(final Member member, final int organizationId, final int organizationGroupId);
 }

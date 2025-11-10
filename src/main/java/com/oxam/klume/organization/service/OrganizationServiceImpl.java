@@ -179,7 +179,43 @@ public class OrganizationServiceImpl implements OrganizationService {
         organizationGroup.updateOrganization(organization);
 
         return organizationGroupRepository.save(organizationGroup);
+    }
 
+    @Transactional
+    @Override
+    public OrganizationGroup updateOrganizationGroup(final Member member, final int organizationId,
+                                                     final int organizationGroupId, final OrganizationGroup organizationGroup) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        final OrganizationGroup originOrganizationGroup = findOrganizationGroupById(organizationGroupId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        if (!originOrganizationGroup.getName().equals(organizationGroup.getName())) {
+            validateOrganizationGroupName(organizationGroup.getName(), organization);
+        }
+
+        originOrganizationGroup.updateOrganizationGroup(organizationGroup.getName(), originOrganizationGroup.getDescription());
+
+        return originOrganizationGroup;
+    }
+
+    @Transactional
+    @Override
+    public void deleteOrganizationGroup(final Member member, final int organizationId, final int organizationGroupId) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        final OrganizationGroup organizationGroup = findOrganizationGroupById(organizationGroupId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        organizationMemberRepository.updateOrganizationGroup(null, organizationGroup);
+
+        organizationGroupRepository.delete(organizationGroup);
     }
 
     private int countByOrganizationAndOrganizationGroup(final Organization organization,
