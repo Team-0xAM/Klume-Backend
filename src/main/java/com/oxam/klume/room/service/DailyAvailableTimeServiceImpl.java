@@ -7,6 +7,8 @@ import com.oxam.klume.organization.exception.OrganizationNotAdminException;
 import com.oxam.klume.organization.exception.OrganizationNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
+import com.oxam.klume.reservation.exception.ReservationExistsException;
+import com.oxam.klume.reservation.repository.DailyReservationRepository;
 import com.oxam.klume.room.dto.DailyAvailableTimeRequestDTO;
 import com.oxam.klume.room.dto.DailyAvailableTimeResponseDTO;
 import com.oxam.klume.room.entity.AvailableTime;
@@ -27,6 +29,7 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
     private final AvailableTimeRepository availableTimeRepository;
+    private final DailyReservationRepository dailyReservationRepository;
 
     @Transactional
     @Override
@@ -37,6 +40,7 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
         AvailableTime availableTime = findAvailableTimeById(request.getAvailableTimeId());
         DailyAvailableTime dailyAvailableTime = findDailyAvailableTimeById(dailyAvailableTimeId);
 
+        validateNoReservation(request.getAvailableTimeId());
 
         dailyAvailableTime.update(
                 request.getDate(),
@@ -51,14 +55,18 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
         return DailyAvailableTimeResponseDTO.of(dailyAvailableTime);
     }
 
+    @Transactional
     @Override
     public void deleteDailyAvailableTime(final int memberId, final int organizationId, final int dailyAvailableTimeId) {
         Organization organization = findOrganizationById(organizationId);
         validateAdminPermission(memberId, organization, OrganizationRole.ADMIN);
         DailyAvailableTime dailyAvailableTime = findDailyAvailableTimeById(dailyAvailableTimeId);
 
+        validateNoReservation(dailyAvailableTime.getAvailableTime().getId());
+
         dailyAvailableTimeRepository.delete(dailyAvailableTime);
     }
+
 
     // ============================== 공통 메서드 =====================================
     private Organization findOrganizationById(final int organizationId){
@@ -79,6 +87,17 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
     private void validateAdminPermission(final int memberId, final Organization organization, final OrganizationRole role) {
         if (!organizationMemberRepository.existsByMemberIdAndOrganizationAndRole(memberId, organization, role)) {
             throw new OrganizationNotAdminException();
+        }
+    }
+
+    // 해당 일자의 예약 가능 시간에 예약이 존재하는지 확인
+    private void validateNoReservation(int availableTimeId) {
+        AvailableTime availableTime = availableTimeRepository.findById(availableTimeId)
+                .orElseThrow(AvailableTimeNotFoundException::new);
+
+        boolean hasReservation = dailyReservationRepository.existsByDailyAvailableTime_AvailableTime(availableTime);
+        if (hasReservation) {
+            throw new ReservationExistsException();
         }
     }
 

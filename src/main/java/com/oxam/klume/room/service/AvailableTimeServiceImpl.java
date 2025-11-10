@@ -115,7 +115,7 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
                 .filter(t -> t.getId() != availableTimeId)
                 .toList();
 
-        // 요일 + 시간 + 기간 겹침여부 확인
+        // 회의실의 기존의 예약 가능 시간과 겹치는 시간이 있는지 확인
         validateNoOverlap(request, otherTimes);
 
         // 기존 DailyAvailableTime 모두 삭제
@@ -269,7 +269,7 @@ public class AvailableTimeServiceImpl implements AvailableTimeService{
         }
     }
 
-    // 설명: 예약 등록, 수정, 삭제시 기존의 회의실 예약 가능 시간과 겹치는 부분이 있는지 확인
+    // 설명: 예약 등록, 수정시 기존의 회의실 예약 가능 시간과 겹치는 부분이 있는지 확인
     private void validateNoOverlap(AvailableTimeRequestDTO request, List<AvailableTime> otherTimes) {
         LocalDate reqStart = LocalDate.parse(request.getRepeatStartDay());
         LocalDate reqEnd = LocalDate.parse(request.getRepeatEndDay());

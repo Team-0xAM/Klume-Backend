@@ -44,7 +44,7 @@ public enum ErrorCode {
 
     /* Reservation */
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION001","Reservation not found"),
-    RESERVATION_ALREADY_EXISTS(HttpStatus.FORBIDDEN, "RESERVATION002", "Reservation cannot be deleted: reservation exists");
+    RESERVATION_ALREADY_EXISTS(HttpStatus.FORBIDDEN, "RESERVATION002", "Reservation exists");
 
     private final HttpStatus status;
     private final String code;
