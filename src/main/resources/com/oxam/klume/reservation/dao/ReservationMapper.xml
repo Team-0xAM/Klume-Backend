@@ -16,10 +16,10 @@
         COALESCE(f.nickname, '-') AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
-        JOIN daily_available_time c ON dat.available_time_id = b.id
-        LEFT JOIN daily_reservation d ON dr.daily_available_time_id = c.id
+        JOIN daily_available_time c ON c.available_time_id = b.id
+        LEFT JOIN daily_reservation d ON d.daily_available_time_id = c.id
         LEFT JOIN reservation e ON d.reservation_id = e.id
-        LEFT JOIN organization_member f ON res.organization_member_id = f.id
+        LEFT JOIN organization_member f ON e.organization_member_id = f.id
         WHERE c.date = #{date}
             AND a.id = #{roomId}
             AND a.organization_id = #{organizationId}
@@ -38,10 +38,10 @@
         COALESCE(f.nickname, '-') AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
-        JOIN daily_available_time c ON dat.available_time_id = b.id
-        LEFT JOIN daily_reservation d ON dr.daily_available_time_id = c.id
+        JOIN daily_available_time c ON c.available_time_id = b.id
+        LEFT JOIN daily_reservation d ON d.daily_available_time_id = c.id
         LEFT JOIN reservation e ON d.reservation_id = e.id
-        LEFT JOIN organization_member f ON res.organization_member_id = f.id
+        LEFT JOIN organization_member f ON e.organization_member_id = f.id
         WHERE c.date BETWEEN #{startDate} AND #{endDate}
             AND a.id = #{roomId}
             AND a.organization_id = #{organizationId}
