@@ -37,16 +37,4 @@ public class Room {
         this.description = description;
         this.capacity = capacity;
     }
-
-    public void validateCapacity() {
-        if (capacity <= 0) {
-            throw new IllegalArgumentException("수용 인원은 1명 이상이어야 합니다.");
-        }
-    }
-
-    public void assignToOrganization(Organization organization) {
-        if (organization == null) throw new IllegalArgumentException("조직은 필수입니다.");
-        this.organization = organization;
-    }
-
 }

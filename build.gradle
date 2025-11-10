@@ -35,7 +35,8 @@ dependencies {
 
 	/* Database */
 //	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
+//	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	/* Google oAuth */
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -67,6 +68,8 @@ dependencies {
     /* MongoDB */
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
+	/* S3 */
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
 }
 
 tasks.named('test') {

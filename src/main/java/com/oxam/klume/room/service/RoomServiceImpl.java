@@ -3,22 +3,23 @@ package com.oxam.klume.room.service;
 import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.entity.enums.OrganizationRole;
+import com.oxam.klume.organization.exception.OrganizationMemberAccessDeniedException;
 import com.oxam.klume.organization.exception.OrganizationNotAdminException;
-import com.oxam.klume.organization.exception.OrganizationNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
 import com.oxam.klume.room.dto.RoomRequestDTO;
 import com.oxam.klume.room.dto.RoomResponseDTO;
 import com.oxam.klume.room.entity.Room;
+import com.oxam.klume.room.exception.RoomCapacityInvalidException;
+import com.oxam.klume.room.exception.RoomNameDuplicationException;
 import com.oxam.klume.room.repository.RoomRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
+import com.oxam.klume.file.FileValidator;
+import com.oxam.klume.file.infra.S3Uploader;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,9 +33,11 @@ public class RoomServiceImpl implements RoomService {
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
 
+    private final FileValidator fileValidator;
+    private final S3Uploader s3Uploader;
+
     // 회의실 목록 조회
     @Override
-    @Transactional(readOnly = true)
     public List<RoomResponseDTO> getRooms(int organizationId, int memberId) {
         Organization organization = getOrganizationOrThrow(organizationId);
         findOrganizationMemberById(organizationId, memberId);
@@ -46,7 +49,6 @@ public class RoomServiceImpl implements RoomService {
 
     // 회의실 상세 조회
     @Override
-    @Transactional(readOnly = true)
     public RoomResponseDTO getRoomDetail(int organizationId, int roomId, int memberId) {
         Organization organization = getOrganizationOrThrow(organizationId);
         findOrganizationMemberById(organizationId, memberId);
@@ -64,8 +66,14 @@ public class RoomServiceImpl implements RoomService {
             throw new OrganizationNotAdminException("회의실을 등록할 권한이 없습니다.");
         }
 
+        // 회의실 이름 중복 체크
         if (roomRepository.existsByOrganizationAndName(organization, dto.getName())) {
-            throw new IllegalArgumentException("이미 동일한 이름의 회의실이 존재합니다.");
+            throw new RoomNameDuplicationException();
+        }
+
+        // 수용 인원 검증
+        if (dto.getCapacity() <= 0) {
+            throw new RoomCapacityInvalidException();
         }
 
         String imageUrl = uploadImage(imageFile);
@@ -77,9 +85,6 @@ public class RoomServiceImpl implements RoomService {
                 .capacity(dto.getCapacity())
                 .imageUrl(imageUrl)
                 .build();
-
-        room.assignToOrganization(organization);
-        room.validateCapacity();
 
         Room saved = roomRepository.save(room);
         return toResponseDTO(saved);
@@ -95,9 +100,12 @@ public class RoomServiceImpl implements RoomService {
         }
 
         Room room = getRoomOrThrow(roomId, organization);
-        room.updateInfo(dto.getName(), dto.getDescription(), dto.getCapacity());
-        room.validateCapacity();
 
+        if (dto.getCapacity() <= 0) {
+            throw new IllegalArgumentException("수용 인원은 1명 이상이어야 합니다.");
+        }
+
+        room.updateInfo(dto.getName(), dto.getDescription(), dto.getCapacity());
         return toResponseDTO(room);
     }
 
@@ -130,10 +138,10 @@ public class RoomServiceImpl implements RoomService {
     private OrganizationMember findOrganizationMemberById(int organizationId, int memberId) {
         OrganizationMember member = organizationMemberRepository
                 .findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new OrganizationNotFoundException("사용자가 가입하지 않은 조직입니다."));
+                .orElseThrow(() -> new OrganizationMemberAccessDeniedException("사용자가 가입하지 않은 조직입니다."));
 
-        // 필요 시 정지 상태 등 추가 검증 가능
-        // if (member.isBanned()) throw new OrganizationNotAdminException("정지된 사용자는 접근할 수 없습니다.");
+        // 정지 상태
+        if (member.isBanned()) throw new OrganizationNotAdminException("정지된 사용자는 접근할 수 없습니다.");
 
         return member;
     }
@@ -155,10 +163,12 @@ public class RoomServiceImpl implements RoomService {
         return room;
     }
 
-    // 이미지 업로드 (S3 연동 전, mock URL 반환)
-    private String uploadImage(MultipartFile file) {
-        if (file != null && !file.isEmpty()) {
-            return "https://s3.amazonaws.com/klume-bucket/" + file.getOriginalFilename();
+    // 이미지 업로드
+    private String uploadImage(final MultipartFile file) {
+        if (file != null) {
+            fileValidator.validateImage(file);
+
+            return s3Uploader.upload("room/", file);
         }
         return null;
     }
