@@ -34,4 +34,7 @@ public interface OrganizationService {
                                               final OrganizationGroup organizationGroup);
 
     void deleteOrganizationGroup(final Member member, final int organizationId, final int organizationGroupId);
+
+    Organization updateOrganization(final Member member, final int organizationId, final MultipartFile file,
+                                    final OrganizationUpdateRequestDTO requestDTO);
 }

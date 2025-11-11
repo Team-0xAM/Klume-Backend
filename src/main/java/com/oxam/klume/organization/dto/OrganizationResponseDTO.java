@@ -22,7 +22,6 @@ public class OrganizationResponseDTO {
     @Schema(description = "조직 설명", example = "개발자 부트캠프로, 미래 소프트웨어 인재 양성을 목표로 합니다.")
     private String description;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "조직 이미지 url", example = "https://picsum.photos/300")
     private String imageUrl;
 

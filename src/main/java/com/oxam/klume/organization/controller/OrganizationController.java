@@ -338,4 +338,17 @@ public class OrganizationController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "조직 정보 수정")
+    @PutMapping(value = "/{organizationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<OrganizationResponseDTO> updateOrganization(final Authentication authentication,
+                                                                      @PathVariable(name = "organizationId") final int organizationId,
+                                                                      @RequestPart(value = "image", required = false) final MultipartFile file,
+                                                                      @RequestPart("requestDTO") @Valid final OrganizationUpdateRequestDTO requestDTO) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final Organization organization = organizationService.updateOrganization(member, organizationId, file, requestDTO);
+
+        return ResponseEntity.ok(OrganizationResponseDTO.of(organization));
+    }
 }

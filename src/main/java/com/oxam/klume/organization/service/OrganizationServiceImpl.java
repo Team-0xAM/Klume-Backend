@@ -4,7 +4,6 @@ import com.oxam.klume.common.redis.RedisService;
 import com.oxam.klume.file.FileValidator;
 import com.oxam.klume.file.infra.S3Uploader;
 import com.oxam.klume.member.entity.Member;
-import com.oxam.klume.member.exception.MemberNotFoundException;
 import com.oxam.klume.member.repository.MemberRepository;
 import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
@@ -216,6 +215,48 @@ public class OrganizationServiceImpl implements OrganizationService {
         organizationMemberRepository.updateOrganizationGroup(null, organizationGroup);
 
         organizationGroupRepository.delete(organizationGroup);
+    }
+
+
+    @Transactional
+    @Override
+    public Organization updateOrganization(final Member member, final int organizationId,
+                                           final MultipartFile file, final OrganizationUpdateRequestDTO requestDTO) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        updateOrganizationImage(organization, file);
+
+        organization.updateOrganization(requestDTO.getName(), requestDTO.getDescription());
+
+        return organization;
+    }
+
+    private void updateOrganizationImage(final Organization organization, final MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            deleteOrganizationImageIfExists(organization);
+
+            return;
+        }
+
+        fileValidator.validateImage(file);
+
+        deleteOrganizationImageIfExists(organization);
+
+        final String imageUrl = s3Uploader.upload("organization/", file);
+
+        organization.updateImageUrl(imageUrl);
+    }
+
+    private void deleteOrganizationImageIfExists(final Organization organization) {
+        if (organization.getImageUrl() != null) {
+            s3Uploader.delete(organization.getImageUrl());
+
+            organization.updateImageUrl(null);
+        }
     }
 
     private int countByOrganizationAndOrganizationGroup(final Organization organization,
