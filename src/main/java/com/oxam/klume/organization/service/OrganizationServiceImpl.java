@@ -276,6 +276,16 @@ public class OrganizationServiceImpl implements OrganizationService {
         organizationMemberRepository.delete(organizationMember);
     }
 
+    @Transactional
+    @Override
+    public Organization findOrganizationInfoByOrganizationId(final Member member, final int organizationId) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        return organization;
+    }
+
     private void updateOrganizationImage(final Organization organization, final MultipartFile file) {
         if (file == null || file.isEmpty()) {
             deleteOrganizationImageIfExists(organization);

@@ -44,4 +44,6 @@ public interface OrganizationService {
     void leaveOrganization(final Member member, final int organizationId);
 
     void kickOrganizationMember(final Member member, final int organizationId, final int organizationMemberId);
+
+    Organization findOrganizationInfoByOrganizationId(final Member member, final int organizationId);
 }
