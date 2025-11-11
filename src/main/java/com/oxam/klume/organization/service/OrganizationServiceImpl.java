@@ -224,7 +224,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         organizationGroupRepository.delete(organizationGroup);
     }
 
-
     @Transactional
     @Override
     public Organization updateOrganization(final Member member, final int organizationId,
