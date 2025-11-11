@@ -41,7 +41,7 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
         AvailableTime availableTime = findAvailableTimeById(request.getAvailableTimeId());
         DailyAvailableTime dailyAvailableTime = findDailyAvailableTimeById(dailyAvailableTimeId);
 
-        validateNoReservation(request.getAvailableTimeId());
+        validateNoReservation(dailyAvailableTimeId);
 
         dailyAvailableTime.update(
                 request.getDate(),
@@ -92,11 +92,12 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
     }
 
     // 해당 일자의 예약 가능 시간에 예약이 존재하는지 확인
-    private DailyReservation validateNoReservation(int dailyAvailableTimeId) {
-        return dailyReservationRepository.findById(dailyAvailableTimeId)
-                .orElseThrow(ReservationExistsException::new);
-
+    private void validateNoReservation(int dailyAvailableTimeId) {
+        if (dailyReservationRepository.findByDailyAvailableTime_Id(dailyAvailableTimeId).isPresent()) {
+            throw new ReservationExistsException();
+        }
     }
+
 
 
 }
