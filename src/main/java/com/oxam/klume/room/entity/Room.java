@@ -2,13 +2,15 @@ package com.oxam.klume.room.entity;
 
 import com.oxam.klume.organization.entity.Organization;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
-@Table(name = "room")
-@NoArgsConstructor
 @Entity
+@Table(name = "room",
+        uniqueConstraints = @UniqueConstraint(name = "UQ_Room_Name_Per_Org", columnNames = {"organization_id", "name"}))
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +24,17 @@ public class Room {
     @Column(nullable = false)
     private int capacity;
 
+    @Setter
     @Column(name = "image_url")
     private String imageUrl;
 
     @JoinColumn(name = "organization_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Organization organization;
+
+    public void updateInfo(String name, String description, int capacity) {
+        this.name = name;
+        this.description = description;
+        this.capacity = capacity;
+    }
 }
