@@ -36,13 +36,16 @@ public enum ErrorCode {
     ORGANIZATION_MEMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "ORGANIZATION004", "Organization member already exists"),
     ORGANIZATION_INVITATION_CODE_INVALID(HttpStatus.BAD_REQUEST, "ORGANIZATION005", "Organization invitation code is expired or invalid"),
     ORGANIZATION_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION006", "Organization group not found"),
+    ORGANIZATION_GROUP_NAME_DUPLICATED(HttpStatus.CONFLICT, "ORGANIZATION007", "Organization group name duplicated"),
+    ORGANIZATION_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION008", "Organization Member not found"),
+    ORGANIZATION_ADMIN_MINIMUM_REQUIRED(HttpStatus.BAD_REQUEST, "ORGANIZATION009", "Organization admin minimum required"),
+    ORGANIZATION_MISMATCH(HttpStatus.FORBIDDEN, "ORGANIZATION010", "Organization mismatch"),
 
-    /* Organization Notice*/
-    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001","Organization notice not found"),
+    /* Organization Notice */
+    ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001", "Organization notice not found"),
 
     /* Room */
     ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "ROOM001","Room not found"),
-
 
     /* Available_Time */
     AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "AVAILABLE_TIME001","Available time not found"),
@@ -50,7 +53,6 @@ public enum ErrorCode {
 
     /* Daily_Available_Time */
     DAILY_AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "DAILY_AVAILABLE_TIME001","Daily available time not found"),
-
 
     /* Reservation */
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION001","Reservation not found"),
@@ -62,7 +64,10 @@ public enum ErrorCode {
     /* S3 */
     S3_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3001", "S3 upload failed"),
     S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3002", "S3 Delete failed"),
-    S3_URL_INVALID(HttpStatus.BAD_REQUEST, "S3003", "Invalid S3 URL");
+    S3_URL_INVALID(HttpStatus.BAD_REQUEST, "S3003", "Invalid S3 URL"),
+
+    /* Organization Member */
+    ORGANIZATION_MEMBER_NOT_FOUNT(HttpStatus.NOT_FOUND, "ORGANIZATIONMEMBER001", "Organization member not found");
 
     private final HttpStatus status;
     private final String code;

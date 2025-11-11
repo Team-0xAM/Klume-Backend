@@ -4,11 +4,8 @@ import com.oxam.klume.common.redis.RedisService;
 import com.oxam.klume.file.FileValidator;
 import com.oxam.klume.file.infra.S3Uploader;
 import com.oxam.klume.member.entity.Member;
-import com.oxam.klume.member.exception.MemberNotFoundException;
 import com.oxam.klume.member.repository.MemberRepository;
-import com.oxam.klume.organization.dto.OrganizationGroupResponseDTO;
-import com.oxam.klume.organization.dto.OrganizationMemberRequestDTO;
-import com.oxam.klume.organization.dto.OrganizationRequestDTO;
+import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationGroup;
 import com.oxam.klume.organization.entity.OrganizationMember;
@@ -42,18 +39,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final RedisService redisService;
     private final S3Uploader s3Uploader;
 
-    /**
-     * 조직 생성
-     *
-     * @param memberId   로그인한 회원의 id
-     * @param file       조직 이미지 파일
-     * @param requestDTO 조직 정보
-     */
     @Transactional
     @Override
-    public Organization createOrganization(final int memberId, final MultipartFile file, final OrganizationRequestDTO requestDTO) {
-        final Member member = findMemberById(memberId);
-
+    public Organization createOrganization(final Member member, final MultipartFile file, final OrganizationRequestDTO requestDTO) {
         final String imageUrl = uploadImage(file);
 
         Organization organization = new Organization(requestDTO.getName(), requestDTO.getDescription(), imageUrl);
@@ -72,40 +60,22 @@ public class OrganizationServiceImpl implements OrganizationService {
         return organization;
     }
 
-    /**
-     * 초대 코드 발급
-     *
-     * @param organizationId 조직 id
-     * @param memberId       로그인한 회원의 id
-     * @return 초대 코드
-     */
     @Transactional
     @Override
     public String createInvitationCode(final int organizationId, final int memberId) {
-        // 1) 조직 id로 조직 찾기
         final Organization organization = findOrganizationById(organizationId);
 
-        // 2) 로그인한 회원이 조직 멤버인지 확인
         findOrganizationMemberByMemberIdAndOrganization(memberId, organization);
 
-        // 3) 조직 내 권한이 관리자인지 확인 (관리자만 초대 코드 발급 가능)
         validateAdminPermission(memberId, organization, OrganizationRole.ADMIN);
 
-        // 4) 초대 코드 생성
         final String invitationCode = generateRandomCode(6);
 
-        // 5) 레디스에 조직 id, 초대 코드 저장
         saveInvitationCodeToRedis(organizationId, invitationCode);
 
         return invitationCode;
     }
 
-    /**
-     * 조직 내 회원 권한 조회
-     *
-     * @param memberId       로그인한 회원의 id
-     * @param organizationId 조직의 id
-     */
     @Transactional(readOnly = true)
     @Override
     public OrganizationMember findOrganizationMemberRole(final int memberId, final int organizationId) {
@@ -114,12 +84,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         return findOrganizationMemberByMemberIdAndOrganization(memberId, organization);
     }
 
-    /**
-     * 조직 id로 조직 그룹 목록 조회
-     *
-     * @param memberId       로그인한 회원의 id
-     * @param organizationId 조직의 id
-     */
     @Transactional(readOnly = true)
     @Override
     public List<OrganizationGroupResponseDTO> findOrganizationGroups(final int memberId, final int organizationId) {
@@ -142,45 +106,25 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 초대 코드 검증
-     *
-     * @param memberId 로그인한 회원의 id
-     * @param code     초대 코드
-     */
     @Transactional(readOnly = true)
     @Override
     public Organization validateInvitationCode(final int memberId, final String code) {
-        // 1) 레디스에서 초대 코드를 키로 가지는 데이터 조회 (만약 레디스에 없을 경우 만료되었거나 유효하지 않는 코드라는 에러 발생)
         final int organizationId = getOrganizationIdFromRedis(code);
 
-        // 2) 조직 id로 조직 조회
         final Organization organization = findOrganizationById(organizationId);
 
-        // 3) 회원이 이미 조직에 가입되었는지 검증 (만약 가입했다면 이미 가입된 회원이라는 에러 발생)
         validateMemberNotInOrganization(memberId, organization);
 
         return organization;
     }
 
-    /**
-     * 조직 가입
-     *
-     * @param memberId       로그인한 회원의 id
-     * @param organizationId 조직 id
-     * @param requestDTO     조직에서 사용할 닉네임 및 그룹 정보
-     * @return
-     */
     @Transactional
     @Override
-    public OrganizationMember createOrganizationMember(final int memberId, final int organizationId,
+    public OrganizationMember createOrganizationMember(final Member member, final int organizationId,
                                                        final OrganizationMemberRequestDTO requestDTO) {
-        final Member member = findMemberById(memberId);
-
         final Organization organization = findOrganizationById(organizationId);
 
-        // 회원이 이미 조직에 가입되었는지 검증 (만약 가입했다면 이미 가입된 회원이라는 에러 발생)
-        validateMemberNotInOrganization(memberId, organization);
+        validateMemberNotInOrganization(member.getId(), organization);
 
         OrganizationGroup organizationGroup = null;
 
@@ -197,6 +141,189 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public List<Organization> findOrganizationByMember(final Member member) {
         return organizationMemberRepository.findOrganizationByMember(member);
+    }
+
+    @Transactional
+    @Override
+    public OrganizationMember updateOrganizationMemberRole(final Member member, final int organizationMemberId,
+                                                           final int organizationId, final OrganizationMemberRoleRequestDTO requestDTO) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
+
+        validateSameOrganization(organization, organizationMember.getOrganization());
+
+        organizationMember.updateRole(requestDTO.getOrganizationRole());
+
+        if (requestDTO.getOrganizationRole() == OrganizationRole.ADMIN) {
+            organizationMember.updateOrganizationGroup(null);
+        }
+
+        return organizationMember;
+    }
+
+    @Transactional
+    @Override
+    public OrganizationGroup createOrganizationGroup(final Member member, final int organizationId,
+                                                     final OrganizationGroup organizationGroup) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        validateOrganizationGroupName(organizationGroup.getName(), organization);
+
+        organizationGroup.updateOrganization(organization);
+
+        return organizationGroupRepository.save(organizationGroup);
+    }
+
+    @Transactional
+    @Override
+    public OrganizationGroup updateOrganizationGroup(final Member member, final int organizationId,
+                                                     final int organizationGroupId, final OrganizationGroup organizationGroup) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        final OrganizationGroup originOrganizationGroup = findOrganizationGroupById(organizationGroupId);
+
+        validateSameOrganization(organization, organizationGroup.getOrganization());
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        if (!originOrganizationGroup.getName().equals(organizationGroup.getName())) {
+            validateOrganizationGroupName(organizationGroup.getName(), organization);
+        }
+
+        originOrganizationGroup.updateOrganizationGroup(organizationGroup.getName(), organizationGroup.getDescription());
+
+        return originOrganizationGroup;
+    }
+
+    @Transactional
+    @Override
+    public void deleteOrganizationGroup(final Member member, final int organizationId, final int organizationGroupId) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        final OrganizationGroup organizationGroup = findOrganizationGroupById(organizationGroupId);
+
+        validateSameOrganization(organization, organizationGroup.getOrganization());
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        organizationMemberRepository.updateOrganizationGroup(null, organizationGroup);
+
+        organizationGroupRepository.delete(organizationGroup);
+    }
+
+    @Transactional
+    @Override
+    public Organization updateOrganization(final Member member, final int organizationId,
+                                           final MultipartFile file, final OrganizationUpdateRequestDTO requestDTO) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        updateOrganizationImage(organization, file);
+
+        organization.updateOrganization(requestDTO.getName(), requestDTO.getDescription());
+
+        return organization;
+    }
+
+    @Transactional
+    @Override
+    public OrganizationMember updateOrganizationMemberPenalty(final Member member, final int organizationId,
+                                                              final int organizationMemberId) {
+
+        final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
+
+        validateSameOrganization(organization, organizationMember.getOrganization());
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        organizationMember.updatePenaltyStatus(0, false, null);
+
+        return organizationMember;
+    }
+
+    @Transactional
+    @Override
+    public void leaveOrganization(final Member member, final int organizationId) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        final OrganizationMember organizationMember = findOrganizationMemberByMemberIdAndOrganization(member.getId(),
+                organization);
+
+        if (organizationMember.getRole() == OrganizationRole.ADMIN) {
+            validateAdminCanLeave(organization);
+        }
+
+        organizationMemberRepository.delete(organizationMember);
+    }
+
+    @Transactional
+    @Override
+    public void kickOrganizationMember(final Member member, final int organizationId, final int organizationMemberId) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
+
+        validateSameOrganization(organization, organizationMember.getOrganization());
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        organizationMemberRepository.delete(organizationMember);
+    }
+
+    @Transactional
+    @Override
+    public Organization findOrganizationInfoByOrganizationId(final Member member, final int organizationId) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        return organization;
+    }
+
+    private void updateOrganizationImage(final Organization organization, final MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            deleteOrganizationImageIfExists(organization);
+
+            return;
+        }
+
+        fileValidator.validateImage(file);
+
+        deleteOrganizationImageIfExists(organization);
+
+        final String imageUrl = s3Uploader.upload("organization/", file);
+
+        organization.updateImageUrl(imageUrl);
+    }
+
+    private void deleteOrganizationImageIfExists(final Organization organization) {
+        if (organization.getImageUrl() != null) {
+            s3Uploader.delete(organization.getImageUrl());
+
+            organization.updateImageUrl(null);
+        }
     }
 
     private int countByOrganizationAndOrganizationGroup(final Organization organization,
@@ -265,10 +392,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         return null;
     }
 
-    private Member findMemberById(final int memberId) {
-        return memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
-    }
-
     private Organization findOrganizationById(final int organizationId) {
         return organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
     }
@@ -281,5 +404,28 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private OrganizationGroup findOrganizationGroupById(final int groupId) {
         return organizationGroupRepository.findById(groupId).orElseThrow(OrganizationGroupNotFoundException::new);
+    }
+
+    private void validateOrganizationGroupName(final String name, final Organization organization) {
+        if (organizationGroupRepository.findByNameAndOrganization(name, organization).isPresent()) {
+            throw new OrganizationGroupNameDuplicatedException();
+        }
+    }
+
+    private OrganizationMember findOrganizationMemberByOrganizationMemberId(final int organizationMemberId) {
+        return organizationMemberRepository.findById(organizationMemberId)
+                .orElseThrow(OrganizationMemberNotFoundException::new);
+    }
+
+    private void validateAdminCanLeave(final Organization organization) {
+        if (organizationMemberRepository.countByOrganizationAndRole(organization, OrganizationRole.ADMIN) < 2) {
+            throw new OrganizationAdminMinimumRequiredException();
+        }
+    }
+
+    private void validateSameOrganization(final Organization organization, final Organization targetOrganization) {
+        if (organization != targetOrganization) {
+            throw new OrganizationMismatchException();
+        }
     }
 }

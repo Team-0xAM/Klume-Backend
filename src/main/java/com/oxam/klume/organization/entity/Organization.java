@@ -27,4 +27,13 @@ public class Organization {
         this.description = description;
         this.imageUrl = imageUrl;
     }
+
+    public void updateImageUrl(final String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void updateOrganization(final String name, final String description) {
+        this.name = name;
+        this.description = description;
+    }
 }
