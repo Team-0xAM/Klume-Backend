@@ -155,7 +155,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
 
-        validateSameOrganization(organization, organizationMember);
+        validateSameOrganization(organization, organizationMember.getOrganization());
 
         organizationMember.updateRole(requestDTO.getOrganizationRole());
 
@@ -191,6 +191,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         final OrganizationGroup originOrganizationGroup = findOrganizationGroupById(organizationGroupId);
 
+        validateSameOrganization(organization, organizationGroup.getOrganization());
+
         findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
 
         validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
@@ -199,7 +201,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             validateOrganizationGroupName(organizationGroup.getName(), organization);
         }
 
-        originOrganizationGroup.updateOrganizationGroup(organizationGroup.getName(), originOrganizationGroup.getDescription());
+        originOrganizationGroup.updateOrganizationGroup(organizationGroup.getName(), organizationGroup.getDescription());
 
         return originOrganizationGroup;
     }
@@ -210,6 +212,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         final Organization organization = findOrganizationById(organizationId);
 
         final OrganizationGroup organizationGroup = findOrganizationGroupById(organizationGroupId);
+
+        validateSameOrganization(organization, organizationGroup.getOrganization());
 
         findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
 
@@ -249,7 +253,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
 
-        validateSameOrganization(organization, organizationMember);
+        validateSameOrganization(organization, organizationMember.getOrganization());
 
         validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
 
@@ -282,7 +286,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
 
-        validateSameOrganization(organization, organizationMember);
+        validateSameOrganization(organization, organizationMember.getOrganization());
 
         validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
 
@@ -420,14 +424,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
     }
 
-    private void validateSameOrganization(final Organization organization, final OrganizationMember organizationMember) {
-
-        System.out.println(organization.getId());
-        System.out.println(organizationMember
-                .getOrganization()
-                .getId());
-        if (organization != organizationMember.getOrganization()) {
-            throw new OrganizationMemberAccessDeniedException();
+    private void validateSameOrganization(final Organization organization, final Organization targetOrganization) {
+        if (organization != targetOrganization) {
+            throw new OrganizationMismatchException();
         }
     }
 }

@@ -39,6 +39,7 @@ public enum ErrorCode {
     ORGANIZATION_GROUP_NAME_DUPLICATED(HttpStatus.CONFLICT, "ORGANIZATION007", "Organization group name duplicated"),
     ORGANIZATION_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORGANIZATION008", "Organization Member not found"),
     ORGANIZATION_ADMIN_MINIMUM_REQUIRED(HttpStatus.BAD_REQUEST, "ORGANIZATION009", "Organization admin minimum required"),
+    ORGANIZATION_MISMATCH(HttpStatus.FORBIDDEN, "ORGANIZATION010", "Organization mismatch"),
 
     /* Organization Notice */
     ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001", "Organization notice not found"),
