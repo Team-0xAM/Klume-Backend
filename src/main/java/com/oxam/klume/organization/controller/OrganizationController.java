@@ -287,7 +287,7 @@ public class OrganizationController {
 
 
     @Operation(summary = "권한 변경")
-    @PutMapping("{organizationId}/members/{organizationMemberId}/role")
+    @PutMapping("/{organizationId}/members/{organizationMemberId}/role")
     public ResponseEntity<OrganizationMemberRoleUpdateResponseDTO> updateOrganizationMemberRole(final Authentication authentication,
                                                                                                 @PathVariable(name = "organizationMemberId") final int organizationMemberId,
                                                                                                 @PathVariable("organizationId") final int organizationId,
@@ -300,7 +300,7 @@ public class OrganizationController {
     }
 
     @Operation(summary = "그룹 생성")
-    @PostMapping("{organizationId}/groups")
+    @PostMapping("/{organizationId}/groups")
     public ResponseEntity<OrganizationGroupResponseDTO> createOrganizationGroup(final Authentication authentication,
                                                                                 @PathVariable(name = "organizationId") final int organizationId,
                                                                                 @RequestBody @Valid final OrganizationGroupRequestDTO requestDTO) {

@@ -155,6 +155,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
 
+        validateSameOrganization(organization, organizationMember);
+
         organizationMember.updateRole(requestDTO.getOrganizationRole());
 
         if (requestDTO.getOrganizationRole() == OrganizationRole.ADMIN) {
@@ -240,11 +242,14 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public OrganizationMember updateOrganizationMemberPenalty(final Member member, final int organizationId,
                                                               final int organizationMemberId) {
+
         final Organization organization = findOrganizationById(organizationId);
 
         findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
 
         final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
+
+        validateSameOrganization(organization, organizationMember);
 
         validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
 
@@ -276,6 +281,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
 
         final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
+
+        validateSameOrganization(organization, organizationMember);
 
         validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
 
@@ -410,6 +417,17 @@ public class OrganizationServiceImpl implements OrganizationService {
     private void validateAdminCanLeave(final Organization organization) {
         if (organizationMemberRepository.countByOrganizationAndRole(organization, OrganizationRole.ADMIN) < 2) {
             throw new OrganizationAdminMinimumRequiredException();
+        }
+    }
+
+    private void validateSameOrganization(final Organization organization, final OrganizationMember organizationMember) {
+
+        System.out.println(organization.getId());
+        System.out.println(organizationMember
+                .getOrganization()
+                .getId());
+        if (organization != organizationMember.getOrganization()) {
+            throw new OrganizationMemberAccessDeniedException();
         }
     }
 }
