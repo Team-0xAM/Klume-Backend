@@ -7,7 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Table(name = "reservation")
+@Table(
+        name = "reservation",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "UK_DATE_ROOM_ID",
+                        columnNames = {"date", "room_id"}
+                )
+        }
+)
 @NoArgsConstructor
 @Entity
 public class Reservation {
@@ -31,4 +39,16 @@ public class Reservation {
     @JoinColumn(name = "organization_member_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private OrganizationMember organizationMember;
+
+    public Reservation(final String date, final Room room, final OrganizationMember organizationMember,
+                       final String createdAt) {
+        this.date = date;
+        this.room = room;
+        this.organizationMember = organizationMember;
+        this.createdAt = createdAt;
+    }
+
+    public void updateImageUrl(final String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

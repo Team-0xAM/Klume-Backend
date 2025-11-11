@@ -7,7 +7,6 @@ import com.oxam.klume.organization.exception.OrganizationNotAdminException;
 import com.oxam.klume.organization.exception.OrganizationNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
-import com.oxam.klume.reservation.entity.DailyReservation;
 import com.oxam.klume.reservation.exception.ReservationExistsException;
 import com.oxam.klume.reservation.repository.DailyReservationRepository;
 import com.oxam.klume.room.dto.DailyAvailableTimeRequestDTO;
@@ -21,7 +20,6 @@ import com.oxam.klume.room.repository.DailyAvailableTimeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +48,6 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
                 request.getReservationOpenDay(),
                 request.getReservationOpenTime(),
                 availableTime
-
         );
 
         return DailyAvailableTimeResponseDTO.of(dailyAvailableTime);
@@ -67,7 +64,6 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
 
         dailyAvailableTimeRepository.delete(dailyAvailableTime);
     }
-
 
     // ============================== 공통 메서드 =====================================
     private Organization findOrganizationById(final int organizationId){
@@ -97,7 +93,4 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
             throw new ReservationExistsException();
         }
     }
-
-
-
 }

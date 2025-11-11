@@ -45,18 +45,19 @@ public enum ErrorCode {
     ORGANIZATION_NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE001", "Organization notice not found"),
 
     /* Room */
-    ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "ROOM001","Room not found"),
+    ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "ROOM001", "Room not found"),
 
     /* Available_Time */
-    AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "AVAILABLE_TIME001","Available time not found"),
+    AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "AVAILABLE_TIME001", "Available time not found"),
     AVAILABLE_TIME_OVERLAP(HttpStatus.FORBIDDEN, "AVAILABLE_TIME002", "Available time overlap"),
 
     /* Daily_Available_Time */
-    DAILY_AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "DAILY_AVAILABLE_TIME001","Daily available time not found"),
+    DAILY_AVAILABLE_TIME_NOT_FOUND(HttpStatus.NOT_FOUND, "DAILY_AVAILABLE_TIME001", "Daily available time not found"),
 
     /* Reservation */
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION001","Reservation not found"),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION001", "Reservation not found"),
     RESERVATION_ALREADY_EXISTS(HttpStatus.FORBIDDEN, "RESERVATION002", "Reservation exists"),
+    ROOM_ALREADY_BOOKED(HttpStatus.BAD_REQUEST, "RESERVATION003", "Room already booked"),
 
     /* FAQ */
     FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ001", "FAQ not found"),
@@ -67,7 +68,8 @@ public enum ErrorCode {
     S3_URL_INVALID(HttpStatus.BAD_REQUEST, "S3003", "Invalid S3 URL"),
 
     /* Organization Member */
-    ORGANIZATION_MEMBER_NOT_FOUNT(HttpStatus.NOT_FOUND, "ORGANIZATIONMEMBER001", "Organization member not found");
+    ORGANIZATION_MEMBER_NOT_FOUNT(HttpStatus.NOT_FOUND, "ORGANIZATION_MEMBER001", "Organization member not found"),
+    ORGANIZATION_MEMBER_BANNED(HttpStatus.FORBIDDEN, "ORGANIZATION_MEMBER002", "Organization member banned");
 
     private final HttpStatus status;
     private final String code;
