@@ -12,5 +12,5 @@ public interface MemberService {
 
     LoginResponseDTO login(LoginRequestDTO request);
 
-    Member findMemberByEmail(String string);
+    Member findMemberByEmail(final String string);
 }

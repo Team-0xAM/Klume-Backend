@@ -61,9 +61,14 @@ public class WebSecurity {
                         .requestMatchers(
                                 "/auth/**",
                                 "/mail/**",
-                                "/profile/**"
+                                "/oauth2/**",  // TODO: 테스트 후 삭제 - OAuth2 로그인 (구글 로그인 불필요 시)
+                                "/test.html",  // TODO: 테스트 후 삭제 - 테스트 페이지
+                                "/*.html",     // TODO: 테스트 후 삭제 - 정적 HTML 파일
+                                "/css/**",     // TODO: 테스트 후 삭제 - CSS 파일
+                                "/js/**",      // TODO: 테스트 후 삭제 - JS 파일
+                                "/profile/**",
+                                "/ws/**"       // websocket 관련 핸드셰이크 허용
                         ).permitAll()
-                        // 그 외는 인증 필요
                         .anyRequest().authenticated()
                 )
 
