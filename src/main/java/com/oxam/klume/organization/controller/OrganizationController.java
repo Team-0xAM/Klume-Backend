@@ -366,11 +366,23 @@ public class OrganizationController {
 
     @Operation(summary = "조직 탈퇴")
     @DeleteMapping("/{organizationId}")
-    public ResponseEntity<?> kickOrganization(final Authentication authentication,
-                                              @PathVariable(name = "organizationId") final int organizationId) {
+    public ResponseEntity<?> leaveOrganization(final Authentication authentication,
+                                               @PathVariable(name = "organizationId") final int organizationId) {
         final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
 
-        organizationService.kickOrganization(member, organizationId);
+        organizationService.leaveOrganization(member, organizationId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "조직 멤버 강퇴")
+    @DeleteMapping("{organizationId}/members/{organizationMemberId}")
+    public ResponseEntity<?> kickOrganizationMember(final Authentication authentication,
+                                                    @PathVariable(name = "organizationId") final int organizationId,
+                                                    @PathVariable(name = "organizationMemberId") final int OrganizationMemberId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        organizationService.kickOrganizationMember(member, organizationId, OrganizationMemberId);
 
         return ResponseEntity.noContent().build();
     }

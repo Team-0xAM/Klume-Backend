@@ -251,7 +251,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Transactional
     @Override
-    public void kickOrganization(final Member member, final int organizationId) {
+    public void leaveOrganization(final Member member, final int organizationId) {
         final Organization organization = findOrganizationById(organizationId);
 
         final OrganizationMember organizationMember = findOrganizationMemberByMemberIdAndOrganization(member.getId(),
@@ -260,6 +260,18 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (organizationMember.getRole() == OrganizationRole.ADMIN) {
             validateAdminCanLeave(organization);
         }
+
+        organizationMemberRepository.delete(organizationMember);
+    }
+
+    @Transactional
+    @Override
+    public void kickOrganizationMember(final Member member, final int organizationId, final int organizationMemberId) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
 
         organizationMemberRepository.delete(organizationMember);
     }
