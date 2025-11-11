@@ -28,14 +28,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-
     /* Lombok */
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	/* Database */
-//	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+//	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	/* Google oAuth */
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -61,14 +60,14 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    /* WebSocket */
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	/* WebSocket */
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-    /* MongoDB */
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	/* MongoDB */
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
-    /* S3 */
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
+	/* S3 */
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.4.0'
 }
 
 tasks.named('test') {
