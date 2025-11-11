@@ -12,6 +12,7 @@ import static org.springframework.data.mongodb.core.FindAndModifyOptions.options
 
 @Service
 @RequiredArgsConstructor
+// MongoDB는 AUTO_INCREAMENT 지원 하지 않기 때문에 직접 만들어야함.
 public class SequenceGeneratorService {
 
     private final MongoOperations mongoOperations;

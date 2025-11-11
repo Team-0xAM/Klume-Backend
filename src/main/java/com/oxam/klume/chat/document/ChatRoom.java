@@ -25,6 +25,7 @@ public class ChatRoom {
     private String createdByEmail;   // 채팅 시작한 회원 이메일
     private Integer assignedToId;    // 담당 관리자 OrganizationMember ID (null이면 미배정)
     private String assignedToName;   // 담당 관리자 닉네임
+    private String assignedToEmail;  // 담당 관리자 이메일 (null이면 미배정)
     private String createdAt;
     private String lastMessageAt;    // 마지막 메시지 시각 (정렬용)
 
@@ -38,21 +39,24 @@ public class ChatRoom {
                 .createdByEmail(createdByEmail)
                 .assignedToId(null)
                 .assignedToName(null)
+                .assignedToEmail(null)
                 .createdAt(now)
                 .lastMessageAt(now)
                 .build();
     }
 
     // 담당자 지정 (관리자가 "이 문의 담당하기" 클릭)
-    public void assignTo(int adminId, String adminName) {
+    public void assignTo(int adminId, String adminName, String adminEmail) {
         this.assignedToId = adminId;
         this.assignedToName = adminName;
+        this.assignedToEmail = adminEmail;
     }
 
     // 담당 해제
     public void unassign() {
         this.assignedToId = null;
         this.assignedToName = null;
+        this.assignedToEmail = null;
     }
 
     // 마지막 메시지 시각 업데이트
