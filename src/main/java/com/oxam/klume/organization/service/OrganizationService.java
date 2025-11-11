@@ -40,4 +40,6 @@ public interface OrganizationService {
 
     OrganizationMember updateOrganizationMemberPenalty(final Member member, final int organizationId,
                                                        final int organizationMemberId);
+
+    void kickOrganization(final Member member, final int organizationId);
 }

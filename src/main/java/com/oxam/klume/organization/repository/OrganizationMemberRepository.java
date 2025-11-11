@@ -30,4 +30,6 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
     @Query("UPDATE OrganizationMember om SET om.organizationGroup = :newOrganizationGroup WHERE om.organizationGroup = :oldOrganizationGroup")
     void updateOrganizationGroup(@Param("newOrganizationGroup") final OrganizationGroup newOrganizationGroup,
                                  @Param("oldOrganizationGroup") final OrganizationGroup oldOrganizationGroup);
+
+    int countByOrganizationAndRole(final Organization organization, final OrganizationRole organizationRole);
 }

@@ -249,6 +249,21 @@ public class OrganizationServiceImpl implements OrganizationService {
         return organizationMember;
     }
 
+    @Transactional
+    @Override
+    public void kickOrganization(final Member member, final int organizationId) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        final OrganizationMember organizationMember = findOrganizationMemberByMemberIdAndOrganization(member.getId(),
+                organization);
+
+        if (organizationMember.getRole() == OrganizationRole.ADMIN) {
+            validateAdminCanLeave(organization);
+        }
+
+        organizationMemberRepository.delete(organizationMember);
+    }
+
     private void updateOrganizationImage(final Organization organization, final MultipartFile file) {
         if (file == null || file.isEmpty()) {
             deleteOrganizationImageIfExists(organization);
@@ -362,5 +377,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     private OrganizationMember findOrganizationMemberByOrganizationMemberId(final int organizationMemberId) {
         return organizationMemberRepository.findById(organizationMemberId)
                 .orElseThrow(OrganizationMemberNotFoundException::new);
+    }
+
+    private void validateAdminCanLeave(final Organization organization) {
+        if (organizationMemberRepository.countByOrganizationAndRole(organization, OrganizationRole.ADMIN) < 2) {
+            throw new OrganizationAdminMinimumRequiredException();
+        }
     }
 }

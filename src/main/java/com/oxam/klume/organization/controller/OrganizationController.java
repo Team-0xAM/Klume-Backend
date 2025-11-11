@@ -363,4 +363,15 @@ public class OrganizationController {
 
         return ResponseEntity.ok(OrganizationMemberPenaltyStatusUpdateResponseDTO.of(organizationMember));
     }
+
+    @Operation(summary = "조직 탈퇴")
+    @DeleteMapping("/{organizationId}")
+    public ResponseEntity<?> kickOrganization(final Authentication authentication,
+                                              @PathVariable(name = "organizationId") final int organizationId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        organizationService.kickOrganization(member, organizationId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
