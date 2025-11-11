@@ -7,6 +7,7 @@ import com.oxam.klume.organization.exception.OrganizationNotAdminException;
 import com.oxam.klume.organization.exception.OrganizationNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
+import com.oxam.klume.reservation.entity.DailyReservation;
 import com.oxam.klume.reservation.exception.ReservationExistsException;
 import com.oxam.klume.reservation.repository.DailyReservationRepository;
 import com.oxam.klume.room.dto.DailyAvailableTimeRequestDTO;
@@ -62,7 +63,7 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
         validateAdminPermission(memberId, organization, OrganizationRole.ADMIN);
         DailyAvailableTime dailyAvailableTime = findDailyAvailableTimeById(dailyAvailableTimeId);
 
-        validateNoReservation(dailyAvailableTime.getAvailableTime().getId());
+        validateNoReservation(dailyAvailableTimeId);
 
         dailyAvailableTimeRepository.delete(dailyAvailableTime);
     }
@@ -91,14 +92,10 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
     }
 
     // 해당 일자의 예약 가능 시간에 예약이 존재하는지 확인
-    private void validateNoReservation(int availableTimeId) {
-        AvailableTime availableTime = availableTimeRepository.findById(availableTimeId)
-                .orElseThrow(AvailableTimeNotFoundException::new);
+    private DailyReservation validateNoReservation(int dailyAvailableTimeId) {
+        return dailyReservationRepository.findById(dailyAvailableTimeId)
+                .orElseThrow(ReservationExistsException::new);
 
-        boolean hasReservation = dailyReservationRepository.existsByDailyAvailableTime_AvailableTime(availableTime);
-        if (hasReservation) {
-            throw new ReservationExistsException();
-        }
     }
 
 
