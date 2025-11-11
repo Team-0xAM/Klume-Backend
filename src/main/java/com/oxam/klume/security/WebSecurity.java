@@ -32,6 +32,9 @@ public class WebSecurity {
                 // CSRF 비활성화 (Swagger에서 POST 테스트 가능하게)
                 .csrf(csrf -> csrf.disable())
 
+                // CORS 활성화 (WebConfig의 CORS 설정 사용)
+                .cors(cors -> cors.configure(http))
+
                 // 요청 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         // Swagger 관련 URL은 모두 허용
