@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oxam.klume.reservation.dao.MyReservationMapper">
+
+    <select id="selectMyReservations" parameterType="int" resultType="com.oxam.klume.reservation.dto.MyReservationDTO">
+        SELECT
+            a.id AS reservationId,
+            b.name AS roomName,
+            a.created_at AS reservationCreatedAt,
+            a.date AS reservationDate,
+            d.available_start_time AS startTime,
+            d.available_end_time AS endTime,
+            e.cancelled_at AS cancelledAt,
+        CASE
+            WHEN e.cancelled_at IS NOT NULL THEN 'CANCELLED'
+            WHEN STR_TO_DATE(a.date, '%Y-%m-%d') &lt; CURDATE() THEN 'COMPLETED'
+            WHEN STR_TO_DATE(a.date, '%Y-%m-%d') = CURDATE() THEN 'TODAY'
+            ELSE 'UPCOMING'
+        END AS reservationStatus
+        FROM reservation a
+        JOIN room b
+        ON a.room_id = b.id
+        JOIN daily_reservation e
+        ON a.id = e.reservation_id
+        JOIN daily_available_time d
+        ON e.daily_available_time_id = d.id
+        WHERE a.organization_member_id = #{organizationMemberId}
+        ORDER BY
+        STR_TO_DATE(a.date, '%Y-%m-%d') DESC,
+        d.available_start_time ASC;
+    </select>
+
+</mapper>
