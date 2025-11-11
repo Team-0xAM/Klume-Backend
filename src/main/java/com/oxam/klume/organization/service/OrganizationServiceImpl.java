@@ -149,6 +149,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                                                            final int organizationId, final OrganizationMemberRoleRequestDTO requestDTO) {
         final Organization organization = findOrganizationById(organizationId);
 
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
         validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
 
         final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
@@ -240,6 +242,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                                                               final int organizationMemberId) {
         final Organization organization = findOrganizationById(organizationId);
 
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
         final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
 
         validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
@@ -268,6 +272,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public void kickOrganizationMember(final Member member, final int organizationId, final int organizationMemberId) {
         final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
 
         final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
 
