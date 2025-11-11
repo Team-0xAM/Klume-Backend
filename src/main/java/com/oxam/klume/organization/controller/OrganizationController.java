@@ -287,7 +287,7 @@ public class OrganizationController {
 
 
     @Operation(summary = "권한 변경")
-    @PostMapping("{organizationId}/members/{organizationMemberId}/role")
+    @PutMapping("{organizationId}/members/{organizationMemberId}/role")
     public ResponseEntity<OrganizationMemberRoleUpdateResponseDTO> updateOrganizationMemberRole(final Authentication authentication,
                                                                                                 @PathVariable(name = "organizationMemberId") final int organizationMemberId,
                                                                                                 @PathVariable("organizationId") final int organizationId,
