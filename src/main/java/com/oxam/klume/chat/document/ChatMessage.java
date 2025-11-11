@@ -18,14 +18,14 @@ public class ChatMessage {
     @Id
     private String id;
 
-    private String roomId;      // 채팅방 번호
+    private int roomId;         // 채팅방 번호 (auto-increment)
     private String senderId;    // 누가 보냈는지
     private boolean admin;      //  관리자인지 여부
     private String content;     // 메시지 내용
     private String createdAt;   // 보낸 시각
 
     // 채팅방 번호 설정
-    public void updateRoomId(String roomId) {
+    public void updateRoomId(int roomId) {
         this.roomId = roomId;
     }
     // 발신자 ID 설정
