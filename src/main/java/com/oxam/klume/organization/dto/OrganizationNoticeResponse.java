@@ -13,6 +13,7 @@ public class OrganizationNoticeResponse {
     private String createdAt;
     private String updatedAt;
     private int memberId;
+    private String authorName;  // 작성자 닉네임 추가
 
     public static OrganizationNoticeResponse of(final OrganizationNotice notice) {
         return OrganizationNoticeResponse.builder()
@@ -22,6 +23,7 @@ public class OrganizationNoticeResponse {
                 .createdAt(notice.getCreatedAt())
                 .updatedAt(notice.getUpdatedAt())
                 .memberId(notice.getOrganizationMember().getId())
+                .authorName(notice.getOrganizationMember().getNickname())  // 작성자 닉네임 추가
                 .build();
     }
 }

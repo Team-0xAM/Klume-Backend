@@ -1,7 +1,14 @@
 package com.oxam.klume.room.exception;
 
-public class RoomNotFoundException extends RoomException {
+import com.oxam.klume.common.error.ErrorCode;
+import com.oxam.klume.common.error.exception.BusinessException;
+
+public class RoomNotFoundException extends BusinessException {
     public RoomNotFoundException() {
-        super("회의실을 찾을 수 없습니다.");
+        super(ErrorCode.ROOM_NOT_FOUND);
+    }
+
+    public RoomNotFoundException(final String message) {
+        super(ErrorCode.ROOM_NOT_FOUND, message);
     }
 }

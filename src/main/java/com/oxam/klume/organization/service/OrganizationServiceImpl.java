@@ -194,6 +194,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         return organizationMemberRepository.save(organizationMember);
     }
 
+    @Override
+    public List<Organization> findOrganizationByMember(final Member member) {
+        return organizationMemberRepository.findOrganizationByMember(member);
+    }
+
     private int countByOrganizationAndOrganizationGroup(final Organization organization,
                                                         final OrganizationGroup organizationGroup) {
         return organizationMemberRepository.countByOrganizationAndOrganizationGroup(organization, organizationGroup);

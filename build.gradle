@@ -36,6 +36,10 @@ dependencies {
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 //	runtimeOnly 'com.mysql:mysql-connector-j'
 
+	/* Mybatis */
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
+
 	/* Google oAuth */
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
