@@ -9,8 +9,6 @@ import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.member.entity.MemberSystemRole;
 import com.oxam.klume.member.entity.enums.Role;
 import com.oxam.klume.member.exception.MemberNotAdminException;
-import com.oxam.klume.member.exception.MemberNotFoundException;
-import com.oxam.klume.member.repository.MemberRepository;
 import com.oxam.klume.member.repository.MemberSystemRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,6 @@ import java.util.List;
 @Service
 public class FaqServiceImpl implements FaqService {
     private final FaqRepository faqRepository;
-    private final MemberRepository memberRepository;
     private final MemberSystemRoleRepository memberSystemRoleRepository;
 
     // FAQ 전체 목록 조회
@@ -37,25 +34,25 @@ public class FaqServiceImpl implements FaqService {
     // FAQ 상세 조회
     @Override
     public FaqResponse getFaqDetail(final int faqId) {
-        Faq faq = findFaqById(faqId);
+        final Faq faq = findFaqById(faqId);
+
         return FaqResponse.of(faq);
     }
 
     // FAQ 등록
     @Transactional
     @Override
-    public FaqResponse createFaq(final FaqRequest request, final int memberId) {
-        Member member = findMemberById(memberId);
-        findMemberSystemRole(memberId);
+    public FaqResponse createFaq(final FaqRequest request, final Member member) {
+        findMemberSystemRole(member.getId());
 
-        Faq faq = Faq.create(
+        final Faq faq = Faq.create(
                 request.getTitle(),
                 request.getContent(),
                 request.getAnswer(),
                 member
         );
 
-        Faq saved = faqRepository.save(faq);
+        final Faq saved = faqRepository.save(faq);
 
         return FaqResponse.of(saved);
     }
@@ -63,10 +60,10 @@ public class FaqServiceImpl implements FaqService {
     // FAQ 수정
     @Transactional
     @Override
-    public FaqResponse updateFaq(final int faqId, final int memberId, final FaqRequest request) {
-        Member member = findMemberById(memberId);
-        findMemberSystemRole(memberId);
-        Faq faq = findFaqById(faqId);
+    public FaqResponse updateFaq(final int faqId, final Member member, final FaqRequest request) {
+        findMemberSystemRole(member.getId());
+
+        final Faq faq = findFaqById(faqId);
 
         faq.update(request.getTitle(), request.getContent(), request.getAnswer(), member);
 
@@ -76,31 +73,25 @@ public class FaqServiceImpl implements FaqService {
     // FAQ 삭제
     @Transactional
     @Override
-    public void deleteFaq(int faqId, int memberId) {
-        findMemberById(memberId);
-        findMemberSystemRole(memberId);
-        Faq faq = findFaqById(faqId);
+    public void deleteFaq(final int faqId, final Member member) {
+        findMemberSystemRole(member.getId());
+
+        final Faq faq = findFaqById(faqId);
 
         faqRepository.delete(faq);
     }
 
-
     // ============================== 공통 메서드 =====================================
-    private Member findMemberById(final int memberId){
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("사용자가 존재하지 않습니다."));
-    }
-
     private MemberSystemRole findMemberSystemRole(final int memberId) {
-        MemberSystemRole memberRole = memberSystemRoleRepository.findFirstByMemberId(memberId);
-        if(!memberRole.getSystemRole().getName().equals(Role.ADMIN)){
+        final MemberSystemRole memberRole = memberSystemRoleRepository.findFirstByMemberId(memberId);
+        if (!memberRole.getSystemRole().getName().equals(Role.ADMIN)) {
             throw new MemberNotAdminException("사용자가 시스템 관리자가 아닙니다.");
         }
         return memberRole;
     }
 
-    private Faq findFaqById(int faqId) {
-        Faq faq = faqRepository.findById(faqId)
+    private Faq findFaqById(final int faqId) {
+        final Faq faq = faqRepository.findById(faqId)
                 .orElseThrow(() -> new FaqNotFoundException("FAQ 게시물이 존재하지 않습니다."));
         return faq;
     }
