@@ -64,4 +64,10 @@ public class OrganizationMember {
     public void updateOrganizationGroup(final OrganizationGroup organizationGroup) {
         this.organizationGroup = organizationGroup;
     }
+
+    public void updatePenaltyStatus(final int penaltyCount, final boolean isBanned, final String bannedAt) {
+        this.penaltyCount = penaltyCount;
+        this.isBanned = isBanned;
+        this.bannedAt = bannedAt;
+    }
 }

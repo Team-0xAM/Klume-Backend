@@ -151,8 +151,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
 
-        final OrganizationMember organizationMember = organizationMemberRepository.findById(organizationMemberId)
-                .orElseThrow(OrganizationMemberNotFoundException::new);
+        final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
 
         organizationMember.updateRole(requestDTO.getOrganizationRole());
 
@@ -233,6 +232,21 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.updateOrganization(requestDTO.getName(), requestDTO.getDescription());
 
         return organization;
+    }
+
+    @Transactional
+    @Override
+    public OrganizationMember updateOrganizationMemberPenalty(final Member member, final int organizationId,
+                                                              final int organizationMemberId) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        final OrganizationMember organizationMember = findOrganizationMemberByOrganizationMemberId(organizationMemberId);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        organizationMember.updatePenaltyStatus(0, false, null);
+
+        return organizationMember;
     }
 
     private void updateOrganizationImage(final Organization organization, final MultipartFile file) {
@@ -343,5 +357,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (organizationGroupRepository.findByNameAndOrganization(name, organization).isPresent()) {
             throw new OrganizationGroupNameDuplicatedException();
         }
+    }
+
+    private OrganizationMember findOrganizationMemberByOrganizationMemberId(final int organizationMemberId) {
+        return organizationMemberRepository.findById(organizationMemberId)
+                .orElseThrow(OrganizationMemberNotFoundException::new);
     }
 }

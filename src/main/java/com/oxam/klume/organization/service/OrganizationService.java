@@ -37,4 +37,7 @@ public interface OrganizationService {
 
     Organization updateOrganization(final Member member, final int organizationId, final MultipartFile file,
                                     final OrganizationUpdateRequestDTO requestDTO);
+
+    OrganizationMember updateOrganizationMemberPenalty(final Member member, final int organizationId,
+                                                       final int organizationMemberId);
 }

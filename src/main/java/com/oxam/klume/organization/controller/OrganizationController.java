@@ -351,4 +351,16 @@ public class OrganizationController {
 
         return ResponseEntity.ok(OrganizationResponseDTO.of(organization));
     }
+
+    @Operation(summary = "패널티 초기화")
+    @PutMapping("/{organizationId}/members/{organizationMemberId}/penalty")
+    public ResponseEntity<OrganizationMemberPenaltyStatusUpdateResponseDTO> updateOrganizationMemberPenalty(final Authentication authentication,
+                                                                                                            @PathVariable(name = "organizationId") final int organizationId,
+                                                                                                            @PathVariable(name = "organizationMemberId") final int OrganizationMemberId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationMember organizationMember = organizationService.updateOrganizationMemberPenalty(member, organizationId, OrganizationMemberId);
+
+        return ResponseEntity.ok(OrganizationMemberPenaltyStatusUpdateResponseDTO.of(organizationMember));
+    }
 }
