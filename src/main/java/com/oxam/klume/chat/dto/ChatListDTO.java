@@ -14,6 +14,7 @@ public class ChatListDTO {
     private Integer assignedToId;       // 담당자 ID
     private String assignedToEmail;     // 담당자 이메일 (null이면 미배정)
     private String lastMessageAt;       // 마지막 메시지 시각
+    private String lastMessageContent;  // 마지막 메시지 내용
     private String createdAt;
 
     public static ChatListDTO from(ChatRoom chatRoom) {
@@ -25,6 +26,7 @@ public class ChatListDTO {
             chatRoom.getAssignedToId(),
             chatRoom.getAssignedToEmail(),
             chatRoom.getLastMessageAt(),
+            chatRoom.getLastMessageContent(),
             chatRoom.getCreatedAt()
         );
     }
