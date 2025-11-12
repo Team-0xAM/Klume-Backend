@@ -70,29 +70,7 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
 
         dailyAvailableTimeRepository.delete(dailyAvailableTime);
     }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<DailyAvailableTimeResponseDTO> getTodayOpeningTimes(final int memberId, final int organizationId) {
-        Organization organization = findOrganizationById(organizationId);
-
-        // 조직 멤버 권한 검증
-        organizationMemberRepository.findByMemberIdAndOrganization(memberId, organization)
-                .orElseThrow(OrganizationNotFoundException::new);
-
-        // 오늘 날짜 (YYYY-MM-DD 형식)
-        String today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-
-        // 오늘 이후 이용 가능한 일자별 예약 가능 시간 조회
-        List<DailyAvailableTime> dailyAvailableTimes =
-                dailyAvailableTimeRepository.findByOrganizationIdAndReservationOpenDay(organizationId, today);
-
-        return dailyAvailableTimes.stream()
-                .map(DailyAvailableTimeResponseDTO::of)
-                .collect(Collectors.toList());
-    }
-
-
+    
     @Transactional(readOnly = true)
     @Override
     public List<DailyAvailableTimeResponseDTO> getTodayOpeningTimes(final int memberId, final int organizationId) {

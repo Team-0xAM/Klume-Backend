@@ -33,7 +33,7 @@
         WHERE a.organization_member_id = #{organizationMemberId}
         ORDER BY
         STR_TO_DATE(a.date, '%Y-%m-%d') DESC,
-        d.available_start_time ASC;
+        d.available_start_time DESC;
     </select>
 
 </mapper>
