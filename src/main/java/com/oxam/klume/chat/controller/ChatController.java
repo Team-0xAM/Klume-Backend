@@ -65,13 +65,14 @@ public class ChatController {
         // DB에 저장 (MongoDB)
         ChatMessage saved = chatMessageRepository.save(chatMessage);
 
-        // 🔹 ChatRoom의 lastMessageAt 업데이트
-        chatRoom.updateLastMessageTime();
+        // ChatRoom의 lastMessageAt 및 lastMessageContent 업데이트
+        chatRoom.updateLastMessage(requestDTO.getContent());
         chatRepository.save(chatRoom);
 
         // 응답 DTO
         MessageResponseDTO responseDTO = new MessageResponseDTO();
         responseDTO.updateSenderId(saved.getSenderId());
+        responseDTO.updateAdmin(saved.isAdmin());
         responseDTO.updateContent(saved.getContent());
         responseDTO.updateCreatedAt(saved.getCreatedAt());
 
@@ -85,13 +86,22 @@ public class ChatController {
      * - 관리자: 자기가 담당한 채팅방에만 보낼 수 있음
      */
     private boolean canSendMessage(ChatRoom chatRoom, Member sender, boolean isAdmin) {
+        System.out.println("=== 권한 검증 시작 ===");
+        System.out.println("isAdmin: " + isAdmin);
+        System.out.println("sender ID: " + sender.getId());
+        System.out.println("chatRoom createdById: " + chatRoom.getCreatedById());
+        System.out.println("chatRoom assignedToId: " + chatRoom.getAssignedToId());
+
         // 일반 회원인 경우: 자기가 만든 채팅방인지 확인
         if (!isAdmin) {
-            return chatRoom.getCreatedById() == sender.getId();
+            boolean result = chatRoom.getCreatedById() == sender.getId();
+            System.out.println("일반 회원 권한 검증 결과: " + result);
+            return result;
         }
 
         // 관리자인 경우: 담당자로 지정되어 있는지 확인
         if (chatRoom.getAssignedToId() == null) {
+            System.out.println("담당자가 없음");
             return false; // 담당자가 없으면 답장 불가
         }
 
@@ -101,10 +111,14 @@ public class ChatController {
             .orElse(null);
 
         if (assignedMember == null) {
+            System.out.println("담당자 정보를 찾을 수 없음");
             return false;
         }
 
-        return assignedMember.getMember().getId() == sender.getId();
+        System.out.println("담당자 Member ID: " + assignedMember.getMember().getId());
+        boolean result = assignedMember.getMember().getId() == sender.getId();
+        System.out.println("관리자 권한 검증 결과: " + result);
+        return result;
     }
 }
 

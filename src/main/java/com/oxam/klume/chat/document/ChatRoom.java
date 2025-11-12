@@ -28,6 +28,7 @@ public class ChatRoom {
     private String assignedToEmail;  // 담당 관리자 이메일 (null이면 미배정)
     private String createdAt;
     private String lastMessageAt;    // 마지막 메시지 시각 (정렬용)
+    private String lastMessageContent; // 마지막 메시지 내용
 
     // 채팅방 생성 (일반 회원이 관리자에게 문의 시작) - roomId는 외부에서 주입
     public static ChatRoom create(int roomId, int organizationId, int createdById, String createdByEmail) {
@@ -59,8 +60,9 @@ public class ChatRoom {
         this.assignedToEmail = null;
     }
 
-    // 마지막 메시지 시각 업데이트
-    public void updateLastMessageTime() {
+    // 마지막 메시지 시각 및 내용 업데이트
+    public void updateLastMessage(String messageContent) {
         this.lastMessageAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.lastMessageContent = messageContent;
     }
 }
