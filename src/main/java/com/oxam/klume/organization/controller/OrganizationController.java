@@ -397,4 +397,70 @@ public class OrganizationController {
 
         return ResponseEntity.ok(OrganizationResponseDTO.of(organization));
     }
+
+    @Operation(summary = "조직 통계 정보 조회", description = "조직의 구성원 수, 회의실 수 등 통계 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조직 통계 정보 조회 성공", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = OrganizationStatsResponseDTO.class)
+            )),
+            @ApiResponse(responseCode = "403", content = @Content(mediaType = "application/json", examples = {
+                    @ExampleObject(name = "ORGANIZATION_MEMBER_ACCESS_DENIED", value = """
+                            {
+                                "code": "ORGANIZATION003",
+                                "message": "Not a member of the organization"
+                            }
+                            """)
+            })),
+            @ApiResponse(responseCode = "404", content = @Content(mediaType = "application/json", examples = {
+                    @ExampleObject(name = "ORGANIZATION_NOT_FOUND", value = """
+                            {
+                                "code": "ORGANIZATION001",
+                                "message": "Organization not found"
+                            }
+                            """)
+            }))
+    })
+    @GetMapping("/{organizationId}/stats")
+    public ResponseEntity<OrganizationStatsResponseDTO> getOrganizationStats(final Authentication authentication,
+                                                                              @PathVariable(name = "organizationId") final int organizationId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationStatsResponseDTO response = organizationService.getOrganizationStats(member, organizationId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "내 조직 멤버 정보 조회", description = "현재 로그인한 사용자의 조직 내 정보(닉네임, 권한, 그룹 등)를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조직 멤버 정보 조회 성공", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = OrganizationMemberInfoResponseDTO.class)
+            )),
+            @ApiResponse(responseCode = "403", content = @Content(mediaType = "application/json", examples = {
+                    @ExampleObject(name = "ORGANIZATION_MEMBER_ACCESS_DENIED", value = """
+                            {
+                                "code": "ORGANIZATION003",
+                                "message": "Not a member of the organization"
+                            }
+                            """)
+            })),
+            @ApiResponse(responseCode = "404", content = @Content(mediaType = "application/json", examples = {
+                    @ExampleObject(name = "ORGANIZATION_NOT_FOUND", value = """
+                            {
+                                "code": "ORGANIZATION001",
+                                "message": "Organization not found"
+                            }
+                            """)
+            }))
+    })
+    @GetMapping("/{organizationId}/members/me")
+    public ResponseEntity<OrganizationMemberInfoResponseDTO> getMyOrganizationMemberInfo(final Authentication authentication,
+                                                                                          @PathVariable(name = "organizationId") final int organizationId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationMemberInfoResponseDTO response = organizationService.getMyOrganizationMemberInfo(member, organizationId);
+
+        return ResponseEntity.ok(response);
+    }
 }

@@ -46,4 +46,8 @@ public interface OrganizationService {
     void kickOrganizationMember(final Member member, final int organizationId, final int organizationMemberId);
 
     Organization findOrganizationInfoByOrganizationId(final Member member, final int organizationId);
+
+    OrganizationStatsResponseDTO getOrganizationStats(final Member member, final int organizationId);
+
+    OrganizationMemberInfoResponseDTO getMyOrganizationMemberInfo(final Member member, final int organizationId);
 }
