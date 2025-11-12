@@ -1,5 +1,6 @@
 package com.oxam.klume.reservation.dao;
 
+import com.oxam.klume.reservation.dto.MyReservationDTO;
 import com.oxam.klume.reservation.dto.ReservationResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -14,4 +15,5 @@ public interface ReservationMapper {
     List<ReservationResponseDTO> selectOrganizationRoomStatusByDay(int organizationId, String date);
 
     List<ReservationResponseDTO> selectOrganizationRoomStatusByWeek(int organizationId, String startDate, String endDate);
+
 }

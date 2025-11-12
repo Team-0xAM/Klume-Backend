@@ -6,21 +6,24 @@
 
     <!-- ================= 특정 회의실의 예약 현황 조회 =================== -->
     <!-- 일별 조회 -->
-    <select id="selectRoomStatusByDay" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
+    <select id="selectRoomAvailableTimes" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
         SELECT
-            a.id AS roomId,
-            a.name AS roomName,
-            c.date AS date,
-            c.available_start_time AS startTime,
-            c.available_end_time AS endTime,
-            b.reservation_open_day AS reservationOpenDay,
-            c.reservation_open_time AS reservationOpenTime,
+        a.id AS roomId,
+        a.name AS roomName,
+        c.date AS date,
+        c.available_start_time AS startTime,
+        c.available_end_time AS endTime,
+        b.reservation_open_day AS reservationOpenDay,
+        c.reservation_open_time AS reservationOpenTime,
         CASE
-            WHEN d.id IS NOT NULL THEN 'RESERVED'
-            WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
-            ELSE 'AVAILABLE'
+        WHEN d.id IS NOT NULL AND d.cancelled_at IS NULL THEN 'RESERVED'
+        WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
+        ELSE 'AVAILABLE'
         END AS status,
-        COALESCE(f.nickname, '-') AS reservedMember
+        COALESCE(
+            CASE WHEN d.cancelled_at IS NOT NULL THEN NULL ELSE f.nickname END,
+            '-'
+        ) AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
         JOIN daily_available_time c ON c.available_time_id = b.id
@@ -33,6 +36,7 @@
         ORDER BY c.available_start_time
     </select>
 
+
     <!-- 주별 조회 -->
     <select id="selectRoomStatusByWeek" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
         SELECT
@@ -44,11 +48,14 @@
             b.reservation_open_day AS reservationOpenDay,
             c.reservation_open_time AS reservationOpenTime,
         CASE
-            WHEN d.id IS NOT NULL THEN 'RESERVED'
+            WHEN d.id IS NOT NULL AND d.cancelled_at IS NULL THEN 'RESERVED'
             WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
             ELSE 'AVAILABLE'
         END AS status,
-        COALESCE(f.nickname, '-') AS reservedMember
+        COALESCE(
+            CASE WHEN d.cancelled_at IS NOT NULL THEN NULL ELSE f.nickname END,
+            '-'
+        ) AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
         JOIN daily_available_time c ON c.available_time_id = b.id
@@ -74,11 +81,14 @@
         b.reservation_open_day AS reservationOpenDay,
         c.reservation_open_time AS reservationOpenTime,
         CASE
-            WHEN d.id IS NOT NULL THEN 'RESERVED'
+            WHEN d.id IS NOT NULL AND d.cancelled_at IS NULL THEN 'RESERVED'
             WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
             ELSE 'AVAILABLE'
         END AS status,
-        COALESCE(f.nickname, '-') AS reservedMember
+        COALESCE(
+            CASE WHEN d.cancelled_at IS NOT NULL THEN NULL ELSE f.nickname END,
+            '-'
+        ) AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
         JOIN daily_available_time c ON c.available_time_id = b.id
@@ -101,11 +111,14 @@
         b.reservation_open_day AS reservationOpenDay,
         c.reservation_open_time AS reservationOpenTime,
         CASE
-            WHEN d.id IS NOT NULL THEN 'RESERVED'
+            WHEN d.id IS NOT NULL AND d.cancelled_at IS NULL THEN 'RESERVED'
             WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
             ELSE 'AVAILABLE'
         END AS status,
-        COALESCE(f.nickname, '-') AS reservedMember
+        COALESCE(
+            CASE WHEN d.cancelled_at IS NOT NULL THEN NULL ELSE f.nickname END,
+            '-'
+        ) AS reservedMember
         FROM room a
         JOIN available_time b ON b.room_id = a.id
         JOIN daily_available_time c ON c.available_time_id = b.id

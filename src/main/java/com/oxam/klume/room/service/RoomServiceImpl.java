@@ -24,6 +24,7 @@ import com.oxam.klume.file.infra.S3Uploader;
 import java.util.List;
 import java.util.Objects;
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -138,7 +139,9 @@ public class RoomServiceImpl implements RoomService {
     private OrganizationMember findOrganizationMemberById(int organizationId, int memberId) {
         OrganizationMember member = organizationMemberRepository
                 .findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new OrganizationMemberAccessDeniedException("사용자가 가입하지 않은 조직입니다."));
+                .orElseThrow(() -> {
+                    return new OrganizationMemberAccessDeniedException("사용자가 가입하지 않은 조직입니다.");
+                });
 
         // 정지 상태
         if (member.isBanned()) throw new OrganizationNotAdminException("정지된 사용자는 접근할 수 없습니다.");

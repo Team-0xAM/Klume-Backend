@@ -7,15 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Table(
-        name = "reservation",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "UK_DATE_ROOM_ID",
-                        columnNames = {"date", "room_id"}
-                )
-        }
-)
+@Table(name = "reservation")
 @NoArgsConstructor
 @Entity
 public class Reservation {
@@ -49,6 +41,10 @@ public class Reservation {
     }
 
     public void updateImageUrl(final String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void uploadImage(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 }
