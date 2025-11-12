@@ -193,7 +193,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         final OrganizationGroup originOrganizationGroup = findOrganizationGroupById(organizationGroupId);
 
-        validateSameOrganization(organization, organizationGroup.getOrganization());
+        validateSameOrganization(organization, originOrganizationGroup.getOrganization());
 
         findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
 
