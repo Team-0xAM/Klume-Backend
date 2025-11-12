@@ -28,6 +28,16 @@ public class DailyReservation {
     @ManyToOne(fetch = FetchType.LAZY)
     private Reservation reservation;
 
+    public DailyReservation(final DailyAvailableTime dailyAvailableTime, final Reservation reservation) {
+        this.cancelledAt = null;
+        this.dailyAvailableTime = dailyAvailableTime;
+        this.reservation = reservation;
+    }
+
+    public void updateCancelledAt(final String cancelledAt) {
+        this.cancelledAt = cancelledAt;
+    }
+
     public void cancel() {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime now = LocalDateTime.now();
