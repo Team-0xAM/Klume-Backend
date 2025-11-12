@@ -14,6 +14,7 @@ import com.oxam.klume.organization.exception.*;
 import com.oxam.klume.organization.repository.OrganizationGroupRepository;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
+import com.oxam.klume.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
     private final OrganizationGroupRepository organizationGroupRepository;
+    private final RoomRepository roomRepository;
 
     private final FileValidator fileValidator;
     private final RedisService redisService;
@@ -427,5 +429,42 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (organization != targetOrganization) {
             throw new OrganizationMismatchException();
         }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public OrganizationStatsResponseDTO getOrganizationStats(final Member member, final int organizationId) {
+        final Organization organization = findOrganizationById(organizationId);
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        // 구성원 수 조회
+        final int memberCount = organizationMemberRepository.countByOrganization(organization);
+
+        // 회의실 수 조회
+        final int roomCount = roomRepository.countByOrganization(organization);
+
+        // 예약 관련 통계는 추후 구현 예정
+        final int totalReservationCount = 0;
+        final int todayReservationCount = 0;
+
+        return OrganizationStatsResponseDTO.builder()
+                .organizationId(organization.getId())
+                .name(organization.getName())
+                .description(organization.getDescription())
+                .imageUrl(organization.getImageUrl())
+                .memberCount(memberCount)
+                .roomCount(roomCount)
+                .totalReservationCount(totalReservationCount)
+                .todayReservationCount(todayReservationCount)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public OrganizationMemberInfoResponseDTO getMyOrganizationMemberInfo(final Member member, final int organizationId) {
+        final Organization organization = findOrganizationById(organizationId);
+        final OrganizationMember organizationMember = findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        return OrganizationMemberInfoResponseDTO.of(organizationMember);
     }
 }
