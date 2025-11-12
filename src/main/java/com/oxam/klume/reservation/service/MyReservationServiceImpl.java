@@ -2,13 +2,16 @@ package com.oxam.klume.reservation.service;
 
 import com.oxam.klume.file.infra.S3Uploader;
 import com.oxam.klume.organization.entity.OrganizationMember;
+import com.oxam.klume.organization.entity.enums.OrganizationRole;
 import com.oxam.klume.organization.exception.OrganizationNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.reservation.dao.MyReservationMapper;
 import com.oxam.klume.reservation.dto.MyReservationDTO;
 import com.oxam.klume.reservation.entity.DailyReservation;
 import com.oxam.klume.reservation.entity.Reservation;
+import com.oxam.klume.reservation.exception.ImageUnauthorizedAccessException;
 import com.oxam.klume.reservation.exception.ReservationAlreadyStartedException;
+import com.oxam.klume.reservation.exception.ReservationImageNotFoundException;
 import com.oxam.klume.reservation.exception.ReservationNotFoundException;
 import com.oxam.klume.reservation.repository.DailyReservationRepository;
 import com.oxam.klume.reservation.repository.ReservationRepository;
@@ -16,6 +19,7 @@ import com.oxam.klume.room.entity.DailyAvailableTime;
 import com.oxam.klume.room.exception.DailyAvailableTimeNotFoundException;
 import com.oxam.klume.room.repository.DailyAvailableTimeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -90,6 +94,30 @@ public class MyReservationServiceImpl implements MyReservationService {
 
         reservation.uploadImage(s3Url);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public String getReservationPhoto(int memberId, int reservationId, int organizationId) {
+        OrganizationMember organizationMember = findOrganizationMemberById(organizationId, memberId);
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationNotFoundException("예약이 존재하지 않습니다."));
+
+        // 예약한 자거나 조직의 관리자는 인증사진을 볼 수 있다.
+        boolean isOwner = reservation.getOrganizationMember().getId() == organizationMember.getId();
+        boolean isAdmin = OrganizationRole.ADMIN.equals(organizationMember.getRole());
+
+        if (!isOwner && !isAdmin) {
+            throw new ImageUnauthorizedAccessException();
+        }
+
+        String imageUrl = reservation.getImageUrl();
+        if (imageUrl == null || imageUrl.isBlank()) {
+            throw new ReservationImageNotFoundException();
+        }
+
+        return imageUrl;
+    }
+
 
     private String uploadImage(final MultipartFile file) {
         if (file != null) {

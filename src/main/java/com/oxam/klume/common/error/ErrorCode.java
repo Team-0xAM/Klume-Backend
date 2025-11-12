@@ -58,7 +58,8 @@ public enum ErrorCode {
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION001","Reservation not found"),
     RESERVATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "RESERVATION002", "Reservation exists"),
     RESERVATION_ALREADY_STARTED(HttpStatus.CONFLICT, "RESERVATION003", "Reservation time has already started"),
-
+    RESERVATION_IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "RESERVATION004","Reservation image not found"),
+    IMAGE_UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED, "RESERVATION005", "Unauthorized access to the image url"),
     /* FAQ */
     FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ001", "FAQ not found"),
 

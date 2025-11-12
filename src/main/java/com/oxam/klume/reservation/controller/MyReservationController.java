@@ -59,4 +59,18 @@ public class MyReservationController {
 
         return ResponseEntity.ok("인증사진 업로드가 완료되었습니다.");
     }
+
+    @Operation(summary = "회의실 입장 인증사진 조회")
+    @GetMapping("/{reservationId}/photo")
+    public ResponseEntity<String> getReservationPhoto(
+            @PathVariable final int reservationId,
+            @PathVariable final int organizationId,
+            Authentication authentication
+    ){
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
+        String imageUrl = myReservationService.getReservationPhoto(memberId, reservationId, organizationId);
+
+        return ResponseEntity.ok(imageUrl);
+    }
+
 }
