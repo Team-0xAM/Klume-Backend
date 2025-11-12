@@ -31,4 +31,8 @@ public class Reservation {
     @JoinColumn(name = "organization_member_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private OrganizationMember organizationMember;
+
+    public void uploadImage(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

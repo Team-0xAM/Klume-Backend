@@ -6,6 +6,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -51,4 +56,19 @@ public class DailyAvailableTime {
         this.reservationOpenTime = reservationOpenTime;
         this.availableTime = availableTime;
     }
+
+    public void reopen() {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        this.reservationOpenDay = LocalDate.now().format(dateFormatter);
+        this.reservationOpenTime = LocalTime.now().format(timeFormatter);
+    }
+
+    public LocalDateTime getStartDateTime() {
+        LocalDate date = LocalDate.parse(this.date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalTime time = LocalTime.parse(this.availableStartTime, DateTimeFormatter.ofPattern("HH:mm"));
+        return LocalDateTime.of(date, time);
+    }
+
 }

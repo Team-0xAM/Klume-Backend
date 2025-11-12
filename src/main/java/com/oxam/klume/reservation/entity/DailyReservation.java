@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Getter
 @Table(name = "daily_reservation")
 @NoArgsConstructor
@@ -24,4 +27,11 @@ public class DailyReservation {
     @JoinColumn(name = "reservation_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Reservation reservation;
+
+    public void cancel() {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime now = LocalDateTime.now();
+        String formatted = now.format(dateTimeFormatter);
+        this.cancelledAt = formatted;
+    }
 }
