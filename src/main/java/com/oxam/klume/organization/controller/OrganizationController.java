@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "organization", description = "조직 관련 API")
 @RequestMapping("/organizations")
@@ -423,7 +424,7 @@ public class OrganizationController {
     })
     @GetMapping("/{organizationId}/stats")
     public ResponseEntity<OrganizationStatsResponseDTO> getOrganizationStats(final Authentication authentication,
-                                                                              @PathVariable(name = "organizationId") final int organizationId) {
+                                                                             @PathVariable(name = "organizationId") final int organizationId) {
         final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
 
         final OrganizationStatsResponseDTO response = organizationService.getOrganizationStats(member, organizationId);
@@ -456,10 +457,25 @@ public class OrganizationController {
     })
     @GetMapping("/{organizationId}/members/me")
     public ResponseEntity<OrganizationMemberInfoResponseDTO> getMyOrganizationMemberInfo(final Authentication authentication,
-                                                                                          @PathVariable(name = "organizationId") final int organizationId) {
+                                                                                         @PathVariable(name = "organizationId") final int organizationId) {
         final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
 
         final OrganizationMemberInfoResponseDTO response = organizationService.getMyOrganizationMemberInfo(member, organizationId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "조직 멤버 목록 조회")
+    @GetMapping("/{organizationId}/members")
+    public ResponseEntity<List<OrganizationMemberResponseDTO>> getOrganizationMembers(final Authentication authentication,
+                                                                                      @PathVariable(name = "organizationId") final int organizationId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final List<OrganizationMember> organizationMembers = organizationService.getOrganizationMembers(member, organizationId);
+
+        final List<OrganizationMemberResponseDTO> response = organizationMembers.stream()
+                .map(OrganizationMemberResponseDTO::of)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
     }

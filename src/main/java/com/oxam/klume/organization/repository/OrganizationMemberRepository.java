@@ -33,4 +33,6 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
     int countByOrganizationAndRole(final Organization organization, final OrganizationRole organizationRole);
 
     int countByOrganization(final Organization organization);
+
+    List<OrganizationMember> findByOrganization(final Organization organization);
 }
