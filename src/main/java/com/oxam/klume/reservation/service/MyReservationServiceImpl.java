@@ -62,10 +62,10 @@ public class MyReservationServiceImpl implements MyReservationService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         // 예약 시작 시간 계산
-        String startStr = dailyAvailableTime.getAvailableTime().getRepeatStartDay() + " " +
+        String startStr = dailyAvailableTime.getDate() + " " +
                 dailyAvailableTime.getAvailableStartTime();
         LocalDateTime reservationStart = LocalDateTime.parse(startStr, formatter);
-
+        
         // 예약 시작 시간이 지났으면 예외 반환
         if (LocalDateTime.now().isAfter(reservationStart)) {
             throw new ReservationAlreadyStartedException();
