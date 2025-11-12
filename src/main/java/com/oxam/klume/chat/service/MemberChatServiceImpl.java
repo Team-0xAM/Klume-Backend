@@ -62,7 +62,7 @@ public class MemberChatServiceImpl implements MemberChatService {
                 .build();
             chatMessageRepository.save(chatMessage);
 
-            chatRoom.updateLastMessageTime();
+            chatRoom.updateLastMessage(firstMessage);
             chatRepository.save(chatRoom);
         }
 
