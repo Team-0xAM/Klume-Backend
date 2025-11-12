@@ -24,6 +24,9 @@ import com.oxam.klume.file.infra.S3Uploader;
 import java.util.List;
 import java.util.Objects;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -39,8 +42,11 @@ public class RoomServiceImpl implements RoomService {
     // 회의실 목록 조회
     @Override
     public List<RoomResponseDTO> getRooms(int organizationId, int memberId) {
+        log.info("getRooms 호출 - organizationId: {}, memberId: {}", organizationId, memberId);
         Organization organization = getOrganizationOrThrow(organizationId);
+        log.info("조직 찾음 - organization: {}", organization.getId());
         findOrganizationMemberById(organizationId, memberId);
+        log.info("조직 회원 확인 완료");
         return roomRepository.findByOrganization(organization)
                 .stream()
                 .map(this::toResponseDTO)
@@ -59,9 +65,12 @@ public class RoomServiceImpl implements RoomService {
     // 회의실 + 이미지 등록
     @Override
     public RoomResponseDTO createRoomWithImage(int organizationId, RoomRequestDTO dto, MultipartFile imageFile, int memberId) {
+        log.info("createRoomWithImage 호출 - organizationId: {}, memberId: {}, dto: {}", organizationId, memberId, dto);
         Organization organization = getOrganizationOrThrow(organizationId);
+        log.info("조직 찾음 - organization: {}", organization.getId());
 
         OrganizationMember member = findOrganizationMemberById(organizationId, memberId);
+        log.info("조직 회원 찾음 - member role: {}", member.getRole());
         if (member.getRole() != OrganizationRole.ADMIN) {
             throw new OrganizationNotAdminException("회의실을 등록할 권한이 없습니다.");
         }
@@ -136,10 +145,15 @@ public class RoomServiceImpl implements RoomService {
 
     // 조직에 포함된 회원인지 검증 + 정지 여부 추가
     private OrganizationMember findOrganizationMemberById(int organizationId, int memberId) {
+        log.info("findOrganizationMemberById 호출 - organizationId: {}, memberId: {}", organizationId, memberId);
         OrganizationMember member = organizationMemberRepository
                 .findByOrganizationIdAndMemberId(organizationId, memberId)
-                .orElseThrow(() -> new OrganizationMemberAccessDeniedException("사용자가 가입하지 않은 조직입니다."));
+                .orElseThrow(() -> {
+                    log.error("조직 회원을 찾을 수 없음 - organizationId: {}, memberId: {}", organizationId, memberId);
+                    return new OrganizationMemberAccessDeniedException("사용자가 가입하지 않은 조직입니다.");
+                });
 
+        log.info("조직 회원 찾음 - member: {}, role: {}, banned: {}", member.getId(), member.getRole(), member.isBanned());
         // 정지 상태
         if (member.isBanned()) throw new OrganizationNotAdminException("정지된 사용자는 접근할 수 없습니다.");
 
