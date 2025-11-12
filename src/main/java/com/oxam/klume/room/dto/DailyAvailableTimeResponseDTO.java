@@ -14,6 +14,7 @@ public class DailyAvailableTimeResponseDTO {
     private String available_end_time;
     private String reservation_open_day;
     private String reservation_open_time;
+    private String room_name;
 
     public static DailyAvailableTimeResponseDTO of(final DailyAvailableTime dailyAvailableTime) {
         return DailyAvailableTimeResponseDTO.builder()
@@ -24,6 +25,7 @@ public class DailyAvailableTimeResponseDTO {
                 .available_end_time(dailyAvailableTime.getAvailableEndTime())
                 .reservation_open_day(dailyAvailableTime.getReservationOpenDay())
                 .reservation_open_time(dailyAvailableTime.getReservationOpenTime())
+                .room_name(dailyAvailableTime.getAvailableTime().getRoom().getName())
                 .build();
     }
 }
