@@ -46,7 +46,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         validateSameOrganization(organization, room.getOrganization());
 
-        final DailyAvailableTime dailyAvailableTime = findDailyReservationById(dailyAvailableTimeId);
+        final DailyAvailableTime dailyAvailableTime = findDailyReservationByIdWithLock(dailyAvailableTimeId);
 
         validateSameOrganization(organization, findOrganizationByDailyAvailableTimeId(dailyAvailableTimeId));
 
@@ -78,8 +78,8 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private DailyAvailableTime findDailyReservationById(final int dailyAvailableTimeId) {
-        return dailyAvailableTimeRepository.findById(dailyAvailableTimeId)
+    private DailyAvailableTime findDailyReservationByIdWithLock(final int dailyAvailableTimeId) {
+        return dailyAvailableTimeRepository.findByIdWithLock(dailyAvailableTimeId)
                 .orElseThrow(DailyAvailableTimeNotFoundException::new);
     }
 
