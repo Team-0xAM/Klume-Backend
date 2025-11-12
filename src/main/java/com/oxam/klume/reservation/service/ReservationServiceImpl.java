@@ -66,14 +66,14 @@ public class ReservationServiceImpl implements ReservationService {
 
         reservation = reservationRepository.save(reservation);
 
-        return new DailyReservation(dailyAvailableTime, reservation);
+        return dailyReservationRepository.save(new DailyReservation(dailyAvailableTime, reservation));
     }
 
     private void validateReservationAvailability(final DailyAvailableTime dailyAvailableTime) {
         final Optional<DailyReservation> dailyReservation = dailyReservationRepository
                 .findByDailyAvailableTime_Id(dailyAvailableTime.getId());
 
-        if (dailyReservation.isPresent() && dailyReservation.get().getCancelledAt() != null) {
+        if (dailyReservation.isPresent() && dailyReservation.get().getCancelledAt() == null) {
             throw new RoomAlreadyBookedException();
         }
     }
