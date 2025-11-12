@@ -31,4 +31,6 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
                                  @Param("oldOrganizationGroup") final OrganizationGroup oldOrganizationGroup);
 
     int countByOrganizationAndRole(final Organization organization, final OrganizationRole organizationRole);
+
+    int countByOrganization(final Organization organization);
 }

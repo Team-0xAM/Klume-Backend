@@ -11,4 +11,5 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     List<Room> findByOrganization(Organization organization);
     Optional<Room> findByIdAndOrganization(int id, Organization organization);
     boolean existsByOrganizationAndName(Organization organization, String name);
+    int countByOrganization(Organization organization);
 }
