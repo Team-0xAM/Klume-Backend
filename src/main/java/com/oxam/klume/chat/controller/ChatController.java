@@ -86,11 +86,6 @@ public class ChatController {
      * - 관리자: 자기가 담당한 채팅방에만 보낼 수 있음
      */
     private boolean canSendMessage(ChatRoom chatRoom, Member sender, boolean isAdmin) {
-        System.out.println("=== 권한 검증 시작 ===");
-        System.out.println("isAdmin: " + isAdmin);
-        System.out.println("sender ID: " + sender.getId());
-        System.out.println("chatRoom createdById: " + chatRoom.getCreatedById());
-        System.out.println("chatRoom assignedToId: " + chatRoom.getAssignedToId());
 
         // 일반 회원인 경우: 자기가 만든 채팅방인지 확인
         if (!isAdmin) {
