@@ -8,6 +8,7 @@ public class MyReservationDTO {
     private String roomName;
     private String reservationCreatedAt;
     private String reservationDate;
+    private String imageUrl;
     private String startTime;
     private String endTime;
     private String cancelledAt;

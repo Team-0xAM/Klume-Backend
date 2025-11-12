@@ -34,10 +34,6 @@ public class DailyReservation {
         this.reservation = reservation;
     }
 
-    public void updateCancelledAt(final String cancelledAt) {
-        this.cancelledAt = cancelledAt;
-    }
-
     public void cancel() {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime now = LocalDateTime.now();
