@@ -13,6 +13,7 @@ import com.oxam.klume.reservation.entity.DailyReservation;
 import com.oxam.klume.reservation.entity.Reservation;
 import com.oxam.klume.reservation.exception.OrganizationMemberBannedException;
 import com.oxam.klume.reservation.exception.RoomAlreadyBookedException;
+import com.oxam.klume.reservation.repository.DailyReservationRepository;
 import com.oxam.klume.reservation.repository.ReservationRepository;
 import com.oxam.klume.room.entity.DailyAvailableTime;
 import com.oxam.klume.room.entity.Room;
@@ -21,11 +22,11 @@ import com.oxam.klume.room.exception.RoomNotFoundException;
 import com.oxam.klume.room.repository.DailyAvailableTimeRepository;
 import com.oxam.klume.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -35,6 +36,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final RoomRepository roomRepository;
     private final ReservationRepository reservationRepository;
     private final DailyAvailableTimeRepository dailyAvailableTimeRepository;
+    private final DailyReservationRepository dailyReservationRepository;
 
     @Transactional
     @Override
@@ -46,7 +48,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         validateSameOrganization(organization, room.getOrganization());
 
-        final DailyAvailableTime dailyAvailableTime = findDailyReservationByIdWithLock(dailyAvailableTimeId);
+        final DailyAvailableTime dailyAvailableTime = findDailyReservationById(dailyAvailableTimeId);
 
         validateSameOrganization(organization, findOrganizationByDailyAvailableTimeId(dailyAvailableTimeId));
 
@@ -54,19 +56,24 @@ public class ReservationServiceImpl implements ReservationService {
 
         validateOrganizationMemberNotBanned(organizationMember);
 
+        validateReservationAvailability(dailyAvailableTime);
+
         final String availableStartDateTime = dailyAvailableTime.getDate() + " "
                 + dailyAvailableTime.getAvailableStartTime();
 
         Reservation reservation = new Reservation(availableStartDateTime, room, organizationMember
                 , DateUtil.format(LocalDateTime.now()));
 
-        try {
-            reservation = reservationRepository.save(reservation);
+        reservation = reservationRepository.save(reservation);
 
-            final DailyReservation dailyReservation = new DailyReservation(dailyAvailableTime, reservation);
+        return new DailyReservation(dailyAvailableTime, reservation);
+    }
 
-            return dailyReservation;
-        } catch (DataIntegrityViolationException e) {
+    private void validateReservationAvailability(final DailyAvailableTime dailyAvailableTime) {
+        final Optional<DailyReservation> dailyReservation = dailyReservationRepository
+                .findByDailyAvailableTime_Id(dailyAvailableTime.getId());
+
+        if (dailyReservation.isPresent() && dailyReservation.get().getCancelledAt() != null) {
             throw new RoomAlreadyBookedException();
         }
     }
@@ -78,8 +85,8 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private DailyAvailableTime findDailyReservationByIdWithLock(final int dailyAvailableTimeId) {
-        return dailyAvailableTimeRepository.findByIdWithLock(dailyAvailableTimeId)
+    private DailyAvailableTime findDailyReservationById(final int dailyAvailableTimeId) {
+        return dailyAvailableTimeRepository.findById(dailyAvailableTimeId)
                 .orElseThrow(DailyAvailableTimeNotFoundException::new);
     }
 
