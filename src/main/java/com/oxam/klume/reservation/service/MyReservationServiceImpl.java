@@ -1,5 +1,6 @@
 package com.oxam.klume.reservation.service;
 
+import com.oxam.klume.file.infra.S3Uploader;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.exception.OrganizationNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
@@ -17,6 +18,9 @@ import com.oxam.klume.room.repository.DailyAvailableTimeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import com.oxam.klume.file.FileValidator;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -29,6 +33,9 @@ public class MyReservationServiceImpl implements MyReservationService {
     private final OrganizationMemberRepository organizationMemberRepository;
     private final DailyAvailableTimeRepository dailyAvailableTimeRepository;
     private final DailyReservationRepository dailyReservationRepository;
+
+    private final FileValidator fileValidator;
+    private final S3Uploader s3Uploader;
 
     public List<MyReservationDTO> selectMyReservations(final int organizationId, final int memberId) {
         OrganizationMember organizationMember = findOrganizationMemberById(organizationId, memberId);
@@ -71,8 +78,35 @@ public class MyReservationServiceImpl implements MyReservationService {
         }
     }
 
+
+    @Transactional
+    @Override
+    public void enterRoom(final int memberId, final int reservationId, final int organizationId, final MultipartFile file) {
+        OrganizationMember organizationMember = findOrganizationMemberById(organizationId, memberId);
+
+        Reservation reservation = findReservationByMemberId(reservationId, organizationMember.getId());
+
+        String s3Url = uploadImage(file);
+
+        reservation.uploadImage(s3Url);
+    }
+
+    private String uploadImage(final MultipartFile file) {
+        if (file != null) {
+            fileValidator.validateImage(file);
+
+            return s3Uploader.upload("reservation/", file);
+        }
+        return null;
+    }
+
     private OrganizationMember findOrganizationMemberById(final int organizationId, final int memberId) {
         return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
                 .orElseThrow(() -> new OrganizationNotFoundException("사용자가 가입하지 않은 조직입니다."));
+    }
+
+    private Reservation findReservationByMemberId(final int reservationId, final int organizationMemberId) {
+        return reservationRepository.findByIdAndOrganizationMember_Id(reservationId, organizationMemberId)
+                .orElseThrow(() -> new ReservationNotFoundException("해당 사용자의 예약이 없습니다."));
     }
 }

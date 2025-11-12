@@ -1,5 +1,6 @@
 package com.oxam.klume.reservation.controller;
 
+import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.member.service.MemberService;
 import com.oxam.klume.reservation.dto.MyReservationDTO;
 import com.oxam.klume.reservation.service.MyReservationService;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class MyReservationController {
 
     @Operation(summary = "내 예약 취소")
     @PutMapping("/{reservationId}/cancel")
-    public ResponseEntity<Void> cancelReservation(
+    public ResponseEntity<String> cancelReservation(
             @PathVariable final int reservationId,
             @PathVariable final int organizationId,
             Authentication authentication) {
@@ -41,7 +43,20 @@ public class MyReservationController {
         final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
 
         myReservationService.cancelReservation(reservationId, organizationId, memberId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("예약 취소가 완료되었습니다.");
     }
 
+    @Operation(summary = "회의실 입장 인증사진 업로드")
+    @PostMapping("/{reservationId}/photo")
+    public ResponseEntity<String> enterRoom(
+            @PathVariable final int reservationId,
+            @PathVariable final int organizationId,
+            @RequestPart(value = "image") final MultipartFile file,
+            Authentication authentication
+    ){
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
+        myReservationService.enterRoom(memberId, reservationId, organizationId, file);
+
+        return ResponseEntity.ok("인증사진 업로드가 완료되었습니다.");
+    }
 }
