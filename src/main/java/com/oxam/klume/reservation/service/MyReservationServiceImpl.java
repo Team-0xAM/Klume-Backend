@@ -18,6 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -38,8 +41,8 @@ public class MyReservationServiceImpl implements MyReservationService {
     @Transactional
     @Override
     public void cancelReservation(final int reservationId, final int organizationId, final int memberId) {
-        int organizationMemberId = findOrganizationMemberById(organizationId, memberId).getId();
-        Reservation reservation = reservationRepository.findByIdAndOrganizationMember_Id(reservationId, organizationMemberId)
+        OrganizationMember organizationMember = findOrganizationMemberById(organizationId, memberId);
+        Reservation reservation = reservationRepository.findByIdAndOrganizationMember_Id(reservationId, organizationMember.getId())
                 .orElseThrow(() -> new ReservationNotFoundException("예약이 존재하지 않습니다"));
 
         DailyReservation dailyReservation = dailyReservationRepository.findByReservation(reservation);
@@ -51,11 +54,18 @@ public class MyReservationServiceImpl implements MyReservationService {
 
         dailyAvailableTime.reopen(); // 예약 재오픈
 
-        // 사용자가 1시간 이내 취소했을 시에 패널티 먹임
+        // 사용자가 1시간 이내 취소했을 시에 패널티 부여
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
+        LocalDateTime cancelledAt = LocalDateTime.parse(dailyReservation.getCancelledAt(), formatter);
+        String startStr = dailyAvailableTime.getAvailableTime().getRepeatStartDay() + " " +
+                dailyAvailableTime.getAvailableStartTime();
+        LocalDateTime reservationStart = LocalDateTime.parse(startStr, formatter);
 
-        // 패널티 3회일시 조직별 사용자 업데이트 (
-
+        if (!cancelledAt.isBefore(reservationStart.minusHours(1))) {
+            // 1시간 이내 취소면 패널티 적용
+            organizationMember.applyPenalty();
+        }
     }
 
     private OrganizationMember findOrganizationMemberById(final int organizationId, final int memberId) {
