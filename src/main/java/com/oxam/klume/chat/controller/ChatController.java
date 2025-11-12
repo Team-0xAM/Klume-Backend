@@ -37,14 +37,14 @@ public class ChatController {
     @MessageMapping("/chat")  // /app/chat 엔드포인트로 publish 하면 이쪽으로 오게한다.
     public void sendMessage(MessageRequestDTO requestDTO, Principal principal) {
 
-        // 🔹 principal 에서 이메일 추출 (JwtChannelInterceptor 에서 넣어줌)
+        // principal 에서 이메일 추출 (JwtChannelInterceptor 에서 넣어줌)
         String senderEmail = principal != null ? principal.getName() : "anonymous";
 
-        // 🔹 채팅방 조회
+        // 채팅방 조회
         ChatRoom chatRoom = chatRepository.findByRoomId(requestDTO.getRoomId())
                 .orElseThrow(() -> new RuntimeException("채팅방을 찾을 수 없습니다."));
 
-        // 🔹 권한 검증: 메시지를 보낼 수 있는지 확인
+        // 권한 검증: 메시지를 보낼 수 있는지 확인
         Member sender = memberRepository.findByEmail(senderEmail)
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 
@@ -76,7 +76,7 @@ public class ChatController {
         responseDTO.updateContent(saved.getContent());
         responseDTO.updateCreatedAt(saved.getCreatedAt());
 
-        // 🔹 특정 채팅방 구독자들에게만 전송 (채널 분리)
+        // 특정 채팅방 구독자들에게만 전송 (채널 분리)
         messagingTemplate.convertAndSend("/topic/chat-room/" + requestDTO.getRoomId(), responseDTO);
     }
 

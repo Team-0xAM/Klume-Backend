@@ -1,16 +1,16 @@
 package com.oxam.klume.organization.service;
 
-import com.oxam.klume.organization.dto.OrganizationGroupResponseDTO;
-import com.oxam.klume.organization.dto.OrganizationMemberRequestDTO;
-import com.oxam.klume.organization.dto.OrganizationRequestDTO;
+import com.oxam.klume.member.entity.Member;
+import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
+import com.oxam.klume.organization.entity.OrganizationGroup;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface OrganizationService {
-    Organization createOrganization(final int memberId, final MultipartFile file, final OrganizationRequestDTO requestDTO);
+    Organization createOrganization(final Member member, final MultipartFile file, final OrganizationRequestDTO requestDTO);
 
     String createInvitationCode(final int organizationId, final int memberId);
 
@@ -20,5 +20,34 @@ public interface OrganizationService {
 
     Organization validateInvitationCode(final int memberId, final String code);
 
-    OrganizationMember createOrganizationMember(final int memberId, final int organizationId, final OrganizationMemberRequestDTO requestDTO);
+    OrganizationMember createOrganizationMember(final Member member, final int organizationId,
+                                                final OrganizationMemberRequestDTO requestDTO);
+
+    List<Organization> findOrganizationByMember(final Member member);
+
+    OrganizationMember updateOrganizationMemberRole(final Member member, final int organizationMemberId,
+                                                    final int organizationId, final OrganizationMemberRoleRequestDTO requestDTO);
+
+    OrganizationGroup createOrganizationGroup(final Member member, final int organizationId, final OrganizationGroup organizationGroup);
+
+    OrganizationGroup updateOrganizationGroup(final Member member, final int organizationId, final int organizationGroupId,
+                                              final OrganizationGroup organizationGroup);
+
+    void deleteOrganizationGroup(final Member member, final int organizationId, final int organizationGroupId);
+
+    Organization updateOrganization(final Member member, final int organizationId, final MultipartFile file,
+                                    final OrganizationUpdateRequestDTO requestDTO);
+
+    OrganizationMember updateOrganizationMemberPenalty(final Member member, final int organizationId,
+                                                       final int organizationMemberId);
+
+    void leaveOrganization(final Member member, final int organizationId);
+
+    void kickOrganizationMember(final Member member, final int organizationId, final int organizationMemberId);
+
+    Organization findOrganizationInfoByOrganizationId(final Member member, final int organizationId);
+
+    OrganizationStatsResponseDTO getOrganizationStats(final Member member, final int organizationId);
+
+    OrganizationMemberInfoResponseDTO getMyOrganizationMemberInfo(final Member member, final int organizationId);
 }

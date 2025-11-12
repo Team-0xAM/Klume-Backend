@@ -39,43 +39,42 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         try {
-            // 1. Authorization 헤더에서 JWT 토큰 추출
             String token = getTokenFromRequest(request);
 
-            // 2. 토큰이 있고 유효하면 인증 처리
-            if (token != null && jwtUtil.validateToken(token)) {
-                String email = jwtUtil.getEmailFromToken(token);
+            if (token != null) {
+                if (jwtUtil.validateToken(token)) {
+                    String email = jwtUtil.getEmailFromToken(token);
+                    Optional<Member> memberOptional = memberRepository.findByEmail(email);
 
-                // 3. DB에서 회원 조회
-                Optional<Member> memberOptional = memberRepository.findByEmail(email);
+                    if (memberOptional.isPresent()) {
+                        Member member = memberOptional.get();
+                        List<MemberSystemRole> memberRoles = memberSystemRoleRepository.findByMemberId(member.getId());
 
-                if (memberOptional.isPresent()) {
-                    Member member = memberOptional.get();
+                        List<GrantedAuthority> authorities = memberRoles.stream()
+                                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getSystemRole().getName().name()))
+                                .collect(Collectors.toList());
 
-                    // 4. DB에서 회원의 역할 조회
-                    List<MemberSystemRole> memberRoles = memberSystemRoleRepository.findByMemberId(member.getId());
-
-                    // 5. 역할을 권한으로 변환 (MEMBER -> ROLE_MEMBER, ADMIN -> ROLE_ADMIN)
-                    List<GrantedAuthority> authorities = memberRoles.stream()
-                            .map(memberRole -> new SimpleGrantedAuthority("ROLE_" + memberRole.getSystemRole().getName().name()))
-                            .collect(Collectors.toList());
-
-                    // 6. SecurityContext에 인증 정보 저장 (email을 principal로 사용)
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(email, null, authorities);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.info("JWT 인증 성공 - email: {}, authorities: {}", email, authorities);
+                        UsernamePasswordAuthenticationToken authentication =
+                                new UsernamePasswordAuthenticationToken(email, null, authorities);
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    } else {
+                        log.info("JWT 이메일에 해당하는 회원이 없음: {}", email);
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token: user not found");
+                        return;
+                    }
                 } else {
-                    log.warn("JWT 토큰의 이메일에 해당하는 회원이 존재하지 않음: {}", email);
+                    log.info("JWT 토큰이 유효하지 않음");
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+                    return;
                 }
             }
         } catch (Exception e) {
-            log.error("JWT 인증 실패: {}", e.getMessage());
+            log.error("JWT 인증 중 예외 발생: {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT authentication error");
+            return;
         }
 
-        // 4. 다음 필터로 진행
         filterChain.doFilter(request, response);
     }
 

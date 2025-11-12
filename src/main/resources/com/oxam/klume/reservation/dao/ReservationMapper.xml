@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oxam.klume.reservation.dao.ReservationMapper">
+
+    <!-- ================= 특정 회의실의 예약 현황 조회 =================== -->
+    <!-- 일별 조회 -->
+    <select id="selectRoomAvailableTimes" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
+        SELECT
+        a.id AS roomId,
+        a.name AS roomName,
+        c.date AS date,
+        c.available_start_time AS startTime,
+        c.available_end_time AS endTime,
+        b.reservation_open_day AS reservationOpenDay,
+        c.reservation_open_time AS reservationOpenTime,
+        CASE
+        WHEN d.id IS NOT NULL AND d.cancelled_at IS NULL THEN 'RESERVED'
+        WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
+        ELSE 'AVAILABLE'
+        END AS status,
+        COALESCE(
+            CASE WHEN d.cancelled_at IS NOT NULL THEN NULL ELSE f.nickname END,
+            '-'
+        ) AS reservedMember
+        FROM room a
+        JOIN available_time b ON b.room_id = a.id
+        JOIN daily_available_time c ON c.available_time_id = b.id
+        LEFT JOIN daily_reservation d ON d.daily_available_time_id = c.id
+        LEFT JOIN reservation e ON d.reservation_id = e.id
+        LEFT JOIN organization_member f ON e.organization_member_id = f.id
+        WHERE c.date = #{date}
+            AND a.id = #{roomId}
+            AND a.organization_id = #{organizationId}
+        ORDER BY c.available_start_time
+    </select>
+
+
+    <!-- 주별 조회 -->
+    <select id="selectRoomStatusByWeek" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
+        SELECT
+            a.id AS roomId,
+            a.name AS roomName,
+            c.date AS date,
+            c.available_start_time AS startTime,
+            c.available_end_time AS endTime,
+            b.reservation_open_day AS reservationOpenDay,
+            c.reservation_open_time AS reservationOpenTime,
+        CASE
+            WHEN d.id IS NOT NULL AND d.cancelled_at IS NULL THEN 'RESERVED'
+            WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
+            ELSE 'AVAILABLE'
+        END AS status,
+        COALESCE(
+            CASE WHEN d.cancelled_at IS NOT NULL THEN NULL ELSE f.nickname END,
+            '-'
+        ) AS reservedMember
+        FROM room a
+        JOIN available_time b ON b.room_id = a.id
+        JOIN daily_available_time c ON c.available_time_id = b.id
+        LEFT JOIN daily_reservation d ON d.daily_available_time_id = c.id
+        LEFT JOIN reservation e ON d.reservation_id = e.id
+        LEFT JOIN organization_member f ON e.organization_member_id = f.id
+        WHERE c.date BETWEEN #{startDate} AND #{endDate}
+            AND a.id = #{roomId}
+            AND a.organization_id = #{organizationId}
+        ORDER BY c.date, c.available_start_time
+    </select>
+
+    <!-- ================= 조직에 속한 모든 회의실 예약 현황 조회 =================== -->
+
+    <!-- 일별 조회 -->
+    <select id="selectOrganizationRoomStatusByDay" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
+        SELECT
+        a.id AS roomId,
+        a.name AS roomName,
+        c.date AS date,
+        c.available_start_time AS startTime,
+        c.available_end_time AS endTime,
+        b.reservation_open_day AS reservationOpenDay,
+        c.reservation_open_time AS reservationOpenTime,
+        CASE
+            WHEN d.id IS NOT NULL AND d.cancelled_at IS NULL THEN 'RESERVED'
+            WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
+            ELSE 'AVAILABLE'
+        END AS status,
+        COALESCE(
+            CASE WHEN d.cancelled_at IS NOT NULL THEN NULL ELSE f.nickname END,
+            '-'
+        ) AS reservedMember
+        FROM room a
+        JOIN available_time b ON b.room_id = a.id
+        JOIN daily_available_time c ON c.available_time_id = b.id
+        LEFT JOIN daily_reservation d ON d.daily_available_time_id = c.id
+        LEFT JOIN reservation e ON d.reservation_id = e.id
+        LEFT JOIN organization_member f ON e.organization_member_id = f.id
+        WHERE c.date = #{date}
+        AND a.organization_id = #{organizationId}
+        ORDER BY a.id, c.available_start_time
+    </select>
+
+    <!-- 주별 조회 -->
+    <select id="selectOrganizationRoomStatusByWeek" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
+        SELECT
+        a.id AS roomId,
+        a.name AS roomName,
+        c.date AS date,
+        c.available_start_time AS startTime,
+        c.available_end_time AS endTime,
+        b.reservation_open_day AS reservationOpenDay,
+        c.reservation_open_time AS reservationOpenTime,
+        CASE
+            WHEN d.id IS NOT NULL AND d.cancelled_at IS NULL THEN 'RESERVED'
+            WHEN STR_TO_DATE(c.reservation_open_day, '%Y-%m-%d') > CURDATE() THEN 'OPENING_SOON'
+            ELSE 'AVAILABLE'
+        END AS status,
+        COALESCE(
+            CASE WHEN d.cancelled_at IS NOT NULL THEN NULL ELSE f.nickname END,
+            '-'
+        ) AS reservedMember
+        FROM room a
+        JOIN available_time b ON b.room_id = a.id
+        JOIN daily_available_time c ON c.available_time_id = b.id
+        LEFT JOIN daily_reservation d ON d.daily_available_time_id = c.id
+        LEFT JOIN reservation e ON d.reservation_id = e.id
+        LEFT JOIN organization_member f ON e.organization_member_id = f.id
+        WHERE c.date BETWEEN #{startDate} AND #{endDate}
+        AND a.organization_id = #{organizationId}
+        ORDER BY a.id, c.date, c.available_start_time
+    </select>
+
+
+</mapper>

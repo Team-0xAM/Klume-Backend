@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Getter
 @Table(name = "organization_member")
 @NoArgsConstructor
@@ -56,4 +59,31 @@ public class OrganizationMember {
         this.member = member;
         this.organizationGroup = organizationGroup;
     }
+
+    public void updateRole(final OrganizationRole role) {
+        this.role = role;
+    }
+
+    public void updateOrganizationGroup(final OrganizationGroup organizationGroup) {
+        this.organizationGroup = organizationGroup;
+    }
+
+    public void updatePenaltyStatus(final int penaltyCount, final boolean isBanned, final String bannedAt) {
+        this.penaltyCount = penaltyCount;
+        this.isBanned = isBanned;
+        this.bannedAt = bannedAt;
+    }
+
+    public void applyPenalty() {
+        this.penaltyCount++;
+        checkBanStatus();
+    }
+
+    private void checkBanStatus() {
+        if (this.penaltyCount >= 3 && !this.isBanned) {
+            this.isBanned = true;
+            this.bannedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        }
+    }
+
 }

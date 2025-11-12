@@ -1,11 +1,13 @@
 package com.oxam.klume.organization.controller;
 
+import com.oxam.klume.member.entity.Member;
+import com.oxam.klume.member.service.MemberService;
 import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
+import com.oxam.klume.organization.entity.OrganizationGroup;
 import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -17,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 public class OrganizationController {
+    private final MemberService memberService;
     private final OrganizationService organizationService;
 
     @Operation(summary = "조직 생성")
@@ -65,12 +69,12 @@ public class OrganizationController {
             }))
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<OrganizationResponseDTO> createOrganization(@Parameter(name = "memberId") final int memberId,
+    public ResponseEntity<OrganizationResponseDTO> createOrganization(final Authentication authentication,
                                                                       @RequestPart(value = "image", required = false) final MultipartFile file,
                                                                       @RequestPart("requestDTO") @Valid final OrganizationRequestDTO requestDTO) {
-        // TODO 로그인한 회원 ID 가져오기
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
 
-        final Organization organization = organizationService.createOrganization(memberId, file, requestDTO);
+        final Organization organization = organizationService.createOrganization(member, file, requestDTO);
 
         final OrganizationResponseDTO response = OrganizationResponseDTO.of(organization);
 
@@ -108,9 +112,9 @@ public class OrganizationController {
             }))
     })
     @PostMapping("/{organizationId}/invitations")
-    public ResponseEntity<OrganizationInvitationCodeResponseDTO> createInvitationCode(@Parameter(name = "memberId") final int memberId,
+    public ResponseEntity<OrganizationInvitationCodeResponseDTO> createInvitationCode(final Authentication authentication,
                                                                                       @PathVariable("organizationId") final int organizationId) {
-        // TODO 로그인한 회원 ID 가져오기  by 지륜
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
 
         final String invitationCode = organizationService.createInvitationCode(organizationId, memberId);
 
@@ -143,10 +147,9 @@ public class OrganizationController {
             }))
     })
     @GetMapping("/{organizationId}/role")
-    public ResponseEntity<OrganizationMemberRoleResponseDTO> findOrganizationMemberRole(
-            @Parameter(name = "memberId") final int memberId,
-            @PathVariable("organizationId") final int organizationId) {
-        // TODO 로그인한 회원 ID 가져오기  by 지륜
+    public ResponseEntity<OrganizationMemberRoleResponseDTO> findOrganizationMemberRole(final Authentication authentication,
+                                                                                        @PathVariable("organizationId") final int organizationId) {
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
 
         final OrganizationMember organizationMember =
                 organizationService.findOrganizationMemberRole(memberId, organizationId);
@@ -174,9 +177,9 @@ public class OrganizationController {
             }))
     })
     @GetMapping("/{organizationId}/groups")
-    public ResponseEntity<List<OrganizationGroupResponseDTO>> findOrganizationGroups(@Parameter(name = "memberId") final int memberId,
+    public ResponseEntity<List<OrganizationGroupResponseDTO>> findOrganizationGroups(final Authentication authentication,
                                                                                      @PathVariable("organizationId") final int organizationId) {
-        // TODO 로그인한 회원 ID 가져오기  by 지륜
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
 
         final List<OrganizationGroupResponseDTO> response = organizationService.findOrganizationGroups(memberId, organizationId);
 
@@ -215,9 +218,9 @@ public class OrganizationController {
             }))
     })
     @PostMapping("/invitations/validation")
-    public ResponseEntity<OrganizationResponseDTO> validateInvitationCode(@Parameter(name = "memberId") final int memberId,
+    public ResponseEntity<OrganizationResponseDTO> validateInvitationCode(final Authentication authentication,
                                                                           @RequestBody @Valid final OrganizationInvitationCodeRequestDTO requestDTO) {
-        // TODO 로그인한 회원 ID 가져오기  by 지륜
+        final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
 
         final Organization organization = organizationService.validateInvitationCode(memberId, requestDTO.getCode());
 
@@ -270,13 +273,193 @@ public class OrganizationController {
             }))
     })
     @PostMapping("/{organizationId}")
-    public ResponseEntity<OrganizationMemberResponseDTO> createOrganizationMember(@Parameter(name = "memberId") final int memberId,
+    public ResponseEntity<OrganizationMemberResponseDTO> createOrganizationMember(final Authentication authentication,
                                                                                   @PathVariable("organizationId") final int organizationId,
                                                                                   @RequestBody @Valid final OrganizationMemberRequestDTO requestDTO) {
-        // TODO 로그인한 회원 ID 가져오기  by 지륜
-        final OrganizationMember organizationMember = organizationService.createOrganizationMember(memberId, organizationId, requestDTO);
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationMember organizationMember = organizationService.createOrganizationMember(member, organizationId, requestDTO);
 
         final OrganizationMemberResponseDTO response = OrganizationMemberResponseDTO.of(organizationMember);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @Operation(summary = "권한 변경")
+    @PutMapping("/{organizationId}/members/{organizationMemberId}/role")
+    public ResponseEntity<OrganizationMemberRoleUpdateResponseDTO> updateOrganizationMemberRole(final Authentication authentication,
+                                                                                                @PathVariable(name = "organizationMemberId") final int organizationMemberId,
+                                                                                                @PathVariable("organizationId") final int organizationId,
+                                                                                                @RequestBody @Valid final OrganizationMemberRoleRequestDTO requestDTO) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationMember organizationMember = organizationService.updateOrganizationMemberRole(member, organizationMemberId, organizationId, requestDTO);
+
+        return ResponseEntity.ok(OrganizationMemberRoleUpdateResponseDTO.of(organizationMember));
+    }
+
+    @Operation(summary = "그룹 생성")
+    @PostMapping("/{organizationId}/groups")
+    public ResponseEntity<OrganizationGroupResponseDTO> createOrganizationGroup(final Authentication authentication,
+                                                                                @PathVariable(name = "organizationId") final int organizationId,
+                                                                                @RequestBody @Valid final OrganizationGroupRequestDTO requestDTO) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationGroup organizationGroup =
+                organizationService.createOrganizationGroup(member, organizationId, OrganizationGroupRequestDTO.toEntity(requestDTO));
+
+        return ResponseEntity.ok(OrganizationGroupResponseDTO.of(organizationGroup, null));
+    }
+
+    @Operation(summary = "그룹 수정")
+    @PutMapping("/{organizationId}/groups/{organizationGroupId}")
+    public ResponseEntity<OrganizationGroupResponseDTO> updateOrganizationGroup(final Authentication authentication,
+                                                                                @PathVariable(name = "organizationId") final int organizationId,
+                                                                                @PathVariable(name = "organizationGroupId") final int organizationGroupId,
+                                                                                @RequestBody @Valid final OrganizationGroupRequestDTO requestDTO) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationGroup organizationGroup =
+                organizationService.updateOrganizationGroup(member, organizationId, organizationGroupId,
+                        OrganizationGroupRequestDTO.toEntity(requestDTO));
+
+        return ResponseEntity.ok(OrganizationGroupResponseDTO.of(organizationGroup, null));
+    }
+
+    @Operation(summary = "그룹 삭제")
+    @DeleteMapping("/{organizationId}/groups/{organizationGroupId}")
+    public ResponseEntity<?> deleteOrganizationGroup(final Authentication authentication,
+                                                     @PathVariable(name = "organizationId") final int organizationId,
+                                                     @PathVariable(name = "organizationGroupId") final int organizationGroupId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        organizationService.deleteOrganizationGroup(member, organizationId, organizationGroupId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "조직 정보 수정")
+    @PutMapping(value = "/{organizationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<OrganizationResponseDTO> updateOrganization(final Authentication authentication,
+                                                                      @PathVariable(name = "organizationId") final int organizationId,
+                                                                      @RequestPart(value = "image", required = false) final MultipartFile file,
+                                                                      @RequestPart("requestDTO") @Valid final OrganizationUpdateRequestDTO requestDTO) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final Organization organization = organizationService.updateOrganization(member, organizationId, file, requestDTO);
+
+        return ResponseEntity.ok(OrganizationResponseDTO.of(organization));
+    }
+
+    @Operation(summary = "패널티 초기화")
+    @PutMapping("/{organizationId}/members/{organizationMemberId}/penalty")
+    public ResponseEntity<OrganizationMemberPenaltyStatusUpdateResponseDTO> updateOrganizationMemberPenalty(final Authentication authentication,
+                                                                                                            @PathVariable(name = "organizationId") final int organizationId,
+                                                                                                            @PathVariable(name = "organizationMemberId") final int OrganizationMemberId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationMember organizationMember = organizationService.updateOrganizationMemberPenalty(member, organizationId, OrganizationMemberId);
+
+        return ResponseEntity.ok(OrganizationMemberPenaltyStatusUpdateResponseDTO.of(organizationMember));
+    }
+
+    @Operation(summary = "조직 탈퇴")
+    @DeleteMapping("/{organizationId}")
+    public ResponseEntity<?> leaveOrganization(final Authentication authentication,
+                                               @PathVariable(name = "organizationId") final int organizationId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        organizationService.leaveOrganization(member, organizationId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "조직 멤버 강퇴")
+    @DeleteMapping("/{organizationId}/members/{organizationMemberId}")
+    public ResponseEntity<?> kickOrganizationMember(final Authentication authentication,
+                                                    @PathVariable(name = "organizationId") final int organizationId,
+                                                    @PathVariable(name = "organizationMemberId") final int OrganizationMemberId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        organizationService.kickOrganizationMember(member, organizationId, OrganizationMemberId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "조직 정보 조회")
+    @GetMapping("/{organizationId}")
+    public ResponseEntity<OrganizationResponseDTO> getOrganizationInfo(final Authentication authentication,
+                                                                       @PathVariable(name = "organizationId") final int organizationId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final Organization organization = organizationService.findOrganizationInfoByOrganizationId(member, organizationId);
+
+        return ResponseEntity.ok(OrganizationResponseDTO.of(organization));
+    }
+
+    @Operation(summary = "조직 통계 정보 조회", description = "조직의 구성원 수, 회의실 수 등 통계 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조직 통계 정보 조회 성공", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = OrganizationStatsResponseDTO.class)
+            )),
+            @ApiResponse(responseCode = "403", content = @Content(mediaType = "application/json", examples = {
+                    @ExampleObject(name = "ORGANIZATION_MEMBER_ACCESS_DENIED", value = """
+                            {
+                                "code": "ORGANIZATION003",
+                                "message": "Not a member of the organization"
+                            }
+                            """)
+            })),
+            @ApiResponse(responseCode = "404", content = @Content(mediaType = "application/json", examples = {
+                    @ExampleObject(name = "ORGANIZATION_NOT_FOUND", value = """
+                            {
+                                "code": "ORGANIZATION001",
+                                "message": "Organization not found"
+                            }
+                            """)
+            }))
+    })
+    @GetMapping("/{organizationId}/stats")
+    public ResponseEntity<OrganizationStatsResponseDTO> getOrganizationStats(final Authentication authentication,
+                                                                              @PathVariable(name = "organizationId") final int organizationId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationStatsResponseDTO response = organizationService.getOrganizationStats(member, organizationId);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "내 조직 멤버 정보 조회", description = "현재 로그인한 사용자의 조직 내 정보(닉네임, 권한, 그룹 등)를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조직 멤버 정보 조회 성공", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = OrganizationMemberInfoResponseDTO.class)
+            )),
+            @ApiResponse(responseCode = "403", content = @Content(mediaType = "application/json", examples = {
+                    @ExampleObject(name = "ORGANIZATION_MEMBER_ACCESS_DENIED", value = """
+                            {
+                                "code": "ORGANIZATION003",
+                                "message": "Not a member of the organization"
+                            }
+                            """)
+            })),
+            @ApiResponse(responseCode = "404", content = @Content(mediaType = "application/json", examples = {
+                    @ExampleObject(name = "ORGANIZATION_NOT_FOUND", value = """
+                            {
+                                "code": "ORGANIZATION001",
+                                "message": "Organization not found"
+                            }
+                            """)
+            }))
+    })
+    @GetMapping("/{organizationId}/members/me")
+    public ResponseEntity<OrganizationMemberInfoResponseDTO> getMyOrganizationMemberInfo(final Authentication authentication,
+                                                                                          @PathVariable(name = "organizationId") final int organizationId) {
+        final Member member = memberService.findMemberByEmail(authentication.getPrincipal().toString());
+
+        final OrganizationMemberInfoResponseDTO response = organizationService.getMyOrganizationMemberInfo(member, organizationId);
 
         return ResponseEntity.ok(response);
     }
