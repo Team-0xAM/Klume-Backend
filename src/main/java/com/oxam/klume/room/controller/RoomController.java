@@ -7,7 +7,6 @@ import com.oxam.klume.room.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
@@ -16,7 +15,6 @@ import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
-@Slf4j
 @Tag(name = "Room - Room CRUD", description = "회의실 CRUD")
 @RestController
 @RequiredArgsConstructor
@@ -34,9 +32,7 @@ public class RoomController {
             final Authentication authentication,
             @PathVariable int organizationId) {
 
-        log.info("GET /organizations/{}/rooms 호출 - email: {}", organizationId, authentication.getPrincipal());
         final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
-        log.info("memberId 찾음: {}", memberId);
         return ResponseEntity.ok(roomService.getRooms(organizationId, memberId));
     }
 
@@ -63,9 +59,7 @@ public class RoomController {
             @RequestPart("dto") RoomRequestDTO dto,
             @RequestPart(value = "image", required = false) MultipartFile imageFile) {
 
-        log.info("POST /organizations/{}/rooms 호출 - email: {}, dto: {}", organizationId, authentication.getPrincipal(), dto);
         final int memberId = memberService.findMemberByEmail(authentication.getPrincipal().toString()).getId();
-        log.info("memberId 찾음: {}", memberId);
         RoomResponseDTO response = roomService.createRoomWithImage(organizationId, dto, imageFile, memberId);
         return ResponseEntity.ok(response);
     }
