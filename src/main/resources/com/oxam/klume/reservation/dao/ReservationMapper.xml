@@ -9,6 +9,7 @@
     <select id="selectRoomAvailableTimes" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
         SELECT
         e.id AS reservationId,
+        c.id AS dailyAvailableTimeId,
         a.id AS roomId,
         a.name AS roomName,
         b.name AS timeName,
@@ -43,6 +44,7 @@
     <select id="selectRoomStatusByWeek" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
         SELECT
             e.id AS reservationId,
+            c.id AS dailyAvailableTimeId,
             a.id AS roomId,
             a.name AS roomName,
             b.name AS timeName,
@@ -78,6 +80,7 @@
     <select id="selectOrganizationRoomStatusByDay" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
         SELECT
         e.id AS reservationId,
+        c.id AS dailyAvailableTimeId,
         a.id AS roomId,
         a.name AS roomName,
         b.name AS timeName,
@@ -110,6 +113,7 @@
     <select id="selectOrganizationRoomStatusByWeek" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
         SELECT
         e.id AS reservationId,
+        c.id AS dailyAvailableTimeId,
         a.id AS roomId,
         a.name AS roomName,
         b.name AS timeName,
