@@ -55,6 +55,7 @@ public class ChatController {
 
         // DB에 저장할 document 생성
         ChatMessage chatMessage = ChatMessage.builder()
+                .organizationId(chatRoom.getOrganizationId())  // 조직 ID 추가
                 .roomId(requestDTO.getRoomId())
                 .senderId(senderEmail)
                 .admin(requestDTO.isAdmin())
