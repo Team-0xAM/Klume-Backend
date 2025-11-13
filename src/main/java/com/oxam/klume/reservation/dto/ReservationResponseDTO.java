@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReservationResponseDTO {
+    private int reservationId;
     private int roomId;
     private String roomName;
+    private String timeName;
     private String date;
     private String startTime;
     private String endTime;
