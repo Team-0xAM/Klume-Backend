@@ -84,6 +84,36 @@
 
 </details>
 
+
+### DDD
+<details>
+  <summary>DDD</summary>
+<h3>조직 공지사항</h3>
+<img width="857" height="572" alt="공지사항" src="https://github.com/user-attachments/assets/0b7b5437-0dc4-4a34-aa01-8e6b8a491403" />
+
+<h3>조직관리</h3>
+<img width="1096" height="547" alt="조직관리" src="https://github.com/user-attachments/assets/ae609e2c-2880-4a94-8339-19fe322ea2b9" />
+
+<h3>회원</h3>
+<img width="932" height="707" alt="회원" src="https://github.com/user-attachments/assets/1d126626-73cc-4cea-a944-2a1a8eea64f2" />
+
+<h3>알림</h3>
+<img width="602" height="415" alt="알림" src="https://github.com/user-attachments/assets/1e24d392-e479-438d-b2a7-bfa679d0637c" />
+
+<h3>회의실 예약</h3>
+<img width="1294" height="629" alt="예약" src="https://github.com/user-attachments/assets/e51b5e6d-3d3e-4359-b6e5-58a2dd9aced7" />
+
+<h3>채팅</h3>
+<img width="1217" height="700" alt="채팅" src="https://github.com/user-attachments/assets/35908715-3c06-4db3-870c-1cfe41fdfef4" />
+
+<h3>FAQ</h3>
+<img width="843" height="512" alt="FAQ" src="https://github.com/user-attachments/assets/180d96a7-3158-4488-a8a9-2f605ee15fed" />
+
+<h3>예약 이후 회의실 이용</h3>
+<img width="1023" height="636" alt="회의실 이용" src="https://github.com/user-attachments/assets/80c8f23e-4555-4507-8e75-5021e473ed03" />
+
+</details>
+
 ---
 
 ## 3. 와이어 프레임
