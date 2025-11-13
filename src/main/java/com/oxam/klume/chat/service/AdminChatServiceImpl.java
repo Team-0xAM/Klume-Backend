@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -70,6 +72,18 @@ public class AdminChatServiceImpl implements AdminChatService {
 
         chatRoom.assignTo(orgMember.getId(), orgMember.getNickname(), userEmail);
         chatRepository.save(chatRoom);
+
+        // 시스템 메시지: 담당자 배정
+        ChatMessage systemMessage = ChatMessage.builder()
+            .organizationId(chatRoom.getOrganizationId())
+            .roomId(chatRoom.getRoomId())
+            .senderId("SYSTEM")
+            .senderName("시스템")
+            .admin(false)
+            .content(orgMember.getNickname() + "(가) 배정되었습니다.")
+            .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .build();
+        chatMessageRepository.save(systemMessage);
     }
 
     /**
@@ -95,8 +109,21 @@ public class AdminChatServiceImpl implements AdminChatService {
             throw new RuntimeException("담당자만 해제할 수 있습니다.");
         }
 
+        String assignedName = orgMember.getNickname();
         chatRoom.unassign();
         chatRepository.save(chatRoom);
+
+        // 시스템 메시지: 담당 해제
+        ChatMessage systemMessage = ChatMessage.builder()
+            .organizationId(chatRoom.getOrganizationId())
+            .roomId(chatRoom.getRoomId())
+            .senderId("SYSTEM")
+            .senderName("시스템")
+            .admin(false)
+            .content(assignedName + "(가) 배정 해제되었습니다.")
+            .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .build();
+        chatMessageRepository.save(systemMessage);
     }
 
     /**
