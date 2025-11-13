@@ -22,6 +22,7 @@ public class ChatMessage {
     private String senderId;    // 누가 보냈는지
     private boolean admin;      //  관리자인지 여부
     private String content;     // 메시지 내용
+    private String imageUrl;    // 이미지 URL (옵션)
     private String createdAt;   // 보낸 시각
 
     // 채팅방 번호 설정
@@ -41,6 +42,11 @@ public class ChatMessage {
     // 메시지 내용 설정
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    // 이미지 URL 설정
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     // 생성 시각 설정

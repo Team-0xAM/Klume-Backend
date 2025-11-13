@@ -59,6 +59,7 @@ public class ChatController {
                 .senderId(senderEmail)
                 .admin(requestDTO.isAdmin())
                 .content(requestDTO.getContent())
+                .imageUrl(requestDTO.getImageUrl())  // 이미지 URL 추가
                 .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
 
@@ -74,6 +75,7 @@ public class ChatController {
         responseDTO.updateSenderId(saved.getSenderId());
         responseDTO.updateAdmin(saved.isAdmin());
         responseDTO.updateContent(saved.getContent());
+        responseDTO.updateImageUrl(saved.getImageUrl());  // 이미지 URL 추가
         responseDTO.updateCreatedAt(saved.getCreatedAt());
 
         // 특정 채팅방 구독자들에게만 전송 (채널 분리)

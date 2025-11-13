@@ -12,6 +12,7 @@ public class MessageResponseDTO {
     private String senderId;
     private boolean admin;
     private String content;
+    private String imageUrl;  // 이미지 URL (옵션)
     private String createdAt;
 
     // 발신자 ID 설정
@@ -27,6 +28,11 @@ public class MessageResponseDTO {
     // 메시지 내용 설정
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    // 이미지 URL 설정
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     // 생성 시각 설정
