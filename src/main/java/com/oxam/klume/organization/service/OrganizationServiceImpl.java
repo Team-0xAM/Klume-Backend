@@ -4,7 +4,6 @@ import com.oxam.klume.common.redis.RedisService;
 import com.oxam.klume.file.FileValidator;
 import com.oxam.klume.file.infra.S3Uploader;
 import com.oxam.klume.member.entity.Member;
-import com.oxam.klume.member.repository.MemberRepository;
 import com.oxam.klume.organization.dto.*;
 import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationGroup;
@@ -31,7 +30,6 @@ public class OrganizationServiceImpl implements OrganizationService {
     private static final String INVITATION_CODE_PREFIX = "inviteCode:";
     private static final String ORGANIZATION_PREFIX = "organization:";
 
-    private final MemberRepository memberRepository;
     private final OrganizationRepository organizationRepository;
     private final OrganizationMemberRepository organizationMemberRepository;
     private final OrganizationGroupRepository organizationGroupRepository;
@@ -140,6 +138,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         return organizationMemberRepository.save(organizationMember);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Organization> findOrganizationByMember(final Member member) {
         return organizationMemberRepository.findOrganizationByMember(member);
@@ -291,6 +290,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
 
+        if (organizationMember.getRole() == OrganizationRole.ADMIN) {
+            validateAdminCanLeave(organization);
+        }
+
         organizationMemberRepository.delete(organizationMember);
     }
 
@@ -302,6 +305,18 @@ public class OrganizationServiceImpl implements OrganizationService {
         findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
 
         return organization;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<OrganizationMember> getOrganizationMembers(final Member member, final int organizationId) {
+        final Organization organization = findOrganizationById(organizationId);
+
+        findOrganizationMemberByMemberIdAndOrganization(member.getId(), organization);
+
+        validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
+
+        return organizationMemberRepository.findByOrganization(organization);
     }
 
     private void updateOrganizationImage(final Organization organization, final MultipartFile file) {

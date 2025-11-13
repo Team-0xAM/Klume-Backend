@@ -70,7 +70,7 @@ public class DailyAvailableTimeServiceImpl implements DailyAvailableTimeService 
 
         dailyAvailableTimeRepository.delete(dailyAvailableTime);
     }
-    
+
     @Transactional(readOnly = true)
     @Override
     public List<DailyAvailableTimeResponseDTO> getTodayOpeningTimes(final int memberId, final int organizationId) {
