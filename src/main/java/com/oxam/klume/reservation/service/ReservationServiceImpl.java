@@ -12,6 +12,7 @@ import com.oxam.klume.organization.repository.OrganizationRepository;
 import com.oxam.klume.reservation.entity.DailyReservation;
 import com.oxam.klume.reservation.entity.Reservation;
 import com.oxam.klume.reservation.exception.OrganizationMemberBannedException;
+import com.oxam.klume.reservation.exception.ReservationNotFoundException;
 import com.oxam.klume.reservation.exception.RoomAlreadyBookedException;
 import com.oxam.klume.reservation.repository.DailyReservationRepository;
 import com.oxam.klume.reservation.repository.ReservationRepository;
@@ -96,6 +97,28 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+    @Transactional
+    @Override
+    public DailyReservation cancelReservation(final int reservationId, final int organizationId, final int roomId, final int memberId) {
+        findOrganizationMemberById(organizationId, memberId);
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationNotFoundException("예약이 존재하지 않습니다"));
+
+        DailyReservation dailyReservation = dailyReservationRepository.findByReservation(reservation);
+        int dailyAvailableTimeId = dailyReservation.getDailyAvailableTime().getId();
+        DailyAvailableTime dailyAvailableTime = dailyAvailableTimeRepository.findById(dailyAvailableTimeId)
+                .orElseThrow(() -> new DailyAvailableTimeNotFoundException("해당 예약 시간 정보를 찾을 수 없습니다."));
+
+        // 예약 취소 가능
+        dailyReservation.cancel();
+        return dailyReservation;
+    }
+
+    private OrganizationMember findOrganizationMemberById(final int organizationId, final int memberId) {
+        return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
+                .orElseThrow(() -> new OrganizationNotFoundException("사용자가 가입하지 않은 조직입니다."));
+    }
+
     private OrganizationMember findOrganizationByMemberIdAndOrganization(final Member member, final Organization organization) {
         return organizationMemberRepository.findByMemberIdAndOrganization(member.getId(), organization)
                 .orElseThrow(OrganizationMemberAccessDeniedException::new);
@@ -115,4 +138,6 @@ public class ReservationServiceImpl implements ReservationService {
         return dailyAvailableTimeRepository.findOrganizationByDailyAvailableTimeId(dailyAvailableTimeId)
                 .orElseThrow(OrganizationNotFoundException::new);
     }
+
+
 }
