@@ -20,7 +20,8 @@ public class ChatMessage {
 
     private int organizationId; // 조직 ID (어느 조직의 채팅인지)
     private int roomId;         // 채팅방 번호 (auto-increment)
-    private String senderId;    // 누가 보냈는지
+    private String senderId;    // 누가 보냈는지 (이메일)
+    private String senderName;  // 보낸 사람 닉네임
     private boolean admin;      //  관리자인지 여부
     private String content;     // 메시지 내용
     private String imageUrl;    // 이미지 URL (옵션)

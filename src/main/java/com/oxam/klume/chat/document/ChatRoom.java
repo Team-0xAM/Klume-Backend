@@ -22,6 +22,7 @@ public class ChatRoom {
     private int roomId;              // auto-increment ID
     private int organizationId;      // 어느 조직의 채팅인지
     private int createdById;         // 채팅 시작한 일반 회원 ID
+    private String createdByName;    // 채팅 시작한 회원 닉네임
     private String createdByEmail;   // 채팅 시작한 회원 이메일
     private Integer assignedToId;    // 담당 관리자 OrganizationMember ID (null이면 미배정)
     private String assignedToName;   // 담당 관리자 닉네임
@@ -31,12 +32,13 @@ public class ChatRoom {
     private String lastMessageContent; // 마지막 메시지 내용
 
     // 채팅방 생성 (일반 회원이 관리자에게 문의 시작) - roomId는 외부에서 주입
-    public static ChatRoom create(int roomId, int organizationId, int createdById, String createdByEmail) {
+    public static ChatRoom create(int roomId, int organizationId, int createdById, String createdByName, String createdByEmail) {
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         return ChatRoom.builder()
                 .roomId(roomId)
                 .organizationId(organizationId)
                 .createdById(createdById)
+                .createdByName(createdByName)
                 .createdByEmail(createdByEmail)
                 .assignedToId(null)
                 .assignedToName(null)

@@ -74,11 +74,16 @@ public class ChatServiceImpl implements ChatService {
             );
         }
 
+        // 조직 멤버 정보 조회 (닉네임 가져오기)
+        OrganizationMember orgMember = organizationMemberRepository
+            .findByOrganizationIdAndMemberId(organizationId, member.getId())
+            .orElseThrow(() -> new RuntimeException("조직 멤버를 찾을 수 없습니다."));
+
         // 새 roomId 생성 (auto-increment)
         int nextRoomId = getNextRoomId();
 
         // 새 채팅방 생성
-        ChatRoom chatRoom = ChatRoom.create(nextRoomId, organizationId, member.getId(), userEmail);
+        ChatRoom chatRoom = ChatRoom.create(nextRoomId, organizationId, member.getId(), orgMember.getNickname(), userEmail);
         chatRepository.save(chatRoom);
 
         // 첫 메시지 저장 (MongoDB)
@@ -87,6 +92,7 @@ public class ChatServiceImpl implements ChatService {
                 .organizationId(organizationId)  // 조직 ID 추가
                 .roomId(chatRoom.getRoomId())
                 .senderId(userEmail)
+                .senderName(orgMember.getNickname())  // 보낸 사람 닉네임 추가
                 .admin(false)
                 .content(request.getContent())
                 .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
