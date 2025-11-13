@@ -1,6 +1,8 @@
 # KLÜME - DevOps
 # KLÜME
-<img width="292" height="290" alt="image" src="https://github.com/user-attachments/assets/9426ceef-3bc6-41c7-aa5e-7062fe1f806f" />
+
+<img width="600" height="500" alt="스크린샷 2025-11-13 171816" src="https://github.com/user-attachments/assets/fd15c022-fb88-4d13-a588-6fd0c39ab47e" />
+
 
 
 > 회의실 예약, 티케팅처럼 공평하게.
