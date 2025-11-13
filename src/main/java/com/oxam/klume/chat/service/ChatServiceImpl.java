@@ -84,6 +84,7 @@ public class ChatServiceImpl implements ChatService {
         // 첫 메시지 저장 (MongoDB)
         if (request.getContent() != null && !request.getContent().trim().isEmpty()) {
             ChatMessage chatMessage = ChatMessage.builder()
+                .organizationId(organizationId)  // 조직 ID 추가
                 .roomId(chatRoom.getRoomId())
                 .senderId(userEmail)
                 .admin(false)
@@ -163,8 +164,11 @@ public class ChatServiceImpl implements ChatService {
             throw new RuntimeException("채팅방을 조회할 권한이 없습니다.");
         }
 
-        // 메시지 조회 (시간 오름차순)
-        return chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+        // 메시지 조회 (organizationId와 roomId를 함께 사용하여 필터링)
+        return chatMessageRepository.findByOrganizationIdAndRoomIdOrderByCreatedAtAsc(
+            chatRoom.getOrganizationId(),
+            roomId
+        );
     }
 
     /**

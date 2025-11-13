@@ -54,6 +54,7 @@ public class MemberChatServiceImpl implements MemberChatService {
 
         if (firstMessage != null && !firstMessage.trim().isEmpty()) {
             ChatMessage chatMessage = ChatMessage.builder()
+                .organizationId(organizationId)  // 조직 ID 추가
                 .roomId(chatRoom.getRoomId())
                 .senderId(userEmail)
                 .admin(false)
@@ -84,6 +85,10 @@ public class MemberChatServiceImpl implements MemberChatService {
             throw new RuntimeException("본인의 채팅방만 조회할 수 있습니다.");
         }
 
-        return chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+        // organizationId와 roomId를 함께 사용하여 필터링
+        return chatMessageRepository.findByOrganizationIdAndRoomIdOrderByCreatedAtAsc(
+            chatRoom.getOrganizationId(),
+            roomId
+        );
     }
 }

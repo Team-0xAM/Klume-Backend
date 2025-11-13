@@ -18,6 +18,7 @@ public class ChatMessage {
     @Id
     private String id;
 
+    private int organizationId; // 조직 ID (어느 조직의 채팅인지)
     private int roomId;         // 채팅방 번호 (auto-increment)
     private String senderId;    // 누가 보냈는지
     private boolean admin;      //  관리자인지 여부
