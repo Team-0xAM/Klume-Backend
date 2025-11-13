@@ -40,6 +40,13 @@
 #### 🔧 Tools
 ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white) <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white"/>
 
+#### 📡 Real-time Communication
+![WebSocket](https://img.shields.io/badge/WebSocket-0275D8?style=for-the-badge)
+![STOMP](https://img.shields.io/badge/STOMP-0A97B0?style=for-the-badge)
+![SockJS](https://img.shields.io/badge/SockJS-CC0000?style=for-the-badge)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white) 
+![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socketdotio&logoColor=white)
+
 
 ---
 
@@ -66,12 +73,15 @@
 
 ## 3. 와이어 프레임
 
-[🎨 Figma 바로가기](https://www.figma.com/design/HoYo8IPsQSs3pyGbPfF2Kd/Algo?node-id=245-5&t=VxYrlWGrm6QGVVWW-1)
+[🎨 Figma 바로가기](https://www.figma.com/design/Lepw4zKanA4x6iUSUzzOOh/0xAM?node-id=233-72)
 
 <details>
   <summary>와이어 프레임</summary>
+
+  
   <h3>메인 화면, 회원가입, 로그인</h3>
-<img width="1421" height="519" alt="image" src="https://github.com/user-attachments/assets/16e75fc7-cee7-4758-a41e-7dd87a326410" />
+<img width="1421" height="519" alt="image" src="<img width="2251" height="1027" alt="image" src="https://github.com/user-attachments/assets/cc50a68f-4bf1-4c54-acc7-63ebab662204" />
+" />
 
 
 
