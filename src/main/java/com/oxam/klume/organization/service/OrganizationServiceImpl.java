@@ -235,7 +235,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         validateAdminPermission(member.getId(), organization, OrganizationRole.ADMIN);
 
-        updateOrganizationImage(organization, file);
+        if (requestDTO.isImageEdited()) {
+            updateOrganizationImage(organization, file);
+        }
 
         organization.updateOrganization(requestDTO.getName(), requestDTO.getDescription());
 

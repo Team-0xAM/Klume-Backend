@@ -22,4 +22,7 @@ public class OrganizationUpdateRequestDTO {
 
     @Schema(description = "조직 S3 이미지 url", defaultValue = "https://bucket.3.region.amazonaws.com/12345.png")
     private String imageUrl;
+
+    @Schema(description = "조직 이미지 수정 여부")
+    private boolean isImageEdited;
 }
