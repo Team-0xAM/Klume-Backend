@@ -1,4 +1,3 @@
-# KLÜME - DevOps
 # KLÜME
 
 <img width="600" height="500" alt="스크린샷 2025-11-13 171816" src="https://github.com/user-attachments/assets/fd15c022-fb88-4d13-a588-6fd0c39ab47e" />
@@ -107,11 +106,107 @@
   <details>
   <summary> &nbsp; 회원가입 </summary>
   <p align="center">
-    <img src="https://github.com/user-attachments/assets/7aaf1e41-ebca-4962-9ea1-54ae26a3d015"     width="600">
+    <img src="https://github.com/user-attachments/assets/6dd590d3-13af-4c20-836f-e969de2045b1" width="600">
+  </p>
+  </details>
+  
+  <details>
+  <summary> &nbsp; 로컬 로그인 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/46c87191-ddc0-4ab6-bc18-153a8a320818" width="600">
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 구글 로그인 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/c6d1ef8b-2bc6-4f11-ad87-401a25686942" width="600">
+  </p>
+</div>
+</details>
+
+<details>
+<summary> 👤 &nbsp; 조직 생성 및 가입</summary>
+<div markdown=1>
+  <details>
+  <summary> &nbsp; 조직 페이지 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/819714fa-8e74-4abf-b6a6-2ea1b42b912f" width="600">
 
   </p>
   </details>
 
+  <details>
+  <summary> &nbsp; 조직 생성 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/9e6319ac-8b62-416c-85fe-f9e91ff914ea" width="600">
 
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 조직 코드로 가입 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/2c0e3701-8f91-451a-b51f-f861b7c351c8" width="600">
+
+  </p>
+  </details>
+</div>
+</details>
+
+<details>
+<summary> 👤 &nbsp; 조직 </summary>
+<div markdown=1>
+  <details>
+  <summary> &nbsp; 공지사항 등록 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/b0e272bb-a8d3-4149-b800-d493aa1a0595" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 회의실 등록 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/3e074f0c-aaec-4751-96ac-ad2293725185" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 회의실 예약 등록 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/8c871360-27b1-4c9d-916f-70aafa7af9c4" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 회의실 이용 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/b842871e-1235-42de-9dd6-1f718ee7372b" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 예약 취소 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/39cf74f0-846a-401e-a309-7f8859cad856" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 그룹 생성 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/c6dfec82-a0c5-4526-b927-8a8bcd7abc41" width="600">
+
+
+  </p>
+  </details>
+
+</div>
+</details>
 
 <br>
