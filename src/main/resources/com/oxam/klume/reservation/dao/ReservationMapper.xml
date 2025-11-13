@@ -8,8 +8,10 @@
     <!-- 일별 조회 -->
     <select id="selectRoomAvailableTimes" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
         SELECT
+        e.id AS reservationId,
         a.id AS roomId,
         a.name AS roomName,
+        b.name AS timeName,
         c.date AS date,
         c.available_start_time AS startTime,
         c.available_end_time AS endTime,
@@ -40,8 +42,10 @@
     <!-- 주별 조회 -->
     <select id="selectRoomStatusByWeek" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
         SELECT
+            e.id AS reservationId,
             a.id AS roomId,
             a.name AS roomName,
+            b.name AS timeName,
             c.date AS date,
             c.available_start_time AS startTime,
             c.available_end_time AS endTime,
@@ -73,8 +77,10 @@
     <!-- 일별 조회 -->
     <select id="selectOrganizationRoomStatusByDay" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
         SELECT
+        e.id AS reservationId,
         a.id AS roomId,
         a.name AS roomName,
+        b.name AS timeName,
         c.date AS date,
         c.available_start_time AS startTime,
         c.available_end_time AS endTime,
@@ -103,8 +109,10 @@
     <!-- 주별 조회 -->
     <select id="selectOrganizationRoomStatusByWeek" resultType="com.oxam.klume.reservation.dto.ReservationResponseDTO">
         SELECT
+        e.id AS reservationId,
         a.id AS roomId,
         a.name AS roomName,
+        b.name AS timeName,
         c.date AS date,
         c.available_start_time AS startTime,
         c.available_end_time AS endTime,
