@@ -53,10 +53,17 @@ public class ChatController {
             throw new RuntimeException("메시지를 보낼 권한이 없습니다.");
         }
 
+        // 보낸 사람의 닉네임 조회
+        OrganizationMember senderOrgMember = organizationMemberRepository
+                .findByOrganizationIdAndMemberId(chatRoom.getOrganizationId(), sender.getId())
+                .orElseThrow(() -> new RuntimeException("조직 멤버를 찾을 수 없습니다."));
+
         // DB에 저장할 document 생성
         ChatMessage chatMessage = ChatMessage.builder()
+                .organizationId(chatRoom.getOrganizationId())  // 조직 ID 추가
                 .roomId(requestDTO.getRoomId())
                 .senderId(senderEmail)
+                .senderName(senderOrgMember.getNickname())  // 보낸 사람 닉네임 추가
                 .admin(requestDTO.isAdmin())
                 .content(requestDTO.getContent())
                 .imageUrl(requestDTO.getImageUrl())  // 이미지 URL 추가
@@ -73,6 +80,7 @@ public class ChatController {
         // 응답 DTO
         MessageResponseDTO responseDTO = new MessageResponseDTO();
         responseDTO.updateSenderId(saved.getSenderId());
+        responseDTO.updateSenderName(saved.getSenderName());  // 보낸 사람 닉네임 추가
         responseDTO.updateAdmin(saved.isAdmin());
         responseDTO.updateContent(saved.getContent());
         responseDTO.updateImageUrl(saved.getImageUrl());  // 이미지 URL 추가

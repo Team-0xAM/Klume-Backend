@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class MessageResponseDTO {
 
     private String senderId;
+    private String senderName;  // 보낸 사람 닉네임
     private boolean admin;
     private String content;
     private String imageUrl;  // 이미지 URL (옵션)
@@ -18,6 +19,11 @@ public class MessageResponseDTO {
     // 발신자 ID 설정
     public void updateSenderId(String senderId) {
         this.senderId = senderId;
+    }
+
+    // 발신자 닉네임 설정
+    public void updateSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
     // 관리자 여부 설정

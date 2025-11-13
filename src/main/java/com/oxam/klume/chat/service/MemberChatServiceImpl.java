@@ -7,6 +7,7 @@ import com.oxam.klume.chat.repository.ChatRepository;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.member.repository.MemberRepository;
 import com.oxam.klume.organization.entity.Organization;
+import com.oxam.klume.organization.entity.OrganizationMember;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class MemberChatServiceImpl implements MemberChatService {
         Organization organization = organizationRepository.findById(organizationId)
             .orElseThrow(() -> new RuntimeException("조직을 찾을 수 없습니다."));
 
-        organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, member.getId())
+        OrganizationMember orgMember = organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, member.getId())
             .orElseThrow(() -> new RuntimeException("조직 멤버가 아닙니다."));
 
         var existingChatRoom = chatRepository.findByOrganizationIdAndCreatedById(organizationId, member.getId());
@@ -49,13 +50,15 @@ public class MemberChatServiceImpl implements MemberChatService {
         }
 
         int nextRoomId = sequenceGenerator.getNextSequence("chat_room_id");
-        ChatRoom chatRoom = ChatRoom.create(nextRoomId, organizationId, member.getId(), userEmail);
+        ChatRoom chatRoom = ChatRoom.create(nextRoomId, organizationId, member.getId(), orgMember.getNickname(), userEmail);
         chatRepository.save(chatRoom);
 
         if (firstMessage != null && !firstMessage.trim().isEmpty()) {
             ChatMessage chatMessage = ChatMessage.builder()
+                .organizationId(organizationId)  // 조직 ID 추가
                 .roomId(chatRoom.getRoomId())
                 .senderId(userEmail)
+                .senderName(orgMember.getNickname())  // 보낸 사람 닉네임 추가
                 .admin(false)
                 .content(firstMessage)
                 .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
@@ -84,6 +87,10 @@ public class MemberChatServiceImpl implements MemberChatService {
             throw new RuntimeException("본인의 채팅방만 조회할 수 있습니다.");
         }
 
-        return chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+        // organizationId와 roomId를 함께 사용하여 필터링
+        return chatMessageRepository.findByOrganizationIdAndRoomIdOrderByCreatedAtAsc(
+            chatRoom.getOrganizationId(),
+            roomId
+        );
     }
 }

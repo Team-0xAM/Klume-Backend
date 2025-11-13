@@ -4,14 +4,17 @@ import com.oxam.klume.common.util.DateUtil;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationMember;
+import com.oxam.klume.organization.entity.enums.OrganizationRole;
 import com.oxam.klume.organization.exception.OrganizationMemberAccessDeniedException;
 import com.oxam.klume.organization.exception.OrganizationMismatchException;
+import com.oxam.klume.organization.exception.OrganizationNotAdminException;
 import com.oxam.klume.organization.exception.OrganizationNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
 import com.oxam.klume.reservation.entity.DailyReservation;
 import com.oxam.klume.reservation.entity.Reservation;
 import com.oxam.klume.reservation.exception.OrganizationMemberBannedException;
+import com.oxam.klume.reservation.exception.ReservationNotFoundException;
 import com.oxam.klume.reservation.exception.RoomAlreadyBookedException;
 import com.oxam.klume.reservation.repository.DailyReservationRepository;
 import com.oxam.klume.reservation.repository.ReservationRepository;
@@ -96,6 +99,32 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+    @Transactional
+    @Override
+    public DailyReservation cancelReservation(final int reservationId, final int organizationId, final int roomId, final int memberId) {
+        OrganizationMember organizationMember = findOrganizationMemberById(organizationId, memberId);
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationNotFoundException("예약이 존재하지 않습니다"));
+
+        if (organizationMember.getRole() != OrganizationRole.ADMIN) {
+            throw new OrganizationNotAdminException("예약을 취소할 권한이 없습니다.");
+        }
+
+        DailyReservation dailyReservation = dailyReservationRepository.findByReservation(reservation);
+        int dailyAvailableTimeId = dailyReservation.getDailyAvailableTime().getId();
+        DailyAvailableTime dailyAvailableTime = dailyAvailableTimeRepository.findById(dailyAvailableTimeId)
+                .orElseThrow(() -> new DailyAvailableTimeNotFoundException("해당 예약 시간 정보를 찾을 수 없습니다."));
+
+        // 예약 취소 가능
+        dailyReservation.cancel();
+        return dailyReservation;
+    }
+
+    private OrganizationMember findOrganizationMemberById(final int organizationId, final int memberId) {
+        return organizationMemberRepository.findByOrganizationIdAndMemberId(organizationId, memberId)
+                .orElseThrow(() -> new OrganizationNotFoundException("사용자가 가입하지 않은 조직입니다."));
+    }
+
     private OrganizationMember findOrganizationByMemberIdAndOrganization(final Member member, final Organization organization) {
         return organizationMemberRepository.findByMemberIdAndOrganization(member.getId(), organization)
                 .orElseThrow(OrganizationMemberAccessDeniedException::new);
@@ -115,4 +144,6 @@ public class ReservationServiceImpl implements ReservationService {
         return dailyAvailableTimeRepository.findOrganizationByDailyAvailableTimeId(dailyAvailableTimeId)
                 .orElseThrow(OrganizationNotFoundException::new);
     }
+
+
 }

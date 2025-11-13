@@ -74,18 +74,25 @@ public class ChatServiceImpl implements ChatService {
             );
         }
 
+        // 조직 멤버 정보 조회 (닉네임 가져오기)
+        OrganizationMember orgMember = organizationMemberRepository
+            .findByOrganizationIdAndMemberId(organizationId, member.getId())
+            .orElseThrow(() -> new RuntimeException("조직 멤버를 찾을 수 없습니다."));
+
         // 새 roomId 생성 (auto-increment)
         int nextRoomId = getNextRoomId();
 
         // 새 채팅방 생성
-        ChatRoom chatRoom = ChatRoom.create(nextRoomId, organizationId, member.getId(), userEmail);
+        ChatRoom chatRoom = ChatRoom.create(nextRoomId, organizationId, member.getId(), orgMember.getNickname(), userEmail);
         chatRepository.save(chatRoom);
 
         // 첫 메시지 저장 (MongoDB)
         if (request.getContent() != null && !request.getContent().trim().isEmpty()) {
             ChatMessage chatMessage = ChatMessage.builder()
+                .organizationId(organizationId)  // 조직 ID 추가
                 .roomId(chatRoom.getRoomId())
                 .senderId(userEmail)
+                .senderName(orgMember.getNickname())  // 보낸 사람 닉네임 추가
                 .admin(false)
                 .content(request.getContent())
                 .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
@@ -163,8 +170,11 @@ public class ChatServiceImpl implements ChatService {
             throw new RuntimeException("채팅방을 조회할 권한이 없습니다.");
         }
 
-        // 메시지 조회 (시간 오름차순)
-        return chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+        // 메시지 조회 (organizationId와 roomId를 함께 사용하여 필터링)
+        return chatMessageRepository.findByOrganizationIdAndRoomIdOrderByCreatedAtAsc(
+            chatRoom.getOrganizationId(),
+            roomId
+        );
     }
 
     /**
