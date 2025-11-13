@@ -64,8 +64,22 @@
 <details>
   <summary>요구사항 명세서</summary>
   <h3>회원 정보</h3>
-  <img width="1547" src="https://github.com/user-attachments/assets/4d2ab975-976a-41f7-ba9a-98b45cdeeacc" />
+  <img width="1547" src="https://github.com/user-attachments/assets/e5d1f429-175e-4630-9308-0e7c8f2c9a2d" />
 
+  <h3>조직</h3>
+  <img width="1547" src="https://github.com/user-attachments/assets/e6cca75f-51f0-4864-b002-7a52b723129e" />
+
+  <h3>회의실</h3>
+  <img width="1547" src="https://github.com/user-attachments/assets/ee8a00db-5119-4815-938c-eb9faf5ca5ad" />  
+
+  <h3>예약</h3>
+  <img width="1547" src="https://github.com/user-attachments/assets/6603f8b4-6e2e-4c52-8704-1e130eb0474b" />
+
+  <h3>공지사항, FAQ</h3>
+  <img width="1547" src="https://github.com/user-attachments/assets/45715326-c4f1-4ee1-9c3e-3b947f1007db" />
+
+  <h3>채팅</h3>
+  <img width="1547" src="https://github.com/user-attachments/assets/f5069771-9c86-4be9-8747-8c999e9b8633" />
 
 </details>
 
