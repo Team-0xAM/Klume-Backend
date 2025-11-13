@@ -50,4 +50,6 @@ public interface OrganizationService {
     OrganizationStatsResponseDTO getOrganizationStats(final Member member, final int organizationId);
 
     OrganizationMemberInfoResponseDTO getMyOrganizationMemberInfo(final Member member, final int organizationId);
+
+    List<OrganizationMember> getOrganizationMembers(final Member member, final int organizationId);
 }
