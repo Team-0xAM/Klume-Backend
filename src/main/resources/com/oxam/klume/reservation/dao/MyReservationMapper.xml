@@ -10,12 +10,16 @@
             b.name AS roomName,
             a.created_at AS reservationCreatedAt,
             a.date AS reservationDate,
+            a.image_url AS imageUrl,
             d.available_start_time AS startTime,
             d.available_end_time AS endTime,
             e.cancelled_at AS cancelledAt,
         CASE
             WHEN e.cancelled_at IS NOT NULL THEN 'CANCELLED'
             WHEN STR_TO_DATE(a.date, '%Y-%m-%d') &lt; CURDATE() THEN 'COMPLETED'
+            WHEN STR_TO_DATE(a.date, '%Y-%m-%d') = CURDATE()
+                AND a.image_url IS NOT NULL
+                AND CURTIME() BETWEEN d.available_start_time AND d.available_end_time THEN 'IN_USE'
             WHEN STR_TO_DATE(a.date, '%Y-%m-%d') = CURDATE() THEN 'TODAY'
             ELSE 'UPCOMING'
         END AS reservationStatus
@@ -29,7 +33,7 @@
         WHERE a.organization_member_id = #{organizationMemberId}
         ORDER BY
         STR_TO_DATE(a.date, '%Y-%m-%d') DESC,
-        d.available_start_time ASC;
+        d.available_start_time DESC;
     </select>
 
 </mapper>
