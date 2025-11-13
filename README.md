@@ -77,16 +77,9 @@
 
 <details>
   <summary>와이어 프레임</summary>
+<img width="1126" height="514" alt="와이어프레임" src="https://github.com/user-attachments/assets/667a3862-3106-4527-8e4b-5413c678c448" />
+</details>
 
-  
-  <h3>메인 화면, 회원가입, 로그인</h3>
-<img width="1421" height="519" alt="image" src="<img width="2251" height="1027" alt="image" src="https://github.com/user-attachments/assets/cc50a68f-4bf1-4c54-acc7-63ebab662204" />
-" />
-
-
-
-
----
 
 ## 5. 테스트케이스
 
