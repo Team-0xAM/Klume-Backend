@@ -105,10 +105,14 @@ public class WebSecurity {
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
-                "http://localhost:8080", // Swagger UI
-                "http://localhost:5173"  // Vue (Vite)
-        ));
+
+        String origins = System.getenv("CORS_ALLOWED_ORIGINS");
+        if (origins != null) {
+            for (String origin : origins.split(",")) {
+                config.addAllowedOrigin(origin);
+            }
+        }
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
