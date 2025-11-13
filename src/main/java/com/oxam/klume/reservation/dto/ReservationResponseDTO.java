@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReservationResponseDTO {
     private int reservationId;
+    private int dailyAvailableTimeId;
     private int roomId;
     private String roomName;
     private String timeName;
