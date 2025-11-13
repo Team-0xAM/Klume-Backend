@@ -4,8 +4,10 @@ import com.oxam.klume.common.util.DateUtil;
 import com.oxam.klume.member.entity.Member;
 import com.oxam.klume.organization.entity.Organization;
 import com.oxam.klume.organization.entity.OrganizationMember;
+import com.oxam.klume.organization.entity.enums.OrganizationRole;
 import com.oxam.klume.organization.exception.OrganizationMemberAccessDeniedException;
 import com.oxam.klume.organization.exception.OrganizationMismatchException;
+import com.oxam.klume.organization.exception.OrganizationNotAdminException;
 import com.oxam.klume.organization.exception.OrganizationNotFoundException;
 import com.oxam.klume.organization.repository.OrganizationMemberRepository;
 import com.oxam.klume.organization.repository.OrganizationRepository;
@@ -100,9 +102,13 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     @Override
     public DailyReservation cancelReservation(final int reservationId, final int organizationId, final int roomId, final int memberId) {
-        findOrganizationMemberById(organizationId, memberId);
+        OrganizationMember organizationMember = findOrganizationMemberById(organizationId, memberId);
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationNotFoundException("예약이 존재하지 않습니다"));
+
+        if (organizationMember.getRole() != OrganizationRole.ADMIN) {
+            throw new OrganizationNotAdminException("예약을 취소할 권한이 없습니다.");
+        }
 
         DailyReservation dailyReservation = dailyReservationRepository.findByReservation(reservation);
         int dailyAvailableTimeId = dailyReservation.getDailyAvailableTime().getId();
