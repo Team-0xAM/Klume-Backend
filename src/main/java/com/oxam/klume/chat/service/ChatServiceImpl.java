@@ -86,6 +86,18 @@ public class ChatServiceImpl implements ChatService {
         ChatRoom chatRoom = ChatRoom.create(nextRoomId, organizationId, member.getId(), orgMember.getNickname(), userEmail);
         chatRepository.save(chatRoom);
 
+        // 시스템 메시지: 채팅 오픈
+        ChatMessage systemMessage = ChatMessage.builder()
+            .organizationId(organizationId)
+            .roomId(chatRoom.getRoomId())
+            .senderId("SYSTEM")
+            .senderName("시스템")
+            .admin(false)
+            .content(orgMember.getNickname() + "(가) 채팅을 오픈했습니다.")
+            .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .build();
+        chatMessageRepository.save(systemMessage);
+
         // 첫 메시지 저장 (MongoDB)
         if (request.getContent() != null && !request.getContent().trim().isEmpty()) {
             ChatMessage chatMessage = ChatMessage.builder()
@@ -127,6 +139,18 @@ public class ChatServiceImpl implements ChatService {
         // 담당자 지정
         chatRoom.assignTo(orgMember.getId(), orgMember.getNickname(), userEmail);
         chatRepository.save(chatRoom);
+
+        // 시스템 메시지: 담당자 배정
+        ChatMessage systemMessage = ChatMessage.builder()
+            .organizationId(chatRoom.getOrganizationId())
+            .roomId(chatRoom.getRoomId())
+            .senderId("SYSTEM")
+            .senderName("시스템")
+            .admin(false)
+            .content(orgMember.getNickname() + "(가) 배정되었습니다.")
+            .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .build();
+        chatMessageRepository.save(systemMessage);
     }
 
     // 채팅방 담당 해제 (관리자용)
@@ -151,8 +175,21 @@ public class ChatServiceImpl implements ChatService {
         }
 
         // 담당 해제
+        String assignedName = orgMember.getNickname();
         chatRoom.unassign();
         chatRepository.save(chatRoom);
+
+        // 시스템 메시지: 담당 해제
+        ChatMessage systemMessage = ChatMessage.builder()
+            .organizationId(chatRoom.getOrganizationId())
+            .roomId(chatRoom.getRoomId())
+            .senderId("SYSTEM")
+            .senderName("시스템")
+            .admin(false)
+            .content(assignedName + "(가) 배정 해제되었습니다.")
+            .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .build();
+        chatMessageRepository.save(systemMessage);
     }
 
     // 채팅 히스토리 조회

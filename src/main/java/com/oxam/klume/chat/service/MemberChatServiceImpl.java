@@ -53,6 +53,18 @@ public class MemberChatServiceImpl implements MemberChatService {
         ChatRoom chatRoom = ChatRoom.create(nextRoomId, organizationId, member.getId(), orgMember.getNickname(), userEmail);
         chatRepository.save(chatRoom);
 
+        // 시스템 메시지: 채팅 오픈
+        ChatMessage systemMessage = ChatMessage.builder()
+            .organizationId(organizationId)
+            .roomId(chatRoom.getRoomId())
+            .senderId("SYSTEM")
+            .senderName("시스템")
+            .admin(false)
+            .content(orgMember.getNickname() + "(가) 채팅을 오픈했습니다.")
+            .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+            .build();
+        chatMessageRepository.save(systemMessage);
+
         if (firstMessage != null && !firstMessage.trim().isEmpty()) {
             ChatMessage chatMessage = ChatMessage.builder()
                 .organizationId(organizationId)  // 조직 ID 추가
