@@ -1,5 +1,3 @@
-# KLÜME
-
 <img width="600" height="500" alt="스크린샷 2025-11-13 171816" src="https://github.com/user-attachments/assets/fd15c022-fb88-4d13-a588-6fd0c39ab47e" />
 
 
@@ -258,7 +256,7 @@
   <details>
   <summary> &nbsp; 유저 채팅방 생성 및 사진 전송 </summary>
   <p align="center">
-    <img src="https://github.com/user-attachments/assets/b0e272bb-a8d3-4149-b800-d493aa1a0595" width="600">
+    <img src="https://github.com/user-attachments/assets/11982591-ef95-46a2-8ec8-b6935e2a5870" width="600">
 
   </p>
   </details>
@@ -266,7 +264,7 @@
   <details>
   <summary> &nbsp; 관리자 채팅 담당 및 전송 </summary>
   <p align="center">
-    <img src="https://github.com/user-attachments/assets/3e074f0c-aaec-4751-96ac-ad2293725185" width="600">
+    <img src="https://github.com/user-attachments/assets/35b83204-f42e-4996-85dc-37128db30ad7" width="600">
 
   </p>
   </details>
@@ -274,7 +272,7 @@
   <details>
   <summary> &nbsp; 실시간 채팅 </summary>
   <p align="center">
-    <img src="https://github.com/user-attachments/assets/8c871360-27b1-4c9d-916f-70aafa7af9c4" width="600">
+    <img src="https://github.com/user-attachments/assets/0303430e-4bed-49c1-8c3c-374ae5efcb57" width="600">
 
   </p>
   </details>
