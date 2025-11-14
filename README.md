@@ -248,6 +248,37 @@
   </p>
   </details>
 
+  
+</div>
+</details>
+
+<details>
+<summary> 👤 &nbsp; 채팅 </summary>
+<div markdown=1>
+  <details>
+  <summary> &nbsp; 유저 채팅방 생성 및 사진 전송 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/b0e272bb-a8d3-4149-b800-d493aa1a0595" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 관리자 채팅 담당 및 전송 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/3e074f0c-aaec-4751-96ac-ad2293725185" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 실시간 채팅 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/8c871360-27b1-4c9d-916f-70aafa7af9c4" width="600">
+
+  </p>
+  </details>
+  
 </div>
 </details>
 
