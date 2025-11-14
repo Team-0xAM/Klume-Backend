@@ -44,7 +44,6 @@
 ![STOMP](https://img.shields.io/badge/STOMP-0A97B0?style=for-the-badge)
 ![SockJS](https://img.shields.io/badge/SockJS-CC0000?style=for-the-badge)
 ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white) 
-![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socketdotio&logoColor=white)
 
 
 ---
