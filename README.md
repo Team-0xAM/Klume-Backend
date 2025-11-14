@@ -4,7 +4,7 @@
 
 
 
-> 회의실 예약, 티케팅처럼 공평하게.
+> 회의실 예약, 티켓팅처럼 공평하게.
 
 <br>
 
@@ -27,7 +27,7 @@
 
 ### 기술 요약
 #### 🌆 DevOps
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) ![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white) ![Jenkins](https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) ![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white) ![Jenkins](https://img.shields.io/badge/jenkins-%232C5263.svg?style=for-the-badge&logo=jenkins&logoColor=white) ![Jenkins](https://img.shields.io/badge/ngrok-%232C5263.svg?style=for-the-badge&logo=ngrok&logoColor=white)
 
 #### 🌿 FrontEnd
 ![Vue.js](https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D) ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![NPM](https://img.shields.io/badge/NPM-%23CB3837.svg?style=for-the-badge&logo=npm&logoColor=white) ![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
@@ -248,6 +248,37 @@
   </p>
   </details>
 
+  
+</div>
+</details>
+
+<details>
+<summary> 👤 &nbsp; 채팅 </summary>
+<div markdown=1>
+  <details>
+  <summary> &nbsp; 유저 채팅방 생성 및 사진 전송 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/b0e272bb-a8d3-4149-b800-d493aa1a0595" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 관리자 채팅 담당 및 전송 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/3e074f0c-aaec-4751-96ac-ad2293725185" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 실시간 채팅 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/8c871360-27b1-4c9d-916f-70aafa7af9c4" width="600">
+
+  </p>
+  </details>
+  
 </div>
 </details>
 

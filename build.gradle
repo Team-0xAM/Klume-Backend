@@ -33,8 +33,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	/* Database */
-//	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+//	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	/* Mybatis */
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
