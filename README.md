@@ -280,3 +280,19 @@
 </details>
 
 <br>
+
+
+---
+
+## 6. 시스템 아키텍처
+
+<img width="1737" height="1030" alt="image" src="https://github.com/user-attachments/assets/0a75648f-3440-4d49-8db0-8a7b2ce81451" />
+
+---
+
+## 7. CI/CD
+
+<img width="917" height="740" alt="image" src="https://github.com/user-attachments/assets/3cf1c284-b25a-42fe-8434-3720baeb5600" />
+
+<img width="911" height="657" alt="image" src="https://github.com/user-attachments/assets/28c3aa07-2641-4753-b3aa-a8ca339eda67" />
+
