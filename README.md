@@ -221,6 +221,13 @@
   </details>
 
   <details>
+  <summary> &nbsp; 회의실 예약 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/b6686566-a43e-4672-8779-12d41f6d7dbe" width="600">
+  </p>
+  </details>
+
+  <details>
   <summary> &nbsp; 회의실 이용 </summary>
   <p align="center">
     <img src="https://github.com/user-attachments/assets/b842871e-1235-42de-9dd6-1f718ee7372b" width="600">
