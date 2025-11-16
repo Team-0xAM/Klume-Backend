@@ -316,4 +316,15 @@
   
 </details>
 
+<details>
+<summary>  &nbsp; room 테스트 </summary>
+<img width="966" height="495" alt="회의실테스트 2025-11-17 031320" src="https://github.com/user-attachments/assets/8f30c701-a59c-4f84-8346-03c433f0f9fa" />
+<img width="1178" height="882" alt="회의실서비스단위테스트 2025-11-17 030736" src="https://github.com/user-attachments/assets/65a4f291-002f-4ccf-b93e-31e63d1f22f0" />
+<img width="1243" height="677" alt="회의실컨트롤러단위테스트 2025-11-17 030551" src="https://github.com/user-attachments/assets/5d0b23d5-ec0c-4a31-ad6d-f9fe79b6ccfb" />
+<img width="753" height="557" alt="회의실 이용가능시간단위테스트 2025-11-17 030847" src="https://github.com/user-attachments/assets/4627c0f2-649a-47af-827d-4fd76dbe36e9" />
+
+
+  
+</details>
+
 
