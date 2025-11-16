@@ -1,5 +1,3 @@
-# KLÜME
-
 <img width="600" height="500" alt="스크린샷 2025-11-13 171816" src="https://github.com/user-attachments/assets/fd15c022-fb88-4d13-a588-6fd0c39ab47e" />
 
 
@@ -33,10 +31,10 @@
 ![Vue.js](https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D) ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![NPM](https://img.shields.io/badge/NPM-%23CB3837.svg?style=for-the-badge&logo=npm&logoColor=white) ![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
 
 #### 🗝️ Backend
-<img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"/> ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens) <img src="https://img.shields.io/badge/JPA-59666C?style=for-the-badge&logo=hibernate&logoColor=white"/> <img src="https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=databricks&logoColor=white"/> ![Amazon S3](https://img.shields.io/badge/Amazon%20S3-FF9900?style=for-the-badge&logo=amazons3&logoColor=white) ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
+<img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"/> ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens) <img src="https://img.shields.io/badge/JPA-59666C?style=for-the-badge&logo=hibernate&logoColor=white"/> <img src="https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=databricks&logoColor=white"/> ![Amazon S3](https://img.shields.io/badge/Amazon%20S3-FF9900?style=for-the-badge&logo=amazons3&logoColor=white) 
 
 #### 🗂️ DB
-<img src="https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white"/> ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white) 	![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+<img src="https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white"/> ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white) 	![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
 
 #### 🔧 Tools
 ![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white) <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white"/>
@@ -46,7 +44,6 @@
 ![STOMP](https://img.shields.io/badge/STOMP-0A97B0?style=for-the-badge)
 ![SockJS](https://img.shields.io/badge/SockJS-CC0000?style=for-the-badge)
 ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white) 
-![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socketdotio&logoColor=white)
 
 
 ---
@@ -224,6 +221,13 @@
   </details>
 
   <details>
+  <summary> &nbsp; 회의실 예약 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/b6686566-a43e-4672-8779-12d41f6d7dbe" width="600">
+  </p>
+  </details>
+
+  <details>
   <summary> &nbsp; 회의실 이용 </summary>
   <p align="center">
     <img src="https://github.com/user-attachments/assets/b842871e-1235-42de-9dd6-1f718ee7372b" width="600">
@@ -248,7 +252,79 @@
   </p>
   </details>
 
+  
+</div>
+</details>
+
+<details>
+<summary> 👤 &nbsp; 채팅 </summary>
+<div markdown=1>
+  <details>
+  <summary> &nbsp; 유저 채팅방 생성 및 사진 전송 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/11982591-ef95-46a2-8ec8-b6935e2a5870" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 관리자 채팅 담당 및 전송 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/35b83204-f42e-4996-85dc-37128db30ad7" width="600">
+
+  </p>
+  </details>
+
+  <details>
+  <summary> &nbsp; 실시간 채팅 </summary>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/0303430e-4bed-49c1-8c3c-374ae5efcb57" width="600">
+
+  </p>
+  </details>
+  
 </div>
 </details>
 
 <br>
+
+
+---
+
+## 6. 시스템 아키텍처
+
+<img width="1737" height="1030" alt="image" src="https://github.com/user-attachments/assets/0a75648f-3440-4d49-8db0-8a7b2ce81451" />
+
+---
+
+## 7. CI/CD
+
+<img width="917" height="740" alt="image" src="https://github.com/user-attachments/assets/3cf1c284-b25a-42fe-8434-3720baeb5600" />
+
+<img width="911" height="657" alt="image" src="https://github.com/user-attachments/assets/28c3aa07-2641-4753-b3aa-a8ca339eda67" />
+
+## 8. Mockito 테스트
+<details>
+<summary>  &nbsp; Member 테스트 </summary>
+<img width="931" height="509" alt="멤버테스트" src="https://github.com/user-attachments/assets/691b87b0-73b9-4df8-9c4f-a3121f3d6d3f" />
+<img width="940" height="489" alt="멤버컨트롤러단위테스트" src="https://github.com/user-attachments/assets/1ef0d1b8-e861-47e9-8e36-d204ddb3a853" />
+<img width="966" height="514" alt="멤버서비스단위테스트" src="https://github.com/user-attachments/assets/5b7162a9-8407-4c89-9385-5ea227cbd859" />
+<img width="952" height="507" alt="이메일로회원조회테스트" src="https://github.com/user-attachments/assets/3abecc32-4078-4b11-a0cd-afd31e09fabf" />
+<img width="951" height="523" alt="로그인테스트" src="https://github.com/user-attachments/assets/6384a14a-fe89-4a92-9bb7-5678df2c2864" />
+<img width="960" height="521" alt="회원가입테스트" src="https://github.com/user-attachments/assets/3d7130f6-6af1-46bd-932b-a65f8000b0fd" />
+
+  
+</details>
+
+<details>
+<summary>  &nbsp; room 테스트 </summary>
+<img width="966" height="495" alt="회의실테스트 2025-11-17 031320" src="https://github.com/user-attachments/assets/8f30c701-a59c-4f84-8346-03c433f0f9fa" />
+<img width="1178" height="882" alt="회의실서비스단위테스트 2025-11-17 030736" src="https://github.com/user-attachments/assets/65a4f291-002f-4ccf-b93e-31e63d1f22f0" />
+<img width="1243" height="677" alt="회의실컨트롤러단위테스트 2025-11-17 030551" src="https://github.com/user-attachments/assets/5d0b23d5-ec0c-4a31-ad6d-f9fe79b6ccfb" />
+<img width="753" height="557" alt="회의실 이용가능시간단위테스트 2025-11-17 030847" src="https://github.com/user-attachments/assets/4627c0f2-649a-47af-827d-4fd76dbe36e9" />
+
+
+  
+</details>
+
+

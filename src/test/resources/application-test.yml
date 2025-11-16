@@ -1,0 +1,23 @@
+# Mockito 기반 단위 테스트용 설정 (실제 외부 서비스 사용 안 함)
+
+# JWT 설정 (테스트용)
+jwt:
+  secret: test-secret-key-for-jwt-token-generation-and-validation-minimum-256-bits-required
+  access-token-validity: 36000000  # 1시간 (밀리초)
+
+# 스웨거 설정
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+app:
+  oauth2:
+    redirect-url: "http://localhost:5173/oauth/callback"
+
+# 로깅 설정
+logging:
+  level:
+    com.oxam.klume: INFO
+    org.springframework: WARN
