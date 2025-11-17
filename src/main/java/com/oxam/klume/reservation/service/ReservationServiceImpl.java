@@ -51,15 +51,15 @@ public class ReservationServiceImpl implements ReservationService {
 
         validateSameOrganization(organization, room.getOrganization());
 
-        final DailyAvailableTime dailyAvailableTime = findDailyReservationById(dailyAvailableTimeId);
-
-        validateSameOrganization(organization, findOrganizationByDailyAvailableTimeId(dailyAvailableTimeId));
-
         final OrganizationMember organizationMember = findOrganizationByMemberIdAndOrganization(member, organization);
 
         validateOrganizationMemberNotBanned(organizationMember);
 
-        validateReservationAvailability(dailyAvailableTime);
+        final DailyAvailableTime dailyAvailableTime = findDailyAvailableByIdWithLock(dailyAvailableTimeId);
+
+        validateSameOrganization(organization, findOrganizationByDailyAvailableTimeId(dailyAvailableTime.getId()));
+
+        validateReservationAvailabilityWithLock(dailyAvailableTime);
 
         final String availableStartDateTime = dailyAvailableTime.getDate() + " "
                 + dailyAvailableTime.getAvailableStartTime();
@@ -81,6 +81,15 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+    private void validateReservationAvailabilityWithLock(final DailyAvailableTime dailyAvailableTime) {
+        final Optional<DailyReservation> dailyReservation = dailyReservationRepository
+                .findByDailyAvailableTime_IdWith(dailyAvailableTime.getId());
+
+        if (dailyReservation.isPresent() && dailyReservation.get().getCancelledAt() == null) {
+            throw new RoomAlreadyBookedException();
+        }
+    }
+
     public void validateOrganizationMemberNotBanned(final OrganizationMember organizationMember) {
         if (organizationMember.isBanned() &&
                 DateUtil.parseToLocalDateTime(organizationMember.getBannedAt()).plusDays(7).isAfter(LocalDateTime.now())) {
@@ -88,13 +97,13 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private DailyAvailableTime findDailyReservationById(final int dailyAvailableTimeId) {
-        return dailyAvailableTimeRepository.findById(dailyAvailableTimeId)
+    private DailyAvailableTime findDailyAvailableByIdWithLock(final int dailyAvailableTimeId) {
+        return dailyAvailableTimeRepository.findByIdWithLock(dailyAvailableTimeId)
                 .orElseThrow(DailyAvailableTimeNotFoundException::new);
     }
 
     public void validateSameOrganization(final Organization organization, final Organization targetOrganization) {
-        if (organization != targetOrganization) {
+        if (organization.getId() != targetOrganization.getId()) {
             throw new OrganizationMismatchException();
         }
     }
